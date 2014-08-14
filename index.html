@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js canvas - geometry hierarchy 2</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+body {
+  background:#fff;
+  padding:0;
+  margin:0;
+  font-weight: bold;
+  overflow:hidden;
+}
+#container {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+}
+
+#divL, #divR {
+  display: none;
+
+  position: absolute;
+  width: 50px; height: 50px;
+  background: blue;
+  border: 4px solid red;
+}
+
+#divL {
+  top: calc(50% - 27px); left: calc(25% - 27px);
+}
+
+#divR {
+  top: calc(50% - 27px); left: calc(75% - 27px);
+}
+    </style>
+  </head>
+  <body>
+
+    <button onclick="toggleFS();">Toggle Fullscreen VR (f)</button>
+<!--    <button onclick="toggleVR();">Toggle VR</button> -->
+    <div id="container">
+      <div id="divL"></div>
+      <div id="divR"></div>
+    </div>
+
+    <!-- this version of three.js has WebGL Renderer's setSize method modified to take a canvas resolution scale factor -->
+    <script src="js/three.js"></script>
+    <script src="js/vrutils.js"></script>
+
+    <script>
+
+var container;
+
+var camera, scene, renderer;
+var cameraLeft, cameraRight;
+
+var geometry, group;
+
+var mouseX = 0, mouseY = 0;
+
+var winRenderWidth = 640; // window.innerWidth;
+var winRenderHeight = winRenderWidth * (1080/1920); // window.innerHeight;
+
+var renderWidth = winRenderWidth;
+var renderHeight = winRenderHeight;
+
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
+
+var vrHMD = null, vrPosDev = null, vrEnabled = false;
+
+document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+function mprint(m) {
+     var ms = "[";
+     for (var i = 0; i < 16; ++i) {
+       if (i%4 == 0) ms += "[";
+       ms += m.elements[i] + " ";
+       if (i%4 == 3) ms += "] ";
+     }
+     ms += "]";
+     console.log(ms);
+}
+
+function init() {
+  container = document.getElementById("container");
+
+  camera = new THREE.PerspectiveCamera( 60, renderWidth / renderHeight, 1, 10000 );
+  camera.position.z = 500;
+
+  cameraLeft = new THREE.Camera();
+  cameraRight = new THREE.Camera();
+
+  scene = new THREE.Scene();
+
+  var geometry = new THREE.BoxGeometry( 100, 100, 100 );
+  var material = new THREE.MeshNormalMaterial( { overdraw: 0.5 } );
+
+  group = new THREE.Object3D();
+
+  for (var i = 0; i < 200; i ++) {
+    var mesh = new THREE.Mesh( geometry, material );
+    mesh.position.x = Math.random() * 2000 - 1000;
+    mesh.position.y = Math.random() * 2000 - 1000;
+    mesh.position.z = Math.random() * 2000 - 1000;
+    mesh.rotation.x = Math.random() * 2 * Math.PI;
+    mesh.rotation.y = Math.random() * 2 * Math.PI;
+    mesh.matrixAutoUpdate = false;
+    mesh.updateMatrix();
+
+       if (i == 0) {
+	 console.log("object 0 matrix")
+	 mprint(mesh.matrix);
+       }
+    group.add(mesh);
+  }
+
+  scene.add(group);
+
+  renderer = new THREE.WebGLRenderer();
+  renderer.setClearColor( 0xffffff );
+  renderer.setSize(renderWidth, renderHeight);
+  renderer.domElement.setAttribute("id", "three_canvas");
+  container.appendChild( renderer.domElement );
+}
+
+function setRenderSize(width, height, vr) {
+  // these are only used for mouse handling
+  windowHalfX = window.innerWidth / 2;
+  windowHalfY = window.innerHeight / 2;
+
+  if (vr) {
+    cameraLeft.projectionMatrix = FovToProjection(vrHMD.getRecommendedEyeFieldOfView("left"));
+    cameraRight.projectionMatrix = FovToProjection(vrHMD.getRecommendedEyeFieldOfView("right"));
+
+    var leftTx = vrHMD.getEyeTranslation("left");
+    var rightTx = vrHMD.getEyeTranslation("right");
+
+    cameraLeft.position.add(new THREE.Vector3(leftTx.x, leftTx.y, leftTx.z));
+    cameraRight.position.add(new THREE.Vector3(rightTx.x, rightTx.y, rightTx.z));
+
+    renderer.setSize(width * 2, height, true, 2);
+    container.style.width = (width * 2) + "px";
+    container.style.height = height + "px";
+  } else {
+    camera.aspect = renderWidth / renderHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(width, height);
+    container.style.width = width + "px";
+    container.style.height = height + "px";
+  }
+
+  renderWidth = width;
+  renderHeight = height;
+}
+
+function onDocumentMouseMove(event) {
+  mouseX = ( event.clientX - windowHalfX ) * 10;
+  mouseY = ( event.clientY - windowHalfY ) * 10;
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  render();
+}
+
+function render() {
+  renderer.enableScissorTest(true);
+
+  // this is incredibly nausea-inducing if done in VR
+  if (!vrEnabled) {
+    var currentSeconds = Date.now();
+    group.rotation.x = Math.sin( currentSeconds * 0.0007 ) * 0.5;
+    group.rotation.y = Math.sin( currentSeconds * 0.0003 ) * 0.5;
+    group.rotation.z = Math.sin( currentSeconds * 0.0002 ) * 0.5;
+  }
+
+  if (vrEnabled) {
+    // read the orientation from the HMD, and set the rotation on both cameras
+    var state = vrPosDev.getState();
+    var qrot = new THREE.Quaternion();
+    qrot.set(state.orientation.x, state.orientation.y, state.orientation.z, state.orientation.w);
+    cameraLeft.setRotationFromQuaternion(qrot);
+    cameraRight.setRotationFromQuaternion(qrot);
+
+    // render left eye
+    renderer.setViewport(0, 0, renderWidth, renderHeight);
+    renderer.setScissor(0, 0, renderWidth, renderHeight);
+    renderer.render(scene, cameraLeft);
+
+    // render right eye
+    renderer.setViewport(renderWidth, 0, renderWidth, renderHeight);
+    renderer.setScissor(renderWidth, 0, renderWidth, renderHeight);
+    renderer.render(scene, cameraRight);
+  } else {
+    // use mouse position as input for the non-VR camera
+    camera.position.x += ( mouseX - camera.position.x ) * .05;
+    camera.position.y += ( - mouseY - camera.position.y ) * .05;
+    camera.lookAt( scene.position );
+
+    renderer.setViewport(0, 0, renderWidth, renderHeight);
+    renderer.setScissor(0, 0, renderWidth, renderHeight);
+    renderer.render(scene, camera);
+  }
+}
+
+function vrDeviceCallback(vrdevs) {
+  console.log(vrdevs.length, " VR Devices");
+
+  // First, find a HMD -- just use the first one we find
+  for (var i = 0; i < vrdevs.length; ++i) {
+       console.log(vrdevs[i]);
+    if (vrdevs[i] instanceof HMDVRDevice) {
+      vrHMD = vrdevs[i];
+      break;
+    }
+  }
+
+  if (!vrHMD)
+   return;
+
+  // Then, find that HMD's position sensor
+  for (var i = 0; i < vrdevs.length; ++i) {
+    if (vrdevs[i] instanceof PositionSensorVRDevice &&
+        vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId)
+    {
+      vrPosDev = vrdevs[i];
+      break;
+    }
+  }
+
+  if (!vrPosDev) {
+    alert("Found a HMD, but didn't find its orientation sensor?");
+  }
+
+  console.log("fovleft");
+  mprint(FovToProjection(vrHMD.getRecommendedEyeFieldOfView("left")));
+
+  // kick off rendering
+  animate();
+}
+
+// Used only for debugging, to force toggling VR rendering without
+// fullscreen
+function toggleVR() {
+  if (!vrHMD) {
+    alert("no HMD found");
+    return;
+  }
+
+  vrEnabled = !vrEnabled;
+  setRenderSize(renderWidth, renderHeight, vrEnabled);
+  vrHMD.xxxToggleElementVR(document.getElementById("three_canvas"));
+}
+
+function toggleFS() {
+  if (!vrHMD) {
+    alert("no HMD found");
+    return;
+  }
+
+  container.mozRequestFullScreen({ vrDisplay: vrHMD });
+}
+
+function toggleFS1() {
+  container.mozRequestFullScreen();
+}
+
+function fschange() {
+  if (document.mozFullScreenElement) {
+    renderWidth = screen.availWidth / 2;
+    renderHeight = screen.availHeight;
+    vrEnabled = true;
+  } else {
+    renderWidth = winRenderWidth;
+    renderHeight = winRenderHeight;
+    vrEnabled = false;
+  }
+
+  setRenderSize(renderWidth, renderHeight, vrEnabled);
+}
+
+function onkey(event) {
+  console.log("onkey", event.charCode);
+  if (event.charCode == 'f'.charCodeAt(0)) {
+    toggleFS();
+  } else if (event.charCode == 'z'.charCodeAt(0)) {
+    container.mozRequestFullScreen();
+  } else if (event.charCode == 'v'.charCodeAt(0)) {
+    toggleVR();
+  } else if (event.charCode == 't'.charCodeAt(0)) {
+    toggleFS1();
+  } else {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function start() {
+  document.addEventListener("mozfullscreenchange", fschange, false);
+  window.addEventListener("keypress", onkey, true);
+  init();
+  setRenderSize(renderWidth, renderHeight, false);
+  if (navigator.mozGetVRDevices)
+    navigator.mozGetVRDevices(vrDeviceCallback);
+  else
+    animate();
+}
+
+window.addEventListener("load", start, false);
+
+    </script>
+  </body>
+</html>
