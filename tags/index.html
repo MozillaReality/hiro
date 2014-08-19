@@ -47,7 +47,7 @@
         self.vrEnabled = false;
         self.running = false;
 
-        navigator.mozGetVRDevices(function (devices) {
+        navigator.getVRDevices().then(function (devices) {
           for (var i = 0; i < devices.length; i++) {
             if (devices[i] instanceof HMDVRDevice) {
               self.vr.hmd = devices[i];
@@ -58,12 +58,13 @@
           }
           if (self.vr.hmd && self.vr.tracker) {
             console.log('VR devices ready');
+            console.log(self.vr.hmd, self.vr.tracker);
             self.vrReady = true;
           }
         });
 
         document.addEventListener("mozfullscreenchange", function () {
-          self.vrEnabled = !!document.mozFullScreenElement;
+          self.vrEnabled = !!document.mozFullScreenElement && self.vrReady;
           if (self.vrEnabled) {
             self.width = screen.availWidth / 2;
             self.height = screen.availHeight;
@@ -155,11 +156,12 @@
 
       VRScene.prototype.enableVR = function () {
         var self = this;
-        console.log(self, self.vrReady);
         if (self.vrReady) {
           console.log('VR Launching...');
           self.container.mozRequestFullScreen({ vrDisplay: self.vr.hmd });
         } else {
+          self.container.mozRequestPointerLock();
+          // self.container.mozRequestFullScreen();
           console.warn('VR not ready');
         }
       };
