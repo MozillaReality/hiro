@@ -1,319 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>three.js canvas - geometry hierarchy 2</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>JAVRIS</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <style>
-body {
-  background:#fff;
-  padding:0;
-  margin:0;
-  font-weight: bold;
-  overflow:hidden;
-}
-#container {
-  position: absolute;
-  top: 50px;
-  left: 50px;
-}
+    <style type="text/css">
+      html, body {
+        height: 100%;
+      }
+      body {
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+        margin: 0;
+      }
+      /* keeping style block in body to make it easier to see the relationship between elements */
 
-#divL, #divR {
-  display: none;
+      /* Container is nothing special; it's the element that is made full screen.
+       * When non-fullscreen, you can add transforms to this element to make the scene
+       * make sense in 2D (instead of being centered around the top left).  That transform
+       * will cascade down to children when fullscreen though, so make sure to remove it when
+       * entering fullscreen.  There's a -moz-full-screen selector that's useful for this.
+       */
+      #container {
+        background: #000;
+      }
+      #container:-moz-full-screen {
+        cursor: none;
+      }
 
-  position: absolute;
-  width: 50px; height: 50px;
-  background: blue;
-  border: 4px solid red;
-}
+      #container:not(:-moz-full-screen) {
+        /* this is just to move the scene to the visible area when not in fullscreen VR */
+        /*transform-origin: 50% 50%;*/
+        /*transform: perspective(1000px) rotateZ(180deg) rotateY(180deg);*/
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: absolute;
+      }
 
-#divL {
-  top: calc(50% - 27px); left: calc(25% - 27px);
-}
+      #container:not(:-moz-full-screen) {
+        transform: translate(50vw, 50vh);
+      }
 
-#divR {
-  top: calc(50% - 27px); left: calc(75% - 27px);
-}
+      /* All threed-class elements have preserve-3d; preserve-3d is NOT inherited.  (There's an open
+       * discussion on w3-style about adding a new transform-style that is like preserve-3d but is
+       * inherited.)
+       *
+       * position: absolute; and 0,0 is also set because we'll position these elements fully using
+       * 3D transforms.  Their CSS position is irrelevant for us.  Without this, their CSS position
+       * will come into play as well as their transform.
+       *
+       * When in fullscreen VR, the 0,0,0 position is at the center of the viewport and not the top
+       * left.
+       *
+       * We don't modify the original transform-origin here (50% 50% 0), because that can be useful
+       * for moving elements around by their center point.  But it could also be set to 0,0,0 to
+       * make it completely clear exactly where/how 3D objects are moving.
+       */
+      .threed {
+        transform-style: preserve-3d;
+        position: absolute;
+        top: 0; left: 0;
+      }
+
+      /* The camera div just serves as a way to set up a modelview transform for the entire rest of the
+       * scene.  The transform that's set on it needs to be the *inverse* of where you want the camera
+       * to be; that is, if you want the camera to be at (0, 0, 500), then the transform needs to be
+       * set to (0, 0, -500).  The transform-origin is set here because we want to go from the origin
+       */
+      .camera {
+        transform-origin: 0 0 0;
+        /* the transform itself is set programatically, since it needs to take into account the HMD orientation */
+        pointer-events: none;
+      }
+
+      .stage .wall {
+        width: 500px;
+        height: 500px;
+        background-color: #002;
+        background-image: linear-gradient(to right, #fff 0px, rgba(255,255,255,0) 1px, rgba(255,255,255,0) 99px, #fff 100px), linear-gradient(to bottom, rgba(255,255,255,0) 99px, #fff 100px);
+        background-size: 100px 100px;
+      }
+      #wall1 {
+        transform: translate(-50%, -50%) translate3d(0, 0, 250px);
+      }
+      #wall2 {
+        transform: translate(-50%, -50%) translate3d(0, 0, -250px);
+      }
+      #wall3 {
+        transform: translate(-50%, -50%) rotateY(90deg) translate3d(0, 0, 250px);
+      }
+      #wall4 {
+        transform: translate(-50%, -50%) rotateY(90deg) translate3d(0, 0, -250px);
+      }
+      #wall5 {
+        transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, 250px);
+      }
+      #wall6 {
+        transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, -250px);
+      }
+
+      .camera {
+        transition: 1s opacity linear;
+      }
+
+      .cursor {
+        width: 1px;
+        height: 1px;
+        background: #fff;
+        transform: translate(-50%, -50%) translate3d(0, 0, 10px);
+      }
+
+      .hud {
+        color: #fff;
+        /*width: 50px;
+        height: 50px;*/
+        transform-origin: 0 0 0;
+        transform: translate3d(0, 0, 0) rotateZ(180deg) rotateY(180deg);
+      }
+
+      .hud .dialog {
+        display: block;
+        width: 100px;
+        height: 100px;
+        border: 1px solid white;
+        transform: translate(-50%,-50%) translate3d(0, 0, 200px);
+      }
+
+      .loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .loader iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
     </style>
   </head>
   <body>
+    <!-- this is a containing element that will be made fullscreen -->
+    <div id="container" class="container">
+      <!-- This is an inner element that will serve as a camera, moving its children around in the scene.
+           This and all its children will have transform-style: preserve-3d set via the class, as well as
+           transform-origin set to 0,0 -->
+      <div id="camera" class="threed camera">
+        <div class="stage">
+          <div class="wall threed" id="wall1"></div>
+          <div class="wall threed" id="wall2"></div>
+          <div class="wall threed" id="wall3"></div>
+          <div class="wall threed" id="wall4"></div>
+          <div class="wall threed" id="wall5"></div>
+          <div class="wall threed" id="wall6"></div>
+        </div>
+      </div>
+      <div class="hud threed">
+        <div class="dialog threed">Hi!</div>
+      </div>
 
-    <button onclick="toggleFS();">Toggle Fullscreen VR (f)</button>
-<!--    <button onclick="toggleVR();">Toggle VR</button> -->
-    <div id="container">
-      <div id="divL"></div>
-      <div id="divR"></div>
+      <div class="loader">
+      </div>
     </div>
 
-    <!-- this version of three.js has WebGL Renderer's setSize method modified to take a canvas resolution scale factor -->
-    <script src="js/three.js"></script>
-    <script src="js/vrutils.js"></script>
+    <script src="js/vrmanager.js"></script>
+    <script type="text/javascript">
 
-    <script>
+      function onkey(event) {
+        switch (String.fromCharCode(event.charCode)) {
+          case 'f':
+            VRManager.enableVR();
+            setTimeout(function () {
+              VRManager.load('./tags/index.html');
+            }, 5000);
+            break;
+          case 'z':
+            VRManager.zeroSensor();
+            break;
+        }
+      }
 
-var container;
-
-var camera, scene, renderer;
-var cameraLeft, cameraRight;
-
-var geometry, group;
-
-var mouseX = 0, mouseY = 0;
-
-var winRenderWidth = 640; // window.innerWidth;
-var winRenderHeight = winRenderWidth * (1080/1920); // window.innerHeight;
-
-var renderWidth = winRenderWidth;
-var renderHeight = winRenderHeight;
-
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
-
-var vrHMD = null, vrPosDev = null, vrEnabled = false;
-
-document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
-function mprint(m) {
-     var ms = "[";
-     for (var i = 0; i < 16; ++i) {
-       if (i%4 == 0) ms += "[";
-       ms += m.elements[i] + " ";
-       if (i%4 == 3) ms += "] ";
-     }
-     ms += "]";
-     console.log(ms);
-}
-
-function init() {
-  container = document.getElementById("container");
-
-  camera = new THREE.PerspectiveCamera( 60, renderWidth / renderHeight, 1, 10000 );
-  camera.position.z = 500;
-
-  cameraLeft = new THREE.Camera();
-  cameraRight = new THREE.Camera();
-
-  scene = new THREE.Scene();
-
-  var geometry = new THREE.BoxGeometry( 100, 100, 100 );
-  var material = new THREE.MeshNormalMaterial( { overdraw: 0.5 } );
-
-  group = new THREE.Object3D();
-
-  for (var i = 0; i < 200; i ++) {
-    var mesh = new THREE.Mesh( geometry, material );
-    mesh.position.x = Math.random() * 2000 - 1000;
-    mesh.position.y = Math.random() * 2000 - 1000;
-    mesh.position.z = Math.random() * 2000 - 1000;
-    mesh.rotation.x = Math.random() * 2 * Math.PI;
-    mesh.rotation.y = Math.random() * 2 * Math.PI;
-    mesh.matrixAutoUpdate = false;
-    mesh.updateMatrix();
-
-       if (i == 0) {
-	 console.log("object 0 matrix")
-	 mprint(mesh.matrix);
-       }
-    group.add(mesh);
-  }
-
-  scene.add(group);
-
-  renderer = new THREE.WebGLRenderer();
-  renderer.setClearColor( 0xffffff );
-  renderer.setSize(renderWidth, renderHeight);
-  renderer.domElement.setAttribute("id", "three_canvas");
-  container.appendChild( renderer.domElement );
-}
-
-function setRenderSize(width, height, vr) {
-  // these are only used for mouse handling
-  windowHalfX = window.innerWidth / 2;
-  windowHalfY = window.innerHeight / 2;
-
-  if (vr) {
-    cameraLeft.projectionMatrix = FovToProjection(vrHMD.getRecommendedEyeFieldOfView("left"));
-    cameraRight.projectionMatrix = FovToProjection(vrHMD.getRecommendedEyeFieldOfView("right"));
-
-    var leftTx = vrHMD.getEyeTranslation("left");
-    var rightTx = vrHMD.getEyeTranslation("right");
-
-    cameraLeft.position.add(new THREE.Vector3(leftTx.x, leftTx.y, leftTx.z));
-    cameraRight.position.add(new THREE.Vector3(rightTx.x, rightTx.y, rightTx.z));
-
-    renderer.setSize(width * 2, height, true, 2);
-    container.style.width = (width * 2) + "px";
-    container.style.height = height + "px";
-  } else {
-    camera.aspect = renderWidth / renderHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(width, height);
-    container.style.width = width + "px";
-    container.style.height = height + "px";
-  }
-
-  renderWidth = width;
-  renderHeight = height;
-}
-
-function onDocumentMouseMove(event) {
-  mouseX = ( event.clientX - windowHalfX ) * 10;
-  mouseY = ( event.clientY - windowHalfY ) * 10;
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  render();
-}
-
-function render() {
-  renderer.enableScissorTest(true);
-
-  // this is incredibly nausea-inducing if done in VR
-  if (!vrEnabled) {
-    var currentSeconds = Date.now();
-    group.rotation.x = Math.sin( currentSeconds * 0.0007 ) * 0.5;
-    group.rotation.y = Math.sin( currentSeconds * 0.0003 ) * 0.5;
-    group.rotation.z = Math.sin( currentSeconds * 0.0002 ) * 0.5;
-  }
-
-  if (vrEnabled) {
-    // read the orientation from the HMD, and set the rotation on both cameras
-    var state = vrPosDev.getState();
-    var qrot = new THREE.Quaternion();
-    qrot.set(state.orientation.x, state.orientation.y, state.orientation.z, state.orientation.w);
-    cameraLeft.setRotationFromQuaternion(qrot);
-    cameraRight.setRotationFromQuaternion(qrot);
-
-    // render left eye
-    renderer.setViewport(0, 0, renderWidth, renderHeight);
-    renderer.setScissor(0, 0, renderWidth, renderHeight);
-    renderer.render(scene, cameraLeft);
-
-    // render right eye
-    renderer.setViewport(renderWidth, 0, renderWidth, renderHeight);
-    renderer.setScissor(renderWidth, 0, renderWidth, renderHeight);
-    renderer.render(scene, cameraRight);
-  } else {
-    // use mouse position as input for the non-VR camera
-    camera.position.x += ( mouseX - camera.position.x ) * .05;
-    camera.position.y += ( - mouseY - camera.position.y ) * .05;
-    camera.lookAt( scene.position );
-
-    renderer.setViewport(0, 0, renderWidth, renderHeight);
-    renderer.setScissor(0, 0, renderWidth, renderHeight);
-    renderer.render(scene, camera);
-  }
-}
-
-function vrDeviceCallback(vrdevs) {
-  console.log(vrdevs.length, " VR Devices");
-
-  // First, find a HMD -- just use the first one we find
-  for (var i = 0; i < vrdevs.length; ++i) {
-       console.log(vrdevs[i]);
-    if (vrdevs[i] instanceof HMDVRDevice) {
-      vrHMD = vrdevs[i];
-      break;
-    }
-  }
-
-  if (!vrHMD)
-   return;
-
-  // Then, find that HMD's position sensor
-  for (var i = 0; i < vrdevs.length; ++i) {
-    if (vrdevs[i] instanceof PositionSensorVRDevice &&
-        vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId)
-    {
-      vrPosDev = vrdevs[i];
-      break;
-    }
-  }
-
-  if (!vrPosDev) {
-    alert("Found a HMD, but didn't find its orientation sensor?");
-  }
-
-  console.log("fovleft");
-  mprint(FovToProjection(vrHMD.getRecommendedEyeFieldOfView("left")));
-
-  // kick off rendering
-  animate();
-}
-
-// Used only for debugging, to force toggling VR rendering without
-// fullscreen
-function toggleVR() {
-  if (!vrHMD) {
-    alert("no HMD found");
-    return;
-  }
-
-  vrEnabled = !vrEnabled;
-  setRenderSize(renderWidth, renderHeight, vrEnabled);
-  vrHMD.xxxToggleElementVR(document.getElementById("three_canvas"));
-}
-
-function toggleFS() {
-  if (!vrHMD) {
-    alert("no HMD found");
-    return;
-  }
-
-  container.mozRequestFullScreen({ vrDisplay: vrHMD });
-}
-
-function toggleFS1() {
-  container.mozRequestFullScreen();
-}
-
-function fschange() {
-  if (document.mozFullScreenElement) {
-    renderWidth = screen.availWidth / 2;
-    renderHeight = screen.availHeight;
-    vrEnabled = true;
-  } else {
-    renderWidth = winRenderWidth;
-    renderHeight = winRenderHeight;
-    vrEnabled = false;
-  }
-
-  setRenderSize(renderWidth, renderHeight, vrEnabled);
-}
-
-function onkey(event) {
-  console.log("onkey", event.charCode);
-  if (event.charCode == 'f'.charCodeAt(0)) {
-    toggleFS();
-  } else if (event.charCode == 'z'.charCodeAt(0)) {
-    container.mozRequestFullScreen();
-  } else if (event.charCode == 'v'.charCodeAt(0)) {
-    toggleVR();
-  } else if (event.charCode == 't'.charCodeAt(0)) {
-    toggleFS1();
-  } else {
-    return;
-  }
-
-  event.preventDefault();
-  event.stopPropagation();
-}
-
-function start() {
-  document.addEventListener("mozfullscreenchange", fschange, false);
-  window.addEventListener("keypress", onkey, true);
-  init();
-  setRenderSize(renderWidth, renderHeight, false);
-  if (navigator.mozGetVRDevices)
-    navigator.mozGetVRDevices(vrDeviceCallback);
-  else
-    animate();
-}
-
-window.addEventListener("load", start, false);
+      window.addEventListener("keypress", onkey, true);
 
     </script>
+
   </body>
 </html>
