@@ -102,7 +102,7 @@ window.VRManager = (function() {
     self.loader.appendChild(iframe);
     iframe.addEventListener('load', function () {
       self.stopStage();
-      self.camera.style.opacity = 0;
+      self.camera.style.display = 'none';
     });
     iframe.src = url;
   };
