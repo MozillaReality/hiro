@@ -90,6 +90,18 @@ window.VRManager = (function() {
       }
     });
 
+    window.addEventListener("message", function (e) {
+      var msg = e.data;
+      if (!msg.type) {
+        return;
+      }
+      switch (msg.type) {
+        case 'load':
+          self.load(msg.data);
+          break;
+      }
+    }, false);
+
     self.vrReady.then(function () {
       self.startStage();
     });

@@ -18,6 +18,7 @@
   </head>
   <body>
     <div id="container"></div>
+    <script src="../js/vrclient.js"></script>
     <script>
       function VRScene(container) {
         var self = this;
@@ -52,9 +53,9 @@
         self.renderer.domElement.setAttribute("id", "three_canvas");
         container.appendChild( self.renderer.domElement );
 
-        vrReady.then(function (devices) {
-          self.vr.hmd = devices[0];
-          self.vr.tracker = devices[1];
+        VRClient.getVR.then(function (vr) {
+          self.vr.hmd = vr.hmd;
+          self.vr.tracker = vr.position;
 
           self.width = screen.availWidth / 2;
           self.height = screen.availHeight;
@@ -81,33 +82,6 @@
 
       }
 
-      var vrReady = new Promise(function (resolve, reject) {
-        if (navigator.getVRDevices) {
-          navigator.getVRDevices().then(function (devices) {
-            var positionDevice, hmdDevice;
-            for (var i = 0; i < devices.length; ++i) {
-              if (devices[i] instanceof HMDVRDevice && !hmdDevice) {
-                hmdDevice = devices[i];
-              }
-              if (devices[i] instanceof PositionSensorVRDevice &&
-                  devices[i].hardwareUnitId == hmdDevice.hardwareUnitId &&
-                  !positionDevice) {
-                positionDevice = devices[i];
-                break;
-              }
-            }
-            if (hmdDevice && positionDevice) {
-              console.log('VR devices detected');
-              resolve([hmdDevice, positionDevice]);
-              return;
-            }
-            reject('no VR devices found!');
-          }).catch(reject);
-        } else {
-          reject('no VR implementation found!');
-        }
-      });
-
       VRScene.prototype.start = function () {
         var self = this;
         self.running = true;
@@ -133,8 +107,6 @@
         var tracker = self.vr.tracker;
         var renderer = self.renderer;
         var scene = self.scene;
-
-        console.log(1);
 
         renderer.enableScissorTest(true);
 
@@ -207,6 +179,10 @@
           cubes[i].position.z = ((Date.now() / 15 + cubes[i].initZ) % 2000) - 1000;
         }
       };
+
+      setTimeout(function () {
+        VRClient.load('./tags/index.html?' + Date.now());
+      }, 5000);
 
     </script>
   </body>

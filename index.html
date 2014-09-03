@@ -177,7 +177,7 @@
           case 'f':
             VRManager.enableVR();
             setTimeout(function () {
-              VRManager.load('./tags/index.html');
+              VRManager.load('./tags/index.html?' + Date.now());
             }, 5000);
             break;
           case 'z':
