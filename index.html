@@ -4,169 +4,18 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>JAVRIS</title>
     <meta charset="utf-8">
-    <style type="text/css">
-      html, body {
-        height: 100%;
-        font-family: sans-serif;
-      }
-      body {
-        width: 100%;
-        height: 100%;
-        background: #000;
-        overflow: hidden;
-        margin: 0;
-        font-size: 10px;
-      }
-      /* keeping style block in body to make it easier to see the relationship between elements */
-
-      /* Container is nothing special; it's the element that is made full screen.
-       * When non-fullscreen, you can add transforms to this element to make the scene
-       * make sense in 2D (instead of being centered around the top left).  That transform
-       * will cascade down to children when fullscreen though, so make sure to remove it when
-       * entering fullscreen.  There's a -moz-full-screen selector that's useful for this.
-       */
-      #container {
-        background: #000;
-      }
-      #container:-moz-full-screen {
-        cursor: none;
-      }
-
-      #container:not(:-moz-full-screen) {
-        /* this is just to move the scene to the visible area when not in fullscreen VR */
-        /*transform-origin: 50% 50%;*/
-        /*transform: perspective(1000px) rotateZ(180deg) rotateY(180deg);*/
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        position: absolute;
-      }
-
-      #container:not(:-moz-full-screen) {
-        transform: translate(50vw, 50vh);
-      }
-
-      /* All threed-class elements have preserve-3d; preserve-3d is NOT inherited.  (There's an open
-       * discussion on w3-style about adding a new transform-style that is like preserve-3d but is
-       * inherited.)
-       *
-       * position: absolute; and 0,0 is also set because we'll position these elements fully using
-       * 3D transforms.  Their CSS position is irrelevant for us.  Without this, their CSS position
-       * will come into play as well as their transform.
-       *
-       * When in fullscreen VR, the 0,0,0 position is at the center of the viewport and not the top
-       * left.
-       *
-       * We don't modify the original transform-origin here (50% 50% 0), because that can be useful
-       * for moving elements around by their center point.  But it could also be set to 0,0,0 to
-       * make it completely clear exactly where/how 3D objects are moving.
-       */
-      .threed {
-        transform-style: preserve-3d;
-        position: absolute;
-        top: 0; left: 0;
-      }
-
-      /* The camera div just serves as a way to set up a modelview transform for the entire rest of the
-       * scene.  The transform that's set on it needs to be the *inverse* of where you want the camera
-       * to be; that is, if you want the camera to be at (0, 0, 500), then the transform needs to be
-       * set to (0, 0, -500).  The transform-origin is set here because we want to go from the origin
-       */
-      .camera {
-        transform-origin: 0 0 0;
-        /* the transform itself is set programatically, since it needs to take into account the HMD orientation */
-        pointer-events: none;
-      }
-
-      #stage .wall {
-        width: 800px;
-        height: 800px;
-        background-color: #002;
-        background-image: linear-gradient(to right, #fff 0px, rgba(255,255,255,0) 2px, rgba(255,255,255,0) 98px, #fff 100px), linear-gradient(to bottom, rgba(255,255,255,0) 98px, #fff 100px);
-        background-size: 100px 100px;
-      }
-      #wall1 {
-        transform: translate(-50%, -50%) translate3d(0, 0, 400px);
-      }
-      #wall2 {
-        transform: translate(-50%, -50%) translate3d(0, 0, -400px);
-      }
-      #wall3 {
-        transform: translate(-50%, -50%) rotateY(90deg) translate3d(0, 0, 400px);
-      }
-      #wall4 {
-        transform: translate(-50%, -50%) rotateY(90deg) translate3d(0, 0, -400px);
-      }
-      #wall5 {
-        transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, 400px);
-      }
-      #wall6 {
-        transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, -400px);
-      }
-
-      .cursor {
-        width: 1px;
-        height: 1px;
-        background: #fff;
-        transform: translate(-50%, -50%) translate3d(0, 0, 10px);
-      }
-
-      
-      .loader {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      .loader iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
-      }
-
-
-      #favorites {
-        transform: translate3d(0,0,0);
-      }
-
-      .fav {
-        width: 4.5rem;
-        height: 4.5rem;
-        font-size: 0.8rem;
-        padding: 0.2rem;
-        margin: 0.2rem;
-        background: rgba(0,255,0,0.5);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      }
-
-      .fav-selected {
-        background: rgba(50,255,50,1);
-        color: black;
-      }
-
-
-    </style>
+    <link rel="stylesheet" href="css/hiro.css">
   </head>
   <body>
     <!-- this is a containing element that will be made fullscreen -->
     <div id="container" class="container">
-     
+
 
       <!-- This is an inner element that will serve as a camera, moving its children around in the scene.
            This and all its children will have transform-style: preserve-3d set via the class, as well as
            transform-origin set to 0,0 -->
       <div id="stage">
-        <div class="threed camera"> 
+        <div class="threed camera">
           <div class="wall threed" id="wall1"></div>
           <div class="wall threed" id="wall2"></div>
           <div class="wall threed" id="wall3"></div>
@@ -175,7 +24,7 @@
           <div class="wall threed" id="wall6"></div>
         </div>
       </div>
-    
+
       <!-- This is the container which external iframe content is loaded into. -->
       <div class="loader"></div>
 
@@ -186,8 +35,8 @@
           </div>
         </div>
       </div>
-    </div>  
-      
+    </div>
+
     <script src="js/vrutils.js"></script>
     <script src="js/vrmanager.js"></script>
     <script src="js/vrclient.js"></script>
@@ -195,7 +44,6 @@
     <script type="text/javascript">
       function onkey(event) {
         event.preventDefault();
-        console.log('charcode',event.key)
 
         switch (event.key) {
           case 'f': // f
@@ -216,7 +64,7 @@
         }
       }
 
-          
+
       window.addEventListener("keypress", onkey, true);
 
     </script>
