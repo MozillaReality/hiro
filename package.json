@@ -1,0 +1,23 @@
+{
+  "name": "JAVRIS",
+  "version": "0.0.0",
+  "description": "JAVRIS- Javascript Augmented VR Interaction System",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/potch/javris.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/potch/javris/issues"
+  },
+  "homepage": "https://github.com/potch/javris",
+  "dependencies": {
+    "gulp": "^3.8.7",
+    "gulp-connect": "^2.0.6"
+  }
+}
