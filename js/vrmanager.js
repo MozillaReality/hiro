@@ -1,6 +1,8 @@
+// requires VRCursor
+
 window.VRManager = (function() {
   var baseTransform = "translate3d(0, 0, 0)";
-  
+
   function VRManager(container) {
     var self = this;
     self.container = document.querySelector(container);
@@ -8,6 +10,7 @@ window.VRManager = (function() {
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
     self.hud = self.container.querySelector('#hud');
+    self.cursor = new Cursor(self.container.querySelector('#hud .camera'));
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
@@ -70,7 +73,9 @@ window.VRManager = (function() {
   VRManager.prototype.enableVR = function () {
     var self = this;
     self.vrReady.then(function () {
+      self.cursor.enable();
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
+      self.cursor.enable();
     }).catch(function () {
       self.container.mozRequestFullScreen();
     });
@@ -97,11 +102,13 @@ window.VRManager = (function() {
     var self = this;
     var state = self.positionDevice.getState();
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
-
+    this.cursor.updatePosition(state.orientation);
     for (var i = 0; i < self.cameras.length; i++) {
       self.cameras[i].style.transform = cssOrientationMatrix + " " + baseTransform;
     }
-    
+
+    self.cursor.updateHits();
+
     if (self.stageRunning || self.hudRunning) {
       requestAnimationFrame(self.stageFrame.bind(self));
     }
