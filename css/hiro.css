@@ -142,7 +142,12 @@ body {
   text-align: center;
 }
 
-.fav-selected {
+.fav-highlighted {
   background: rgba(50,255,50,1);
+  color: black;
+}
+
+.fav-selected {
+  background: blue;
   color: black;
 }

@@ -48,15 +48,20 @@ window.Hud = (function() {
       div.setAttribute('id', i);
       div.style.transform = 'rotateY('+ (offsetLayout-rotY) +'deg) translate3D(0,0,'+hudRadius*-1+'rem)';
       div.appendChild(document.createTextNode(favorites[i].name));
+      div.addEventListener('mouseover', function(e) {
+        self.highlight(e.target, true);
+      });
+      div.addEventListener('mouseout', function(e) {
+        self.highlight(e.target, false);
+      });
+      div.addEventListener('click', function(e) {
+        self.changeSelection(e.target.id);
+      });
       div.classList.add('fav','threed');
       favorites[i].el = div;
       container.appendChild(div);
       VRManager.cursor.addHitElement(div);
-      VRManager.cursor.on('hit', onHit);
 
-    }
-    function onHit(els) {
-      self.changeSelection(els[0].id);
     }
     self.favorites = favorites;
     self.changeSelection(0);
@@ -86,6 +91,14 @@ window.Hud = (function() {
     var self = this;
     if (self.currentSelection+1 < favorites.length) {
       self.changeSelection(self.currentSelection+1);
+    }
+  };
+
+  Hud.prototype.highlight = function(el, highlight) {
+    if (highlight) {
+      el.classList.add('fav-highlighted');
+    } else {
+      el.classList.remove('fav-highlighted');
     }
   };
 

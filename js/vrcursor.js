@@ -10,11 +10,29 @@ window.Cursor = (function() {
     return val;
   };
 
-  evt(Cursor.prototype);
+  function invertYAxis(q) {
+    var x = q.x, y = q.y, z = q.z, w = q.w;
+    x = -x; y = y; z = -z;
+    var l = Math.sqrt(x*x + y*y + z*z + w*w);
+    if (l == 0) {
+      x = y = z = 0;
+      w = 1;
+    } else {
+      l = 1/l;
+      x *= l; y *= l; z *= l; w *= l;
+    }
+    return {
+      x: x,
+      y: y,
+      z: z,
+      w: w
+    };
+  }
 
-  function Cursor(el, beforeEl) {
+  function Cursor(el) {
     var onPointerLockChanged = this.onPointerLockChanged.bind(this);
-    var onMouseMoved = this.updateCursorCoordinates.bind(this);
+    this.onMouseMoved = this.updateCoordinates.bind(this);
+    this.onMouseDown = this.emitClickEvents.bind(this);
     this.el = el;
     this.elWidth = el.clientWidth;
     this.elHeight = el.clientHeight;
@@ -23,6 +41,7 @@ window.Cursor = (function() {
       y: 0
     };
     this.hitEls = [];
+    this.hits = [];
     this.cursorEl = this.createCursor();
     this.el.appendChild(this.cursorEl);
 
@@ -34,10 +53,9 @@ window.Cursor = (function() {
     var cursorEl = document.createElement('div');
     cursorEl.id = 'cursor';
     cursorEl.style.backgroundColor = 'transparent';
-    cursorEl.style.width = '50px';
-    cursorEl.style.height = '50px';
-    cursorEl.style.border = '3px solid red';
-    cursorEl.style.borderRadius = '50%';
+    cursorEl.style.borderLeft = '5px solid transparent';
+    cursorEl.style.borderRight = '5px solid transparent';
+    cursorEl.style.borderTop = '10px solid red';
     cursorEl.style.transform = 'rotateY(0) rotateX(0) translate3d(0, 0, -18rem)';
     cursorEl.classList.add('threed');
     return cursorEl;
@@ -52,21 +70,45 @@ window.Cursor = (function() {
   };
 
   Cursor.prototype.addHitElement = function(el) {
-    this.hitEls.push(el);
+    // We only deal with DOM elements
+    if (el instanceof HTMLElement) {
+      this.hitEls.push(el);
+    }
   };
 
-  Cursor.prototype.hits = function() {
+  Cursor.prototype.updateHits = function() {
     var hits = [];
     var self = this;
+    // mouseover events
     this.hitEls.forEach(function(el){
       if(self.hit(el)) {
+        self.emit(el, 'mouseover');
         hits.push(el);
       }
     });
-    if (hits.length !== 0) {
-      this.emit('hit', hits);
-    }
-    return hits;
+    // mouseout events
+    this.hits.forEach(function(el) {
+      if(!self.hit(el)) {
+        self.emit(el, 'mouseout');
+      }
+    });
+    this.hits = hits;
+  };
+
+  Cursor.prototype.emitClickEvents = function() {
+    var self = this;
+    this.hits.forEach(function(el) {
+      self.emit(el, 'click');
+    })
+  };
+
+  Cursor.prototype.emit = function(el, event) {
+    var event = new MouseEvent(event ,{
+      'view': window,
+      'bubbles': true,
+      'cancelable': true
+    });
+    el.dispatchEvent(event);
   };
 
   Cursor.prototype.hit = function(el) {
@@ -81,41 +123,45 @@ window.Cursor = (function() {
     return true;
   };
 
-  Cursor.prototype.updateCursorCoordinates = function() {
+  Cursor.prototype.updateCoordinates = function(e) {
     var movementX = e.mozMovementX || 0;
-    var movementY = e.movementY || 0;
+    var movementY = e.mozMovementY || 0;
     var elHalfWidth = this.elWidth / 2;
     var elHalfHeight = this.elHeight / 2;
     var minX = -elHalfWidth;
     var maxX = elHalfWidth;
     var minY = -elHalfHeight;
     var maxY = elHalfHeight;
-    var x;
-    var y;
-    var paddding = 300;
+    var x = this.cursor.x;
+    var y = this.cursor.y;
+    var padding = 50;
     x += movementX;
     y += movementY;
-
     this.cursor = {
-      x: clamp(x, minX + padding, maxX - padding),
-      y: clamp(y, minY + padding, maxY - padding)
+      x: x,
+      y: y
     };
   };
 
-  Cursor.prototype.updateOrientation = function(orientationMatrix) {
-    // var cursorEl = this.cursorEl;
-    // var x = this.cursor.x;
-    // var y = this.cursor.y;
-    // var positionTransform = 'rotateY(0) rotateX(0) translate3d(0, 0, 500px) translate(' + -x + 'px, ' + y + 'px)';
-    // cursorEl.style.transform = orientationMatrix + ' ' + positionTransform;
-  }
+  Cursor.prototype.updatePosition = function(q) {
+    var cursorEl = this.cursorEl;
+    var cssOrientationMatrix = cssMatrixFromOrientation(invertYAxis(q));
+    var pixelsToDegreesFactor = 0.1;
+    var x = (this.cursor.x * pixelsToDegreesFactor) % 360;
+    var y = (this.cursor.y * pixelsToDegreesFactor) % 360;
+    //x = clamp(x, -20, 20);
+    //y = clamp(y, -20, 20);
+    cursorEl.style.transform = cssOrientationMatrix + ' rotateY(' + -x +'deg) rotateX('+ y +'deg) translate3d(0, 0, -18rem)';
+  };
 
   Cursor.prototype.onPointerLockChanged = function() {
     var el = this.el;
     if(document.mozPointerLockElement === el) {
       document.addEventListener("mousemove", this.onMouseMoved, false);
+      document.body.addEventListener("mousedown", this.onMouseDown, false);
     } else {
       document.removeEventListener("mousemove", this.onMouseMoved, false);
+      document.body.addEventListener("mousedown", this.onMouseDown, false);
     }
   };
 
