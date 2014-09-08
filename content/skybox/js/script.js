@@ -35,6 +35,5 @@ v.tick = function() {
 	var tracker = self.vr.tracker;
 	var state = tracker.getState();
 	var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
-	camera.style.transform = cssOrientationMatrix+ " " + cssCameraPositionTransform;  
-
+	camera.style.transform = cssOrientationMatrix+ " " + cssCameraPositionTransform;
 };

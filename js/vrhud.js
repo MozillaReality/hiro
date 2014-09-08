@@ -15,14 +15,10 @@ window.Hud = (function() {
       url: './content/theater/theater.html'
     },
     {
-      name: 'Favorite 4'
-    },
-    {
-      name: 'Favorite 5'
-    },
-    {
-      name: 'Favorite 6'
-    }];
+      name: 'VR Planetarium',
+      url: './content/planetarium/index.html'
+    }
+    ];
 
   var panelWidth = 5.2; // all in rems
   var hudRadius = 20;   // rems
