@@ -7,7 +7,7 @@ function VRScene() {
 		self.vr.tracker = vr.position;
 		self.start();
 	});
-};
+}
 
 VRScene.prototype.start = function() {
 	var self = this;

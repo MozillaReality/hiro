@@ -44,7 +44,9 @@
     <script src="js/vrhud.js"></script>
     <script type="text/javascript">
       function onkey(event) {
-        event.preventDefault();
+        if (!(event.metaKey || event.altKey || event.ctrlKey)) {
+          event.preventDefault();
+        }
 
         switch (event.key) {
           case 'f': // f

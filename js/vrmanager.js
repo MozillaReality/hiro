@@ -60,12 +60,25 @@ window.VRManager = (function() {
 
   VRManager.prototype.load = function (url) {
     var self = this;
+
+    // wrest fullscreen back from the demo if necessary
+    // self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
     var iframe = document.createElement('iframe');
-    self.loader.innerHTML = '';
+
+    iframe.style.display = 'none';
+    iframe.setAttribute('allowfullscreen', '');
     self.loader.appendChild(iframe);
+
     iframe.addEventListener('load', function () {
       self.stopStage();
       self.stage.style.display = 'none';
+
+      console.log('cleaning up old demo');
+      if (self.currentDemo) {
+        self.currentDemo.remove();
+      }
+      self.currentDemo = iframe;
+      iframe.style.display = 'block';
     });
     iframe.src = url;
   };
@@ -76,8 +89,6 @@ window.VRManager = (function() {
       self.cursor.enable();
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
       self.cursor.enable();
-    }).catch(function () {
-      self.container.mozRequestFullScreen();
     });
   };
 
