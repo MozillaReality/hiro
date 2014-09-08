@@ -80,7 +80,7 @@ window.VRManager = (function() {
       self.currentDemo = iframe;
       iframe.style.display = 'block';
     });
-    iframe.src = url;
+    iframe.src = url + '?timestamp=' + Date.now();
   };
 
   VRManager.prototype.enableVR = function () {
