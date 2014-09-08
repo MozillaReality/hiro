@@ -10,7 +10,7 @@ window.VRManager = (function() {
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
     self.hud = self.container.querySelector('#hud');
-    self.cursor = new Cursor(self.container.querySelector('#hud .camera'));
+    self.cursor = new Cursor(self.container.querySelector('#cursor .camera'));
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
@@ -134,12 +134,6 @@ window.VRManager = (function() {
     if (self.stageRunning || self.hudRunning) {
       requestAnimationFrame(self.stageFrame.bind(self));
     }
-  };
-
-  VRManager.prototype.startHud = function() {
-    var self = this;
-    self.hudRunning = false;
-    requestAnimationFrame(self.stageFrame.bind(self));
   };
 
   VRManager.prototype.startHud = function() {

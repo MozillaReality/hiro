@@ -35,7 +35,6 @@ function generateStars(numStars) {
     'dec': 30
   });
   skyElement.appendChild(moonElement);
-
 }
 
 function generateStar(id) {
@@ -75,12 +74,12 @@ function rotateSky() {
   skyElement.classList.add('rotateSky');
 }
 
-generateStars(100);
-
 function VRScene() {
   var self = this;
   self.vr = {};
   self.running = false;
+  self.cursor = self.Cursor();
+  generateStars(100);
 
   VRClient.getVR.then(function (vr) {
     self.vr.tracker = vr.position;
