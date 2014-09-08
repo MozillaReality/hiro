@@ -61,13 +61,15 @@ window.VRManager = (function() {
   VRManager.prototype.load = function (url) {
     var self = this;
     var iframe = document.createElement('iframe');
+    var timeStamp = new Date().getTime();
     self.loader.innerHTML = '';
     self.loader.appendChild(iframe);
     iframe.addEventListener('load', function () {
       self.stopStage();
       self.stage.style.display = 'none';
     });
-    iframe.src = url;
+    // timestamp to prevent browser content caching
+    iframe.src = url + '?timestamp=' + timeStamp;
   };
 
   VRManager.prototype.enableVR = function () {
