@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>VR Planetarium</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+  <!-- this is a containing element that will be made fullscreen -->
+  <div id="container">
+    <!-- This is an inner element that will serve as a camera, moving its children around in the scene.
+         This and all its children will have transform-style: preserve-3d set via the class, as well as
+         transform-origin set to 0,0 -->
+    <div id="camera" class="threed">
+      <div id="sky" class="threed">
+<!--         <div id="laser" class="threed"></div>
+ -->        <div id="ground" class="threed"></div>
+      </div>
+  </div>
+  <script src="js/leap-0.6.2.js"></script>
+  <script src="../../js/vrclient.js"></script>
+  <script src="../../js/vrutils.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
