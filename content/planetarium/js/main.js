@@ -84,9 +84,11 @@ function VRScene() {
 
   VRClient.getVR.then(function (vr) {
     self.vr.tracker = vr.position;
-    self.start();
+    VRClient.ready().then(function () {
+      self.start();
+    });
   });
-};
+}
 
 VRScene.prototype.start = function() {
   var self = this;

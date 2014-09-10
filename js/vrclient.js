@@ -87,6 +87,22 @@ window.VRClient = (function() {
         reject('no VR implementation found!');
       }
     });
+
+    self.wait = new Promise(function (resolve) {
+      self.startDemo = resolve;
+    });
+
+    window.addEventListener("message", function (e) {
+      var msg = e.data;
+      if (!msg.type) {
+        return;
+      }
+      switch (msg.type) {
+        case 'start':
+          self.startDemo();
+          break;
+      }
+    }, false);
   }
 
   VRClient.prototype.sendMessage = function (type, data) {
@@ -99,8 +115,18 @@ window.VRClient = (function() {
   };
 
   VRClient.prototype.load = function (url) {
-    console.log(1);
     this.sendMessage('load', url);
+  };
+
+  // Takes value 0..1 to represent demo load progress. Optional.
+  VRClient.prototype.progress = function (val) {
+    this.sendMessage('progress', val);
+  };
+
+  // Notifies VRManager that demo is ready. Required.
+  VRClient.prototype.ready = function () {
+    this.sendMessage('ready');
+    return this.wait;
   };
 
   VRClient.prototype.getVR = function () {

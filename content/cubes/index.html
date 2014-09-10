@@ -77,12 +77,16 @@
           cameraLeft.position.add(new THREE.Vector3(leftTx.x*exaggeration, leftTx.y*exaggeration, leftTx.z*exaggeration));
           cameraRight.position.add(new THREE.Vector3(rightTx.x*exaggeration, rightTx.y*exaggeration, rightTx.z*exaggeration));
 
-          self.start();
+          VRClient.ready().then(function () {
+            self.start();
+          });
+
         });
 
       }
 
       VRScene.prototype.start = function () {
+        console.log('starting');
         var self = this;
         self.running = true;
         function tick() {
@@ -179,10 +183,6 @@
           cubes[i].position.z = ((Date.now() / 15 + cubes[i].initZ) % 2000) - 1000;
         }
       };
-
-      // setTimeout(function () {
-      //   VRClient.load('./skybox/index.html');
-      // }, 5000);
 
     </script>
   </body>

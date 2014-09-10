@@ -3,183 +3,94 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>css/vr test</title>
   <meta charset="utf-8">
-  <script src="../../js/vrutils.js"></script>
-  <script type="text/javascript">
-
-
-// Our VR devices -- a HMD, and its associated orientation/position sensor
-var vrHMD, vrSensor;
-
-// the <div> element that we can make fullscreen
-var cssContainer;
-
-// the <div> element that will serve as our camera, moving the
-// rest of the scene around
-var cssCamera;
-
-// the camera's position, as a css transform string.  For right now,
-// we want it just in the middle.
-// XXX BUG this rotateZ should not be needed; the view rendering is flipped.
-// XXX BUG the rotateY should not be needed; the default viewport
-// is not oriented how I expected it to be oriented
-var cssCameraPositionTransform = "translate3d(0, 0, 0)";
-
-function frameCallback() {
-  // This is needed to update the CSS orientation/position from the HMD's orientation/position.
-  // In the future, we may have CSS transform function to do this automatically -- for example:
-  //    transform: vrOrientation() vrPosition()
-  // Where those would turn into full 4x4 matrices based on the current fullscreen HMD's orientation
-  // and position.
-  // XXX we should introduce quaternions to CSS as well
-
-  window.requestAnimationFrame(frameCallback);
-
-  var state = vrSensor.getState();
-  var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
-
-  cssCamera.style.transform = cssOrientationMatrix + " " + cssCameraPositionTransform;
-}
-
-function vrDeviceCallback(vrdevs) {
-  for (var i = 0; i < vrdevs.length; ++i) {
-    if (vrdevs[i] instanceof HMDVRDevice) {
-      vrHMD = vrdevs[i];
-      break;
-    }
-  }
-
-  if (!vrHMD)
-    return;
-
-  // Then, find that HMD's position sensor
-  for (var i = 0; i < vrdevs.length; ++i) {
-    if (vrdevs[i] instanceof PositionSensorVRDevice &&
-        vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId)
-    {
-      vrSensor = vrdevs[i];
-      break;
-    }
-  }
-
-  if (!vrSensor) {
-    alert("Found a HMD, but didn't find its orientation sensor?");
-  }
-
-  // kick off rendering
-  requestAnimationFrame(frameCallback);
-}
-
-function onkey(event) {
-  switch (String.fromCharCode(event.charCode)) {
-  case 'f':
-    cssContainer.mozRequestFullScreen({ vrDisplay: vrHMD });
-    break;
-  case 'z':
-    vrSensor.zeroSensor();
-    break;
-  }
-}
-
-function init() {
-  cssCamera = document.getElementById("camera");
-  cssContainer = document.getElementById("container");
-
-  if (navigator.getVRDevices)
-    navigator.getVRDevices().then(vrDeviceCallback);
-}
-
-window.addEventListener("load", init, false);
-window.addEventListener("keypress", onkey, true);
-
-  </script>
 </head>
 
 <body>
   <style type="text/css">
-  body {
-    background: #000;
-    margin: 0;
-    padding: 0;
-  }
+    body {
+      background: #000;
+      margin: 0;
+      padding: 0;
+    }
 
-  .threed {
-    transform-style: preserve-3d;
-    position: absolute;
-    top: 0; left: 0;
-  }
+    .threed {
+      transform-style: preserve-3d;
+      position: absolute;
+      top: 0; left: 0;
+    }
 
-  .pane {
-    overflow: hidden;
-  }
+    .pane {
+      overflow: hidden;
+    }
 
-  .pane > img {
-    width: 200px;
-    height: 300px;
-  }
+    .pane > img {
+      width: 200px;
+      height: 300px;
+    }
 
-  /* XXX The translate -100,-150 moves the center of each element to 0,0.  transform-origin
-   * at 50% 50% should take care of that, but I'm not sure why it's not.  (It transforms
-   * by half the width/height).
-   */
-  #pane1 {
-    transform: translate(-50%, -50%) translate3d(0, -100px, -800px);
-    /*width: 320px;
-    height: 480px;*/
-  }
+    /* XXX The translate -100,-150 moves the center of each element to 0,0.  transform-origin
+     * at 50% 50% should take care of that, but I'm not sure why it's not.  (It transforms
+     * by half the width/height).
+     */
+    #pane1 {
+      transform: translate(-50%, -50%) translate3d(0, -100px, -800px);
+      /*width: 320px;
+      height: 480px;*/
+    }
 
-.seats {
-  height: 100px;
-  width: 1400px;
-  background: url('seat.png') repeat-x transparent;
-}
-.row1 {
-  transform: translate(-50%, -50%) translate3d(0, -50px, 650px);
-}
-.row2 {
-  transform: translate(-50%, -50%) translate3d(0, 0px, 400px);
-}
-.row3 {
-  transform: translate(-50%, -50%) translate3d(0, 50px, 150px);
-}
-.row4 {
-  transform: translate(-50%, -50%) translate3d(0, 100px, -100px);
-}
-.row5 {
-  transform: translate(-50%, -50%) translate3d(0, 150px, -350px);
-}
-.row6 {
-  transform: translate(-50%, -50%) translate3d(0, 200px, -600px);
-}
-.row7 {
-  transform: translate(-50%, -50%) translate3d(0, 250px, -850px);
-}
-.row8 {
-  transform: translate(-50%, -50%) translate3d(0, 300px, -1100px);
-}
-.exit {
-  transform: rotateY(90deg) scale(.8,1) translate3d(150px,0,-800px);
-  color: #0f0;
-  font-family: sans-serif;
-  text-shadow: 0 0 3px #0f0, 0 0 4px #0f0, 0 0 5px #0f0, 0 0 6px #0f0;
-}
-.projector {
-  width: 72px;
-  height: 30px;
-  background: #888;
-  box-shadow: 0 2px 10px rgba(255,255,255,.5), 0 4px 20px rgba(255,255,255,.5), 0 2px 30px rgba(255,255,255,.5), 0 2px 40px rgba(255,255,255,.5);
-  transform: translate3d(0,-500px,1200px);
-  animation: .005s flicker linear infinite alternate;
-  animation-timing-function: steps(2, end);
-}
+    .seats {
+      height: 100px;
+      width: 1400px;
+      background: url('seat.png') repeat-x transparent;
+    }
+    .row1 {
+      transform: translate(-50%, -50%) translate3d(0, -50px, 650px);
+    }
+    .row2 {
+      transform: translate(-50%, -50%) translate3d(0, 0px, 400px);
+    }
+    .row3 {
+      transform: translate(-50%, -50%) translate3d(0, 50px, 150px);
+    }
+    .row4 {
+      transform: translate(-50%, -50%) translate3d(0, 100px, -100px);
+    }
+    .row5 {
+      transform: translate(-50%, -50%) translate3d(0, 150px, -350px);
+    }
+    .row6 {
+      transform: translate(-50%, -50%) translate3d(0, 200px, -600px);
+    }
+    .row7 {
+      transform: translate(-50%, -50%) translate3d(0, 250px, -850px);
+    }
+    .row8 {
+      transform: translate(-50%, -50%) translate3d(0, 300px, -1100px);
+    }
+    .exit {
+      transform: rotateY(90deg) scale(.8,1) translate3d(150px,0,-800px);
+      color: #0f0;
+      font-family: sans-serif;
+      text-shadow: 0 0 3px #0f0, 0 0 4px #0f0, 0 0 5px #0f0, 0 0 6px #0f0;
+    }
+    .projector {
+      width: 72px;
+      height: 30px;
+      background: #888;
+      box-shadow: 0 2px 10px rgba(255,255,255,.5), 0 4px 20px rgba(255,255,255,.5), 0 2px 30px rgba(255,255,255,.5), 0 2px 40px rgba(255,255,255,.5);
+      transform: translate3d(0,-500px,1200px);
+      animation: .005s flicker linear infinite alternate;
+      animation-timing-function: steps(2, end);
+    }
 
-@keyframes flicker {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: .8;
-  }
-}
+    @keyframes flicker {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: .8;
+      }
+    }
 
   </style>
 
@@ -206,5 +117,94 @@ window.addEventListener("keypress", onkey, true);
     </div>
   </div>
 
+  <script src="../../js/vrutils.js"></script>
+  <script src="../../js/vrclient.js"></script>
+  <script>
+    var vrHMD, vrSensor;
+
+    // the <div> element that we can make fullscreen
+    var cssContainer;
+
+    // the <div> element that will serve as our camera, moving the
+    // rest of the scene around
+    var cssCamera;
+
+    // the camera's position, as a css transform string.  For right now,
+    // we want it just in the middle.
+    // XXX BUG this rotateZ should not be needed; the view rendering is flipped.
+    // XXX BUG the rotateY should not be needed; the default viewport
+    // is not oriented how I expected it to be oriented
+    var cssCameraPositionTransform = "translate3d(0, 0, 0)";
+
+    function frameCallback() {
+      // This is needed to update the CSS orientation/position from the HMD's orientation/position.
+      // In the future, we may have CSS transform function to do this automatically -- for example:
+      //    transform: vrOrientation() vrPosition()
+      // Where those would turn into full 4x4 matrices based on the current fullscreen HMD's orientation
+      // and position.
+      // XXX we should introduce quaternions to CSS as well
+
+      window.requestAnimationFrame(frameCallback);
+
+      var state = vrSensor.getState();
+      var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
+
+      cssCamera.style.transform = cssOrientationMatrix + " " + cssCameraPositionTransform;
+    }
+
+    function vrDeviceCallback(vrdevs) {
+      for (var i = 0; i < vrdevs.length; ++i) {
+        if (vrdevs[i] instanceof HMDVRDevice) {
+          vrHMD = vrdevs[i];
+          break;
+        }
+      }
+
+      if (!vrHMD)
+        return;
+
+      // Then, find that HMD's position sensor
+      for (var i = 0; i < vrdevs.length; ++i) {
+        if (vrdevs[i] instanceof PositionSensorVRDevice &&
+            vrdevs[i].hardwareUnitId == vrHMD.hardwareUnitId)
+        {
+          vrSensor = vrdevs[i];
+          break;
+        }
+      }
+
+      if (!vrSensor) {
+        alert("Found a HMD, but didn't find its orientation sensor?");
+      }
+
+      // kick off rendering
+      VRClient.ready().then(function () {
+        console.log('bar');
+        requestAnimationFrame(frameCallback);
+      });
+    }
+
+    function onkey(event) {
+      switch (String.fromCharCode(event.charCode)) {
+      case 'f':
+        cssContainer.mozRequestFullScreen({ vrDisplay: vrHMD });
+        break;
+      case 'z':
+        vrSensor.zeroSensor();
+        break;
+      }
+    }
+
+    function init() {
+      cssCamera = document.getElementById("camera");
+      cssContainer = document.getElementById("container");
+
+      if (navigator.getVRDevices)
+        navigator.getVRDevices().then(vrDeviceCallback);
+    }
+
+    window.addEventListener("load", init, false);
+    window.addEventListener("keypress", onkey, true);
+  </script>
 
 </body></html>

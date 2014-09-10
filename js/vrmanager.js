@@ -49,6 +49,13 @@ window.VRManager = (function() {
         case 'load':
           self.load(msg.data);
           break;
+        case 'ready':
+          if (self.readyCallback) {
+            self.readyCallback();
+          }
+          break;
+        case 'progress':
+          break;
       }
     }, false);
 
@@ -69,7 +76,7 @@ window.VRManager = (function() {
     iframe.setAttribute('allowfullscreen', '');
     self.loader.appendChild(iframe);
 
-    iframe.addEventListener('load', function () {
+    self.readyCallback = function () {
       self.stopStage();
       self.stage.style.display = 'none';
 
@@ -79,8 +86,19 @@ window.VRManager = (function() {
       }
       self.currentDemo = iframe;
       iframe.style.display = 'block';
-    });
+
+      // We'll do this elsewhere eventually
+      self.startDemo();
+    };
+
     iframe.src = url + '?timestamp=' + Date.now();
+  };
+
+  VRManager.prototype.startDemo = function () {
+    var self = this;
+    self.currentDemo.contentWindow.postMessage({
+      type: 'start'
+    }, '*');
   };
 
   VRManager.prototype.enableVR = function () {
