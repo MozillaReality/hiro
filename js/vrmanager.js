@@ -70,35 +70,27 @@ window.VRManager = (function() {
 
     // wrest fullscreen back from the demo if necessary
     // self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
-    var iframe = document.createElement('iframe');
+    var newTab = new VRTab(url);
 
-    iframe.style.display = 'none';
-    iframe.setAttribute('allowfullscreen', '');
-    self.loader.appendChild(iframe);
+    newTab.hide();
+    self.loader.appendChild(newTab.iframe);
 
-    self.readyCallback = function () {
+    newTab.ready.then(function () {
       self.stopStage();
       self.stage.style.display = 'none';
 
       console.log('cleaning up old demo');
       if (self.currentDemo) {
-        self.currentDemo.remove();
+        self.currentDemo.destroy();
       }
-      self.currentDemo = iframe;
-      iframe.style.display = 'block';
+      self.currentDemo = newTab;
+      newTab.show();
 
       // We'll do this elsewhere eventually
-      self.startDemo();
-    };
+      newTab.start();
+    });
 
-    iframe.src = url + '?timestamp=' + Date.now();
-  };
-
-  VRManager.prototype.startDemo = function () {
-    var self = this;
-    self.currentDemo.contentWindow.postMessage({
-      type: 'start'
-    }, '*');
+    newTab.load();
   };
 
   VRManager.prototype.enableVR = function () {
