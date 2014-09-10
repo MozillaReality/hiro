@@ -30,6 +30,7 @@ window.VRManager = (function() {
           }
           if (self.hmdDevice && self.positionDevice) {
             console.log('VR devices detected');
+            self.vrIsReady = true;
             resolve();
             return;
           }
@@ -95,11 +96,11 @@ window.VRManager = (function() {
 
   VRManager.prototype.enableVR = function () {
     var self = this;
-    self.vrReady.then(function () {
+    if (self.vrIsReady) {
       self.cursor.enable();
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
       self.cursor.enable();
-    });
+    }
   };
 
   VRManager.prototype.zeroSensor = function () {
