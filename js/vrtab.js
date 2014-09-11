@@ -1,4 +1,3 @@
-
 function VRTab(url) {
   var self = this;
   var iframe = document.createElement('iframe');
@@ -65,6 +64,7 @@ VRTab.prototype.destroy = function () {
 
 VRTab.prototype.load = function () {
   this.iframe.src = this.url;
+  console.log(this.url);
 };
 
 VRTab.prototype.start = function () {

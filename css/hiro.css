@@ -10,6 +10,7 @@ body {
   margin: 0;
   font-size: 10px;
 }
+
 /* keeping style block in body to make it easier to see the relationship between elements */
 
 /* Container is nothing special; it's the element that is made full screen.
@@ -98,14 +99,6 @@ body {
 #wall6 {
   transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, -400px);
 }
-
-.cursor {
-  width: 1px;
-  height: 1px;
-  background: #fff;
-  transform: translate(-50%, -50%) translate3d(0, 0, 10px);
-}
-
 
 .loader {
   position: absolute;

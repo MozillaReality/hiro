@@ -19,10 +19,6 @@
   top: 0; left: 0;
 }
 
-#sky {
-  transform: rotateY(180deg);
-}
-
 .star {
   width: 2px;
   height: 2px;
