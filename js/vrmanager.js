@@ -74,7 +74,7 @@ window.VRManager = (function() {
     var newTab = new VRTab(url);
 
     newTab.hide();
-    self.loader.appendChild(newTab.iframe);
+    newTab.mount(self.loader);
 
     newTab.ready.then(function () {
       self.stopStage();

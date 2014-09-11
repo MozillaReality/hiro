@@ -52,6 +52,10 @@ VRTab.prototype.show = function () {
   this.iframe.style = 'block';
 };
 
+VRTab.prototype.mount = function (el) {
+  el.appendChild(this.iframe);
+};
+
 VRTab.prototype.destroy = function () {
   this.iframe.remove();
   while (this.handlers.length) {
