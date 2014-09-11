@@ -56,7 +56,7 @@ window.Cursor = (function() {
     cursorEl.style.borderLeft = '5px solid transparent';
     cursorEl.style.borderRight = '5px solid transparent';
     cursorEl.style.borderTop = '10px solid red';
-    cursorEl.style.transform = 'rotateY(0) rotateX(0) translate3d(0, 0, -18rem)';
+    cursorEl.style.transform = 'rotateY(0) rotateX(0) translate3d(0, 0, -30rem)';
     cursorEl.classList.add('threed');
     return cursorEl;
   };
@@ -151,7 +151,7 @@ window.Cursor = (function() {
     var y = (this.cursor.y * pixelsToDegreesFactor) % 360;
     //x = clamp(x, -20, 20);
     //y = clamp(y, -20, 20);
-    cursorEl.style.transform = cssOrientationMatrix + ' rotateY(' + -x +'deg) rotateX('+ y +'deg) translate3d(0, 0, -18rem)';
+    cursorEl.style.transform = cssOrientationMatrix + ' rotateY(' + -x +'deg) rotateX('+ y +'deg) translate3d(0, 0, -29rem)';
   };
 
   Cursor.prototype.onPointerLockChanged = function() {
