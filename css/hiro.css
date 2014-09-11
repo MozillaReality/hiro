@@ -132,7 +132,7 @@ body {
 .fav {
   font-size: 0.5rem;
   text-transform: uppercase;
-  background: rgba(0,255,0,1);
+  background: rgba(255,255,255,0.8);
   color: black;
   display: flex;
   align-items: center;
