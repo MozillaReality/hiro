@@ -1,4 +1,6 @@
 var stars = [];
+var cursor;
+var container = document.querySelector('#container');
 
 var starColors = [
   "#8DA0E5",
@@ -29,6 +31,13 @@ function generateStars(numStars) {
   moonLabelElement.classList.add('star-label');
   moonLabelElement.textContent = 'Moon';
   moonElement.appendChild(moonLabelElement);
+  cursor.addHitElement(moonElement);
+  moonElement.addEventListener('mouseover', function(e) {
+    e.target.classList.add('highlighted');
+  });
+  moonElement.addEventListener('mouseout', function(e) {
+    e.target.classList.remove('highlighted');
+  });
   stars.push({
     'el': moonElement,
     'ra': 0,
@@ -45,7 +54,8 @@ function generateStar(id) {
   var transform =
     'rotateY(' + ra +  'deg) ' +
     'rotateX(' + dec + 'deg) ' +
-    'translate3d(0, 0, 500px) translate(-100px, -150px)';
+    'translate3d(0, 0, 500px) ' +
+    'rotateY(180deg)';
   starElement.setAttribute('id', 'star-' + id);
   starElement.classList.add('star');
   starElement.classList.add('threed');
@@ -62,6 +72,13 @@ function generateStar(id) {
     "ra": ra,
     "dec": dec
   });
+  cursor.addHitElement(starElement);
+  starElement.addEventListener('mouseover', function(e) {
+    e.target.classList.add('highlighted');
+  });
+  starElement.addEventListener('mouseout', function(e) {
+    e.target.classList.remove('highlighted');
+  });
   return starElement;
 }
 
@@ -76,9 +93,15 @@ function rotateSky() {
 
 function VRScene() {
   var self = this;
+  var cursorStyle =
+    "width: 50px;" +
+    "height: 50px;" +
+    "background-color: transparent;" +
+    "border: 3px solid green;" +
+    "border-radius: 50%;";
   self.vr = {};
   self.running = false;
-  self.cursor = self.Cursor();
+  cursor = new Cursor(container, cursorStyle);
   generateStars(100);
 
   VRClient.getVR.then(function (vr) {
@@ -105,16 +128,24 @@ VRScene.prototype.start = function() {
 
 // main
 var camera = document.getElementById("camera");
-var cssCameraPositionTransform = "translate3d(0, 0, 0)";
-var v = new VRScene();
+var cssCameraPositionTransform = "translate3d(0, 0, 0) rotateY(180deg)";
 
-v.tick = function() {
-  var self = this;
-  var tracker = self.vr.tracker;
-  var state = tracker.getState();
-  var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
-  camera.style.transform = cssOrientationMatrix+ " " + cssCameraPositionTransform;
-};
+window.addEventListener("load", init, false);
+function init() {
+  v = new VRScene();
+  v.tick = function() {
+    var self = this;
+    var tracker = self.vr.tracker;
+    var state = tracker.getState();
+    var cameras = container.querySelectorAll('.camera');
+    var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
+    cursor.updatePosition();
+    cursor.updateHits();
+    for (var i = 0; i < cameras.length; i++) {
+      cameras[i].style.transform = cssOrientationMatrix + " " + cssCameraPositionTransform;
+    }
+  };
+}
 
 // Leap.loop(function(frame) {
 //   var hand = frame.hands[0];

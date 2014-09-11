@@ -10,7 +10,8 @@ window.VRManager = (function() {
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
     self.hud = self.container.querySelector('#hud');
-    self.cursor = new Cursor(self.container.querySelector('#cursor .camera'));
+    self.cursor = new Cursor(self.hud);
+    self.currentCursor = self.cursor;
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
@@ -85,6 +86,7 @@ window.VRManager = (function() {
         self.currentDemo.destroy();
       }
       self.currentDemo = newTab;
+
       newTab.show();
 
       // We'll do this elsewhere eventually
@@ -99,6 +101,7 @@ window.VRManager = (function() {
     if (self.vrIsReady) {
       self.cursor.enable();
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
+      document.body.mozRequestPointerLock();
       self.cursor.enable();
     }
   };
@@ -137,15 +140,17 @@ window.VRManager = (function() {
   };
 
   VRManager.prototype.startHud = function() {
+    var currentDemo = this.currentDemo;
     this.hud.style.display = 'initial';
     this.hudRunning = true;
+    if (currentDemo) { currentDemo.sendMessage('disablecursor'); }
+    this.cursor.enable();
   };
 
   VRManager.prototype.stopHud = function() {
     this.hud.style.display = 'none';
     this.hudRunning = false;
   };
-
 
   return new VRManager('#container');
 

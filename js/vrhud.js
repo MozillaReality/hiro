@@ -29,7 +29,7 @@ Grid.prototype.render = function(container) {
       transYOffset = (self.rows+1)*opts.tileHeight/2,
       rotY = (col * rotPerTile - rotOffset)*-1,
       transY = (row * (opts.tileHeight+opts.tileGutter) - transYOffset);
-    
+
     // use velocity hook to place element
     Velocity.hook(tile.el, 'rotateY', rotY+'deg');
     Velocity.hook(tile.el, 'translateX', '0rem');
@@ -37,7 +37,7 @@ Grid.prototype.render = function(container) {
     Velocity.hook(tile.el, 'translateZ', opts.radius*-1+'rem');
     tile.el.style.width = (tile.w*opts.tileWidth)+((tile.w-1)*opts.tileGutter)+'rem';
     tile.el.style.height = (tile.h*opts.tileHeight)+((tile.h-1)*opts.tileGutter)+'rem';
-    
+
     container.appendChild(tile.el);
   }
   return container;
@@ -46,7 +46,7 @@ Grid.prototype.render = function(container) {
 // requires VRManager, Grid, Velocity
 window.Hud = (function() {
   var self = this;
-  
+
   function Hud() {
     var self = this;
     self.currentSelection = null;
@@ -89,7 +89,7 @@ window.Hud = (function() {
     // create new main HUD grid
     var hudGrid = new Grid({
       tileWidth: 3.5,           //  tile width and height.
-      tileHeight: 3.5,      
+      tileHeight: 3.5,
       radius: 30,               //  how far out to place the HUD from user.
       tileGutter: 0.10,         //  space between tiles.
       tileTransitionDepth: 5    //  relative depth of tile when highlighted or selected.
@@ -139,16 +139,16 @@ window.Hud = (function() {
     for (var i = 7; i < 12; i++) {
       hudGrid.addTile({
         el: createFavorite('Favorite'), x: i, y: 1, w: 1, h: 1
-      });  
+      });
     }
 
     // fav row 3
     for (var i = 7; i < 13; i++) {
       hudGrid.addTile({
         el: createFavorite('Favorite'), x: i, y: 2, w: 1, h: 1
-      });  
+      });
     }
-    
+
     // fav row 4
     hudGrid.addTile({
       el: createFavorite('Favorite'), x: 8, y: 3, w: 1, h: 1
@@ -162,8 +162,8 @@ window.Hud = (function() {
     hudGrid.addTile({
       el: createFavorite('Favorite'), x: 12, y: 3, w: 1, h: 1
     });
-    
-    // widgets right 
+
+    // widgets right
     hudGrid.addTile({
       el: createFavorite('Widget'), x: 14, y: 1, w: 2, h: 2
     });
@@ -173,7 +173,7 @@ window.Hud = (function() {
 
     hudGrid.render(document.querySelector('#grid'));
   };
-  
+
 
   Hud.prototype.animationOut = function() {
     var self = this;
@@ -203,7 +203,7 @@ window.Hud = (function() {
     });
     return p;
   };
-      
+
   Hud.prototype.animationIn = function() {
     var self = this;
     var p = new Promise(function(resolve, reject) {
