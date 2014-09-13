@@ -120,19 +120,19 @@ window.Hud = (function() {
 
     // fav row 1
     hudGrid.addTile({
-      el: createFavorite('Three.js cubes', './content/cubes/index.html'), x: 7, y: 0, w: 1, h: 1
+      el: createFavorite('Cubes', './content/cubes/index.html'), x: 7, y: 0, w: 1, h: 1
     });
     hudGrid.addTile({
-      el: createFavorite('VR DOM Skybox', './content/skybox/index.html'), x: 8, y: 0, w: 1, h: 1
+      el: createFavorite('Skybox', './content/skybox/index.html'), x: 8, y: 0, w: 1, h: 1
     });
     hudGrid.addTile({
-      el: createFavorite('VR DOM Theatre', './content/theater/theater.html'), x: 10, y: 0, w: 1, h: 1
+      el: createFavorite('Theatre', './content/theater/theater.html'), x: 10, y: 0, w: 1, h: 1
     });
     hudGrid.addTile({
-      el: createFavorite('VR Planetarium', './content/planetarium/index.html'), x: 11, y: 0, w: 1, h: 1
+      el: createFavorite('Planetarium', './content/planetarium/index.html'), x: 11, y: 0, w: 1, h: 1
     });
     hudGrid.addTile({
-      el: createFavorite('Favorite'), x: 12, y: 0, w: 1, h: 1
+      el: createFavorite('Sechelt', './content/sechelt/index.html'), x: 12, y: 0, w: 1, h: 1
     });
 
     // fav row 2
