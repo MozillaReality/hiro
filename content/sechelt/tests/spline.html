@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>bspline</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+	<body>
+
+		<script>
+
+			var canvas = document.createElement( 'canvas' );
+			canvas.width = 512;
+			canvas.height = 512;
+			document.body.appendChild( canvas );
+
+			var context = canvas.getContext( '2d' );
+
+			//
+
+			var amount = 20;
+
+			var points = [];
+
+			for ( var i = 0; i < amount; i ++ ) {
+
+				points.push( Math.random() * 512 );
+				points.push( Math.random() * 512 );
+
+			}
+
+			// points = [84.66143441200256, 212.9856994152069, 175.090230345726, 428.726398229599, 426.53888404369354, 461.0632131099701, 153.98445641994476, 445.04166626930237];
+
+			var BSpline = function ( points ) {
+
+				return {
+					pointAt: function ( t ) {
+
+						if ( t <= 0 ) return { x: points[ 0 ], y: points[ 1 ] };
+						if ( t >= 1 ) return { x: points[ points.length - 2 ], y: points[ points.length - 1 ] };
+
+						var array = points.slice( 0 );
+						var length = array.length / 2;
+
+						while ( length > 1 ) {
+
+							context.fillStyle = 'blue';
+
+							for ( var i = 0, j = 0, k = 0; i < length; i ++, j += 2, k += 2 ) {
+
+								array[ j + 0 ] =  array[ k + 0 ] + ( array[ k + 2 ] - array[ k + 0 ] ) * t;
+								array[ j + 1 ] =  array[ k + 1 ] + ( array[ k + 3 ] - array[ k + 1 ] ) * t;
+
+								context.beginPath();
+								context.arc( array[ j + 0 ], array[ j + 1 ], 1, 0, Math.PI * 2, false );
+								context.fill();
+
+							}
+
+							length --;
+
+						}
+
+						return { x: array[ 0 ], y: array[ 1 ] };
+
+					}
+				}
+
+			};
+
+			var spline = new BSpline( points );
+
+			var animate = function () {
+
+				requestAnimationFrame( animate );
+
+				var time = performance.now() / 2000;
+
+				context.fillStyle = 'red';
+
+				for ( var i = 0, l = points.length; i < l; i += 2 ) {
+
+					var x = points[ i ];
+					var y = points[ i + 1 ];
+
+					context.beginPath();
+					context.arc( x, y, 10, 0, Math.PI * 2, false );
+					context.fill();
+
+				}
+
+				//
+
+				var point = spline.pointAt( time );
+
+				context.fillStyle = 'green';
+
+				context.beginPath();
+				context.arc( point.x, point.y, 2, 0, Math.PI * 2, false );
+				context.fill();
+
+			}
+
+			animate();
+			
+
+		</script>
+
+	</body>
+</html>
