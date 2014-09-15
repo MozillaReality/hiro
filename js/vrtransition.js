@@ -1,7 +1,9 @@
-function VRTransition(containerEl, config) {
-  var el =  document.createElement('div');
-  el.classList.add("transition");
-  el.classList.add("threed");
+function VRTransition(containerEl, contentEl, config) {
+  var el =  contentEl || document.createElement('div');
+  if (!contentEl) {
+    el.classList.add("transition");
+    el.classList.add("threed");
+  }
   containerEl.appendChild(el);
   this.el = el;
   config = config || {};
@@ -9,29 +11,52 @@ function VRTransition(containerEl, config) {
   this.z = config.z || -1;
 };
 
-VRTransition.prototype.fadeIn = function () {
+VRTransition.prototype.fadeIn = function (render) {
+  var self = this;
+  var render = render || this.renderFadeIn;
   if (this.fadeOutInProgress) {
     this.fadeInPending = true;
     return;
   }
-  //this.transition.classList.remove('fadeOut');
-  this.el.classList.add('fadeIn');
-  this.transitionRunning = false;
+  this.fadeInInProgress = true;
+  render(this.el);
+  setTimeout(fadeInFinished, this.duration);
+  function fadeInFinished() {
+    self.fadeInInProgress = false;
+    if (self.fadeOutPending) {
+      self.fadeOut();
+      self.fadeOutPending = false;
+    }
+  }
 }
 
-VRTransition.prototype.fadeOut = function () {
+VRTransition.prototype.fadeOut = function (render) {
   var self = this;
+  var render = render || this.renderFadeOut;
+  if (this.fadeInInProgress) {
+    this.fadeOutPending = true;
+    return;
+  }
   this.fadeOutInProgress = true;
-  this.transitionRunning = true;
-  this.el.classList.remove('fadeIn');
-  this.el.classList.add('fadeOut');
+  render(this.el);
   setTimeout(fadeOutFinished, this.duration);
   function fadeOutFinished() {
     self.fadeOutInProgress = false;
     if (self.fadeInPending) {
       self.fadeIn();
+      self.fadeInPending = false;
     }
   }
+};
+
+VRTransition.prototype.renderFadeIn = function (el) {
+  //el.classList.remove('fadeOut');
+  el.classList.add('fadeIn');
+};
+
+VRTransition.prototype.renderFadeOut = function (el) {
+  el.classList.remove('fadeIn');
+  el.classList.add('fadeOut');
 };
 
 VRTransition.prototype.update = function () {
