@@ -102,7 +102,7 @@ function VRScene() {
   self.vr = {};
   self.running = false;
   cursor = new Cursor(container, cursorStyle);
-  generateStars(100);
+  generateStars(300);
 
   VRClient.getVR.then(function (vr) {
     self.vr.tracker = vr.position;

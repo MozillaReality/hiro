@@ -6,6 +6,7 @@ window.VRManager = (function() {
   function VRManager(container) {
     var self = this;
     self.container = document.querySelector(container);
+    self.transition = new VRTransition(self.container);
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
@@ -75,6 +76,7 @@ window.VRManager = (function() {
     var newTab = new VRTab(url);
 
     newTab.hide();
+    this.transition.fadeOut();
     newTab.mount(self.loader);
 
     newTab.ready.then(function () {
@@ -91,6 +93,7 @@ window.VRManager = (function() {
 
       // We'll do this elsewhere eventually
       newTab.start();
+      self.transition.fadeIn();
     });
 
     newTab.load();
@@ -127,7 +130,10 @@ window.VRManager = (function() {
     var self = this;
     var state = self.positionDevice.getState();
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
-    this.cursor.updatePosition(state.orientation);
+    self.cursor.updatePosition(state.orientation);
+    // updates transition object
+    self.transition.update();
+
     for (var i = 0; i < self.cameras.length; i++) {
       self.cameras[i].style.transform = cssOrientationMatrix + " " + baseTransform;
     }
