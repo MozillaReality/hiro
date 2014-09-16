@@ -9,10 +9,8 @@ window.VRManager = (function() {
     self.console = document.querySelector(console);
 
     self.log('\n\nStaring JS-DOS...');
-
     self.log('\n\nHIMEM is testing virtual memory...done.');
     self.log('Javascript Advanced VR Interaction System, Version 0.5\n\n');
-
     self.log('Initializing Mozilla HIRO demo application v1');
 
     var transitionCanvas = document.createElement('canvas');
@@ -120,7 +118,7 @@ window.VRManager = (function() {
       }
     });
   }
-  
+
   VRManager.prototype.showTransition = function(url) {
     console.log('transition');
     var tab = new VRTab(url);
@@ -132,7 +130,7 @@ window.VRManager = (function() {
       tab.start();
     }) ;
     tab.load();
-  }
+  };
 
   VRManager.prototype.showInterstitial = function() {
     // if (interstitials && this.interstitials == null) {
@@ -149,7 +147,7 @@ window.VRManager = (function() {
     //   tab.start();
     // }) ;
     // tab.load();
-  }
+  };
 
 
   VRManager.prototype.log = function (msg) {
@@ -166,6 +164,10 @@ window.VRManager = (function() {
     newTab.hide();
     this.transition.fadeOut(self.renderFadeOut);
     newTab.mount(self.loader);
+    if (self.loadingTab) {
+      self.loadingTab.destroy();
+    }
+    self.loadingTab = newTab;
 
     newTab.ready.then(function () {
       self.stopStage();
@@ -175,6 +177,7 @@ window.VRManager = (function() {
       if (self.currentDemo) {
         self.currentDemo.destroy();
       }
+      self.loadingTab = null;
       self.currentDemo = newTab;
 
       newTab.show();
