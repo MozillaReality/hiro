@@ -5,7 +5,46 @@ window.VRManager = (function() {
 
   function VRManager(container) {
     var self = this;
+    var transitionCanvas = document.createElement('canvas');
+
+    self.renderFadeOut = function(canvas, opacity) {
+      var opacity = opacity || 0;
+      var context = canvas.getContext("2d");
+      var width = canvas.width;
+      var height = canvas.height;
+      if (opacity >= 1) {
+        return;
+      }
+      context.clearRect(0, 0, width , height);
+      context.globalAlpha = opacity;
+      context.fillStyle="rgb(0, 0, 0)";
+      context.fillRect(0, 0, width, height);
+      requestAnimationFrame(render);
+      function render() {
+        self.renderFadeOut(canvas, opacity + 0.1);
+      }
+    };
+
+    self.renderFadeIn = function(canvas, opacity) {
+      var opacity = typeof opacity === "undefined"? 1 : opacity;
+      var context = canvas.getContext("2d");
+      var width = canvas.width;
+      var height = canvas.height;
+      if (opacity <= 0) {
+        return;
+      }
+      context.clearRect(0, 0, width , height);
+      context.globalAlpha = opacity;
+      context.fillStyle="rgb(0, 0, 0)";
+      context.fillRect(0, 0, width, height);
+      requestAnimationFrame(render);
+      function render() {
+        self.renderFadeIn(canvas, opacity - 0.1);
+      }
+    };
+
     self.container = document.querySelector(container);
+    self.transition = new VRTransition(self.container, transitionCanvas);
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
@@ -75,6 +114,7 @@ window.VRManager = (function() {
     var newTab = new VRTab(url);
 
     newTab.hide();
+    this.transition.fadeOut(self.renderFadeOut);
     newTab.mount(self.loader);
 
     newTab.ready.then(function () {
@@ -91,6 +131,7 @@ window.VRManager = (function() {
 
       // We'll do this elsewhere eventually
       newTab.start();
+      self.transition.fadeIn(self.renderFadeIn);
     });
 
     newTab.load();
@@ -127,7 +168,10 @@ window.VRManager = (function() {
     var self = this;
     var state = self.positionDevice.getState();
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
-    this.cursor.updatePosition(state.orientation);
+    self.cursor.updatePosition(state.orientation);
+    // updates transition object
+    self.transition.update();
+
     for (var i = 0; i < self.cameras.length; i++) {
       self.cameras[i].style.transform = cssOrientationMatrix + " " + baseTransform;
     }
