@@ -10,6 +10,7 @@ window.VRManager = (function() {
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
     self.hud = self.container.querySelector('#hud');
+    self.transition = self.container.querySelector('#transition');
     self.cursor = new Cursor(self.container.querySelector('#hud .camera'));
 
     // this promise resolves when VR devices are detected.
@@ -64,6 +65,19 @@ window.VRManager = (function() {
       self.startStage();
       self.startHud();
     });
+  }
+  
+  VRManager.prototype.showTransition = function(url) {
+    console.log('transition');
+    var tab = new VRTab(url);
+
+    tab.hide();
+    tab.mount(self.transition);
+    tab.ready.then(function() {
+      tab.show();
+      tab.start();
+    }) ;
+    tab.load();
   }
 
   VRManager.prototype.load = function (url) {

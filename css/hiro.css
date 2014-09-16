@@ -107,7 +107,7 @@ body {
 }
 
 
-.loader {
+.loader, #transition {
   position: absolute;
   top: 0;
   left: 0;
@@ -115,7 +115,7 @@ body {
   height: 100%;
 }
 
-.loader iframe {
+.loader iframe, #transition iframe {
   position: absolute;
   top: 0;
   left: 0;

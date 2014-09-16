@@ -29,7 +29,9 @@
       <div class="loader"></div>
 
       <!-- This is the container which transition overlays will be drawn into -->
-      <div class="transition"></div>
+      <div id="transition"></div>
+
+      <div id="interstitial"></div>
 
       <!-- This is the container which the HUD stuff loads into. -->
       <div id="hud">
@@ -65,12 +67,9 @@
           case ' ':
             Hud.toggle();
             break;
-          case 'Left':
-            Hud.cursorLeft();
-            break;
-          case 'Right':
-            Hud.cursorRight();
-            break;
+          case '1':
+            VRManager.showTransition('transition/basic/index.html');
+          
         }
       }
 
