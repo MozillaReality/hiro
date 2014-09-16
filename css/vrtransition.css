@@ -1,6 +1,6 @@
 .transition {
-  width: 1600px;
-  height: 900px;
+  width: 4200px;
+  height: 2200px;
   transform: translate(-50%, -50%) translate3d(0, 0, -1rem) rotateY(0) rotateX(0);
 }
 
