@@ -11,7 +11,11 @@ window.VRManager = (function() {
     self.loader = self.container.querySelector('.loader');
     self.hud = self.container.querySelector('#hud');
     self.transition = self.container.querySelector('#transition');
+    self.interstitial = self.container.querySelectorAll('#interstitial');
     self.cursor = new Cursor(self.container.querySelector('#hud .camera'));
+    self.interstitials = [
+      'interstitials/spatial/index.html'
+    ]
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
@@ -79,6 +83,24 @@ window.VRManager = (function() {
     }) ;
     tab.load();
   }
+
+  VRManager.prototype.showInterstitial = function() {
+    if (interstitials && this.interstitials = null) {
+      this.interstitials = interstitials;
+    }
+
+    console.log(this.interstitials);
+    var tab = new VRTab(url);
+
+    tab.hide();
+    tab.mount(self.transition);
+    tab.ready.then(function() {
+      tab.show();
+      tab.start();
+    }) ;
+    tab.load();
+  }
+
 
   VRManager.prototype.load = function (url) {
     var self = this;

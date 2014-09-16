@@ -5,7 +5,6 @@ var Tile = function (name, url, cords) {
   self.name = name;
   self.url = url;
   self.cords = cords;
-
   self.gridEl = createGridTile();
   self.titleEl = createTitle();
 
@@ -17,6 +16,7 @@ var Tile = function (name, url, cords) {
   function createGridTile() {
     var div = document.createElement('div');
     var label = null;
+
     // create a link for label if present
     if (self.url !== undefined) {
       label = document.createElement('a');
@@ -25,12 +25,13 @@ var Tile = function (name, url, cords) {
     } else {
       label = document.createTextNode(self.name);
     }
+
     div.appendChild(label);
     div.classList.add('fav','threed');
-
     div.addEventListener('click', function(e) {
       Hud.load(self);
     });
+
     VRManager.cursor.addHitElement(div);
     return div;
   }
@@ -51,14 +52,15 @@ var Grid = function (opts) {
 
 // add nested content
 Grid.prototype.addTile = function (tile) {
-
   // size extents of grid
   if (tile.cords.x + tile.cords.w > this.cols) {
     this.cols = tile.cords.x + tile.cords.w;
   }
+
   if (tile.cords.y + tile.cords.h > this.rows) {
     this.rows = tile.cords.y + tile.cords.h;
   }
+  
   this.tiles.push(tile);
 };
 
@@ -145,11 +147,11 @@ window.Hud = (function() {
     if (this.currentSelection) {
       this.currentSelection.gridEl.classList.remove('fav-selected');
     }
+
     this.currentSelection = tile;
     tile.gridEl.classList.add('fav-selected');
 
     if (tile.url) {
-      // load up new scene.
       VRManager.load(tile.url);
 
       var animOutP = this.animationOut();
@@ -164,27 +166,29 @@ window.Hud = (function() {
   };
 
   Hud.prototype.animationOut = function() {
-    console.log('animationOut');
     var self = this;
+    var i, count = 0;
+    var el, transZ, shuffledTiles;
     var p = new Promise(function(resolve, reject) {
       if (self.transitioning) {
         reject('Already a transition in progress.');
       } else {
         self.transitioning = true;
       }
-      var shuffledTiles = shuffle(self.grid.tiles);
-      var count = 0;
-      for (var i = 0; i < shuffledTiles.length; i++) {
-        var el = shuffledTiles[i].gridEl;
-        var transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem', self.grid.opts.radius * -1 + 'rem'];
 
-        // transform element selected immediatly, transition the rest away.
+      shuffledTiles = shuffle(self.grid.tiles);
+      for (i = 0; i < shuffledTiles.length; i++) {
+        el = shuffledTiles[i].gridEl;
+        transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem', 
+          self.grid.opts.radius * -1 + 'rem'];
+        
+        // transform selected element immediatly, transition the rest away.
         if (self.currentSelection && self.currentSelection.gridEl.isEqualNode(el)) {
           el.style.transform = 'scale(0) translateZ(' + transZ[0] + ')';
           count++;
         } else {
           Velocity(el, { scaleX: 0, scaleY: 0, translateZ: transZ },
-            { easing: 'easeInQuad', duration: 1000, delay: i*20 })
+            { easing: 'easeInQuad', duration: 1000, delay: i * 20 })
             .then( function() {
               count++;
               if (count == shuffledTiles.length) {
@@ -199,24 +203,24 @@ window.Hud = (function() {
   };
       
   Hud.prototype.animationIn = function() {
-    console.log('animationIn');
     var self = this;
+    var i, count = 0;
+    var el, transZ, shuffledTiles;
     var p = new Promise(function(resolve, reject) {
       if (self.transitioning) {
         reject('Already a transition in progress.');
       } else {
         self.transitioning = true;
       }
-      var shuffledTiles = shuffle(self.grid.tiles);
-      var count = 0;
-      for (var i = 0; i < shuffledTiles.length; i++) {
-        var el = shuffledTiles[i].gridEl;
-        Velocity(el, {
-            scaleX: 1, scaleY: 1,
-            translateZ: [self.grid.opts.radius * -1 + 'rem', (self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem']
-          },{
-            easing: 'easeOutCubic', duration: 200 + (i * 40), delay: i * 10,
-          }).then(function() {
+
+      shuffledTiles = shuffle(self.grid.tiles);
+      for (i = 0; i < shuffledTiles.length; i++) {
+        el = shuffledTiles[i].gridEl;
+        transZ = [self.grid.opts.radius * -1 + 'rem', 
+          (self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem']
+        Velocity(el, { scaleX: 1, scaleY: 1, translateZ: transZ },
+          { easing: 'easeOutCubic', duration: 200 + (i * 40), delay: i * 10, })
+          .then( function() {
             count++;
             if (count == shuffledTiles.length) {
               self.transitioning = false;
@@ -230,37 +234,29 @@ window.Hud = (function() {
 
   Hud.prototype.animationTitle = function(tile) {
     var self = this;
+    var clone, toX, toY, toRotY;
     var p = new Promise(function(resolve, reject) {
       // clone tile for animating, original tile is kept in tact and animated out of site by animateOut.
-      var clone = tile.gridEl.cloneNode(true);
+      clone = tile.gridEl.cloneNode(true);
       tile.gridEl.parentNode.appendChild(clone);
 
-      var toX = (tile.cords.w * self.grid.opts.tileWidth) / 2 * -1 + 'rem';
-      var toY = (tile.cords.h * self.grid.opts.tileHeight) / 2 * -1 + 'rem';
-      var toRotY = (tile.cords.w * self.grid.rotPerTile) / 2 + 'deg';
+      toX = (tile.cords.w * self.grid.opts.tileWidth) / 2 * -1 + 'rem';
+      toY = (tile.cords.h * self.grid.opts.tileHeight) / 2 * -1 + 'rem';
+      toRotY = (tile.cords.w * self.grid.rotPerTile) / 2 + 'deg';
 
       Velocity(clone, {
         translateY: [toY, tile.cords.translateY],
         rotateY: [toRotY, tile.cords.rotateY],
-        translateZ: [tile.cords.translateZ, tile.cords.translateZ]
-      },{
-        duration: 3000
-      }).then(function() {
-
-        clone.parentNode.removeChild(clone);
-        resolve();
-      });
-
-      //clone.style.transform = 'translate3d(0,0,-30rem) rotateY(0deg)';
-
-      // setTimeout(function() {
-      //   console.log('resolving title');
-      //   clone.parentNode.removeChild(clone);
-      //   resolve();
-      // }, 3000);
+        translateZ: [tile.cords.translateZ, tile.cords.translateZ] 
+        },{ duration: 3000 })
+          .then( function() {
+            clone.parentNode.removeChild(clone);
+            resolve();
+          });
     });
     return p;
   };
+
   Hud.prototype.toggle = function() {
     var self = this;
     if (self.transitioning) {
@@ -292,7 +288,7 @@ window.Hud = (function() {
     this.currentSelection = el;
     el.classList.add('fav-selected');
   };
-
+  
   return new Hud();
 })();
 
