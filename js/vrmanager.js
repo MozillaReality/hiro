@@ -5,8 +5,38 @@ window.VRManager = (function() {
 
   function VRManager(container) {
     var self = this;
+    var transitionCanvas = document.createElement('canvas');
+
+    self.renderFadeOut = function(canvas, opacity) {
+      var opacity = opacity || 0;
+      var context = canvas.getContext("2d");
+      if (opacity >= 255) {
+        return;
+      }
+      context.fillStyle="rgba(255, 0, 0, " + opacity + ")";
+      context.fillRect(0, 0, 500, 500);
+      requestAnimationFrame(render);
+      function render() {
+        self.renderFadeOut(canvas, opacity + 1);
+      }
+    };
+
+    self.renderFadeIn = function(canvas, opacity) {
+      var opacity = typeof opacity === "undefined"? 255 : opacity;
+      var context = canvas.getContext("2d");
+      if (opacity <= 0) {
+        return;
+      }
+      context.fillStyle="rgba(255, 0, 0, " + opacity  + ")";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      requestAnimationFrame(render);
+      function render() {
+        self.renderFadeIn(canvas, opacity - 1);
+      }
+    };
+
     self.container = document.querySelector(container);
-    self.transition = new VRTransition(self.container);
+    self.transition = new VRTransition(self.container, transitionCanvas);
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
@@ -76,7 +106,7 @@ window.VRManager = (function() {
     var newTab = new VRTab(url);
 
     newTab.hide();
-    this.transition.fadeOut();
+    this.transition.fadeOut(self.renderFadeOut);
     newTab.mount(self.loader);
 
     newTab.ready.then(function () {
@@ -93,7 +123,7 @@ window.VRManager = (function() {
 
       // We'll do this elsewhere eventually
       newTab.start();
-      self.transition.fadeIn();
+      self.transition.fadeIn(self.renderFadeIn);
     });
 
     newTab.load();

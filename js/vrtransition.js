@@ -1,11 +1,11 @@
 function VRTransition(containerEl, contentEl, config) {
   var el =  contentEl || document.createElement('div');
-  if (!contentEl) {
-    el.classList.add("transition");
-    el.classList.add("threed");
-  }
-  containerEl.appendChild(el);
+  el.classList.add("transition");
+  el.classList.add("threed");
+  el.width = "1200";
+  el.height = "900";
   this.el = el;
+  containerEl.appendChild(el);
   config = config || {};
   this.duration = config.duration || 1200;
   this.z = config.z || -1;
@@ -13,13 +13,13 @@ function VRTransition(containerEl, contentEl, config) {
 
 VRTransition.prototype.fadeIn = function (render) {
   var self = this;
-  var render = render || this.renderFadeIn;
+  this.renderFadeIn = render || this.renderFadeIn;
   if (this.fadeOutInProgress) {
     this.fadeInPending = true;
     return;
   }
   this.fadeInInProgress = true;
-  render(this.el);
+  this.renderFadeIn(this.el);
   setTimeout(fadeInFinished, this.duration);
   function fadeInFinished() {
     self.fadeInInProgress = false;
@@ -32,13 +32,13 @@ VRTransition.prototype.fadeIn = function (render) {
 
 VRTransition.prototype.fadeOut = function (render) {
   var self = this;
-  var render = render || this.renderFadeOut;
+  this.renderFadeOut = render || this.renderFadeOut;
   if (this.fadeInInProgress) {
     this.fadeOutPending = true;
     return;
   }
   this.fadeOutInProgress = true;
-  render(this.el);
+  this.renderFadeOut(this.el);
   setTimeout(fadeOutFinished, this.duration);
   function fadeOutFinished() {
     self.fadeOutInProgress = false;
