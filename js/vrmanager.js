@@ -14,7 +14,7 @@ window.VRManager = (function() {
     self.log('Initializing Mozilla HIRO demo application v1');
 
     var transitionCanvas = document.createElement('canvas');
-    self.transition = new VRTransition(self.container.querySelector('#transition'));
+    self.transition = new VRTransition(self.container.querySelector('#transition'), undefined, {z: -35});
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');

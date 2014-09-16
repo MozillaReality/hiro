@@ -1,9 +1,9 @@
 function VRTransition(containerEl, contentEl, config) {
   var el =  contentEl || document.createElement('div');
   el.classList.add("transition");
-  el.classList.add("threed");
-  el.width = "1600";
-  el.height = "900";
+  //el.classList.add("threed");
+  // el.width = "1000";
+  // el.height = "1000";
   this.el = el;
   containerEl.appendChild(el);
   config = config || {};

@@ -59,7 +59,7 @@ Grid.prototype.addTile = function (tile) {
   if (tile.cords.y + tile.cords.h > this.rows) {
     this.rows = tile.cords.y + tile.cords.h;
   }
-  
+
   this.tiles.push(tile);
 };
 
@@ -67,7 +67,7 @@ Grid.prototype.addTile = function (tile) {
 Grid.prototype.render = function () {
   var self = this;
   var opts  = self.opts, tiles = self.tiles;
-  var rotPerTile = self.rotPerTile = Math.sin((opts.tileWidth + opts.tileGutter) / opts.radius) * (180 / Math.PI); 
+  var rotPerTile = self.rotPerTile = Math.sin((opts.tileWidth + opts.tileGutter) / opts.radius) * (180 / Math.PI);
   var i, tile;
 
   function addToContainer(tile) {
@@ -123,9 +123,9 @@ window.Hud = (function() {
       tileTransitionDepth: 5,    //  relative depth of tile when highlighted or selected.
       container: document.getElementById('grid')
     });
-    
+
     self.grid = hudGrid;
-    
+
     hudGrid.addTile(
       new Tile('Three.js cubes', './content/cubes/index.html', { x: 0, y: 0, w: 2, h: 2 })
     );
@@ -144,10 +144,10 @@ window.Hud = (function() {
     hudGrid.addTile(
       new Tile('Transition', './transition/basic/index.html', { x: 0, y: 3, w: 1, h: 1 })
     );
-    
+
     hudGrid.render();
   }
-  
+
   Hud.prototype.load = function(tile) {
     if (this.currentSelection) {
       this.currentSelection.gridEl.classList.remove('fav-selected');
@@ -201,9 +201,9 @@ window.Hud = (function() {
       shuffledTiles = shuffle(self.grid.tiles);
       for (i = 0; i < shuffledTiles.length; i++) {
         el = shuffledTiles[i].gridEl;
-        transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem', 
+        transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem',
           self.grid.opts.radius * -1 + 'rem'];
-        
+
         // transform selected element immediatly, transition the rest away.
         if (self.currentSelection && self.currentSelection.gridEl.isEqualNode(el)) {
           el.style.transform = 'scale(0) translateZ(' + transZ[0] + ')';
@@ -219,11 +219,11 @@ window.Hud = (function() {
               }
             });
         }
-      } 
+      }
     });
     return p;
   };
-      
+
   Hud.prototype.animationIn = function() {
     var self = this;
     var i, count = 0;
@@ -238,7 +238,7 @@ window.Hud = (function() {
       shuffledTiles = shuffle(self.grid.tiles);
       for (i = 0; i < shuffledTiles.length; i++) {
         el = shuffledTiles[i].gridEl;
-        transZ = [self.grid.opts.radius * -1 + 'rem', 
+        transZ = [self.grid.opts.radius * -1 + 'rem',
           (self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem']
         Velocity(el, { scaleX: 1, scaleY: 1, translateZ: transZ },
           { easing: 'easeOutCubic', duration: 200 + (i * 40), delay: i * 10, })
@@ -269,7 +269,7 @@ window.Hud = (function() {
       Velocity(clone, {
         translateY: [toY, tile.cords.translateY],
         rotateY: [toRotY, tile.cords.rotateY],
-        translateZ: [tile.cords.translateZ, tile.cords.translateZ] 
+        translateZ: [tile.cords.translateZ, tile.cords.translateZ]
         },{ duration: 3000 })
           .then( function() {
             clone.parentNode.removeChild(clone);
@@ -287,7 +287,7 @@ window.Hud = (function() {
 
     if (VRManager.hudRunning) {
       self.animationOut().then( function() {
-        VRManager.stopHud();  
+        VRManager.stopHud();
       });
     } else {
       VRManager.startHud();
@@ -310,7 +310,7 @@ window.Hud = (function() {
     this.currentSelection = el;
     el.classList.add('fav-selected');
   };
-  
+
   return new Hud();
 })();
 
