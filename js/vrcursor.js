@@ -28,8 +28,9 @@ window.Cursor = (function() {
     containerEl.appendChild(this.el);
     // Binds event listeners
     window.addEventListener('message', this.onMessage);
+    var cursor = this;
     this.enable();
-  };
+  }
 
   Cursor.prototype.onMessage = function(e) {
     var msg = e.data;
