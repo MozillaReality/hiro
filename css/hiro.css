@@ -10,6 +10,41 @@ body {
   margin: 0;
   font-size: 10px;
 }
+
+.launch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.launch .console {
+  color: rgba(250,255,250,.95);
+  font-size: 2vmin;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  padding: 1em;
+  text-shadow: .05em 0 .05em #0f0, -.05em 0 .05em #0f0;
+  background-image: linear-gradient(to bottom, rgba(0,255,0,0) 45%, rgba(0,255,0,.1) 50%, rgba(0,255,0,.1) 95%, rgba(0,255,0,0));
+  background-size: 100vw 1vh;
+  background-repeat: repeat;
+  margin: 0;
+  animation: scan 5s linear infinite;
+}
+
+@keyframes scan {
+  to {
+    text-shadow: 0em 0 .05em #0f0, 0em 0 .05em #0f0;
+    background-position: 0 20vh;
+  }
+}
+
+
 /* keeping style block in body to make it easier to see the relationship between elements */
 
 /* Container is nothing special; it's the element that is made full screen.
@@ -23,17 +58,11 @@ body {
 }
 #container:-moz-full-screen {
   cursor: none;
+  display: block;
 }
 
 #container:not(:-moz-full-screen) {
-  /* this is just to move the scene to the visible area when not in fullscreen VR */
-  /*transform-origin: 50% 50%;*/
-  /*transform: perspective(1000px) rotateZ(180deg) rotateY(180deg);*/
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  position: absolute;
+  display: none;
 }
 
 #container:not(:-moz-full-screen) {
@@ -97,13 +126,6 @@ body {
 }
 #wall6 {
   transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, -400px);
-}
-
-.cursor {
-  width: 1px;
-  height: 1px;
-  background: #fff;
-  transform: translate(-50%, -50%) translate3d(0, 0, 10px);
 }
 
 

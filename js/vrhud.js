@@ -1,4 +1,3 @@
-/*jslint browser: true*/
 var Tile = function (name, url, cords) {
   var self = this;
 
@@ -108,7 +107,7 @@ Grid.prototype.render = function () {
 // requires VRManager, Grid, Velocity
 window.Hud = (function() {
   var self = this;
-  
+
   function Hud() {
     var self = this;
     self.currentSelection = null;
@@ -134,7 +133,13 @@ window.Hud = (function() {
       new Tile('Theater demo', './content/theater/theater.html', { x: 2, y: 0, w: 2, h: 2 })
     );
     hudGrid.addTile(
-      new Tile('Skybox', './content/skybox/index.html', { x: 4, y: 2, w: 2, h: 2 })
+      new Tile('Skybox', './content/skybox/index.html', { x: 4, y: 0, w: 2, h: 2 })
+    );
+    hudGrid.addTile(
+      new Tile('Planetarium', './content/planetarium/index.html', { x: 4, y: 2, w: 2, h: 2 })
+    );
+    hudGrid.addTile(
+      new Tile('Sechelt', './content/sechelt/index.html', { x: 6, y: 2, w: 2, h: 2 })
     );
     hudGrid.addTile(
       new Tile('Transition', './transition/basic/index.html', { x: 0, y: 3, w: 1, h: 1 })
@@ -164,6 +169,23 @@ window.Hud = (function() {
       });
     }
   };
+    // fav row 1
+    // hudGrid.addTile({
+    //   el: createFavorite('Cubes', './content/cubes/index.html'), x: 7, y: 0, w: 1, h: 1
+    // });
+    // hudGrid.addTile({
+    //   el: createFavorite('Skybox', './content/skybox/index.html'), x: 8, y: 0, w: 1, h: 1
+    // });
+    // hudGrid.addTile({
+    //   el: createFavorite('Theatre', './content/theater/theater.html'), x: 10, y: 0, w: 1, h: 1
+    // });
+    // hudGrid.addTile({
+    //   el: createFavorite('Planetarium', './content/planetarium/index.html'), x: 11, y: 0, w: 1, h: 1
+    // });
+    // hudGrid.addTile({
+    //   el: createFavorite('Sechelt', './content/sechelt/index.html'), x: 12, y: 0, w: 1, h: 1
+    // });
+
 
   Hud.prototype.animationOut = function() {
     var self = this;

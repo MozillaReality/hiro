@@ -4,12 +4,16 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>JAVRIS</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="css/vrtransition.css">
     <link rel="stylesheet" href="css/hiro.css">
   </head>
   <body>
+
+    <div class="launch">
+      <pre class="console"></pre>
+    </div>
     <!-- this is a containing element that will be made fullscreen -->
     <div id="container" class="container">
-
 
       <!-- This is an inner element that will serve as a camera, moving its children around in the scene.
            This and all its children will have transform-style: preserve-3d set via the class, as well as
@@ -31,23 +35,25 @@
       <!-- This is the container which transition overlays will be drawn into -->
       <div id="transition"></div>
       
+      <!-- Interstitial container -->
       <div id="interstitial"></div>
 
       <!-- This is the container which the HUD stuff loads into. -->
       <div id="hud">
         <div class="threed camera">
-          <div id="grid" class="threed">
-          </div>
+          <div id="grid" class="threed"></div>
         </div>
       </div>
+
     </div>
 
-    
+
     <script src="js/vendor/velocity.min.js"></script>
 
     <script src="js/vrutils.js"></script>
     <script src="js/vrcursor.js"></script>
     <script src="js/vrtab.js"></script>
+    <script src="js/vrtransition.js"></script>
     <script src="js/vrmanager.js"></script>
     <script src="js/vrclient.js"></script>
     <script src="js/vrhud.js"></script>
