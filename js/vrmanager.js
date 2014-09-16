@@ -14,7 +14,7 @@ window.VRManager = (function() {
     self.log('Initializing Mozilla HIRO demo application v1');
 
     var transitionCanvas = document.createElement('canvas');
-    self.transition = new VRTransition(self.container.querySelector('#transition'), transitionCanvas, { z: -35 });
+    self.transition = new VRTransition(self.container.querySelector('#transition'));
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('.loader');
@@ -22,42 +22,6 @@ window.VRManager = (function() {
     self.interstitial = self.container.querySelectorAll('#interstitial');
     self.cursor = new Cursor(self.hud);
     self.currentCursor = self.cursor;
-
-    self.renderFadeOut = function(canvas, opacity) {
-      opacity = opacity || 0;
-      var context = canvas.getContext("2d");
-      var width = canvas.width;
-      var height = canvas.height;
-      if (opacity >= 1) {
-        return;
-      }
-      context.clearRect(0, 0, width , height);
-      context.globalAlpha = opacity;
-      context.fillStyle="rgb(0, 0, 0)";
-      context.fillRect(0, 0, width, height);
-      requestAnimationFrame(render);
-      function render() {
-        self.renderFadeOut(canvas, opacity + 0.1);
-      }
-    };
-
-    self.renderFadeIn = function(canvas, opacity) {
-      opacity = typeof opacity === "undefined"? 1 : opacity;
-      var context = canvas.getContext("2d");
-      var width = canvas.width;
-      var height = canvas.height;
-      if (opacity <= 0) {
-        return;
-      }
-      context.clearRect(0, 0, width , height);
-      context.globalAlpha = opacity;
-      context.fillStyle="rgb(0, 0, 0)";
-      context.fillRect(0, 0, width, height);
-      requestAnimationFrame(render);
-      function render() {
-        self.renderFadeIn(canvas, opacity - 0.1);
-      }
-    };
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {

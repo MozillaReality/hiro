@@ -1,7 +1,7 @@
 .transition {
-  width: 1200px;
+  width: 1600px;
   height: 900px;
-  transform: translate(-50%, -50%) translate3d(0, 0, -10rem) rotateY(0) rotateX(0);
+  transform: translate(-50%, -50%) translate3d(0, 0, -1rem) rotateY(0) rotateX(0);
 }
 
 .transition.fadeOut {
