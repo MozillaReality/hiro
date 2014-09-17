@@ -8,7 +8,7 @@ window.VRManager = (function() {
     self.container = document.querySelector(container);
     self.console = document.querySelector(console);
 
-    self.log('\n\nStaring JS-DOS...');
+    self.log('\n\nStarting JS-DOS...');
     self.log('\n\nHIMEM is testing virtual memory...done.');
     self.log('Javascript Advanced VR Interaction System, Version 0.5\n\n');
     self.log('Initializing Mozilla HIRO demo application v1');
