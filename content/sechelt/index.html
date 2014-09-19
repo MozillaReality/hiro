@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Sechelt</title>
+		<title>three.js webgl</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -15,19 +15,35 @@
 		</style>
 	</head>
 
-	<body>
-		<script src="js/three.min.js"></script>
 
-		<script src="js/FirstPersonControls.js"></script>
+
+	<body>
+
+		<script src="js/three.min.js"></script>
 
 		<script src="js/VRControls.js"></script>
 		<script src="js/VREffect.js"></script>
+
+		<script src="js/DeviceOrientationControls.js"></script>
+		<script src="js/StereoEffect.js"></script>
 
 		<script src="js/C4DLineLoader.js"></script>
 
 		<script src="../../js/vrclient.js"></script>
 
 		<script>
+
+			var parseURLSearch = function () {
+				var parameters = {};
+				var parts = window.location.search.substr( 1 ).split( '&' );
+				for ( var i = 0; i < parts.length; i ++ ) {
+					var parameter = parts[ i ].split( '=' );
+					parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+				}
+				return parameters;
+			}
+
+			var parameters = parseURLSearch();
 
 			var camera, scene, renderer;
 			var controls, effect;
@@ -37,16 +53,18 @@
 			var sky, water;
 
 			var cameraPath;
+			var dolly;
 
 			var loader = new THREE.C4DLineLoader();
-			loader.load( 'flightpath.txt', function ( line ) {
+			loader.load( 'flightpath-ascii.txt', function ( line ) {
 
-				cameraPath = line; 
+				cameraPath = line;
 
 			} );
 
 			init();
 			animate();
+
 			VRClient.ready().then(function() {
 				console.log('kicked off ready');
 			});
@@ -56,22 +74,33 @@
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.autoClear = false;
 				renderer.setClearColor( 0x404040 );
-				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
+
+				//
 
 				scene = new THREE.Scene();
 				scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
 
+				dolly = new THREE.Object3D();
+				dolly.position.set( 500, 500, 500 );
+				scene.add( dolly );
+
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 2000 );
-				camera.position.set( 500, 500, 500 );
+				dolly.add( camera )
 
-				controls2 = new THREE.FirstPersonControls( camera );
-				controls2.movementSpeed = 1000;
-				controls2.lookSpeed = 0;
-				controls2.lookVertical = false;
+				if ( parameters.mode === 'cardboard' ) {
 
-				effect = new THREE.VREffect( renderer );
-				controls = new THREE.VRControls( camera );
+					controls = new THREE.DeviceOrientationControls( camera );
+					effect = new THREE.StereoEffect( renderer );
+
+				} else {
+
+					controls = new THREE.VRControls( camera );
+					effect = new THREE.VREffect( renderer );
+
+				}
+
+				effect.setSize( window.innerWidth, window.innerHeight );
 
 				document.body.addEventListener( 'dblclick', function () {
 
@@ -99,13 +128,13 @@
 					var vertex3 = vertices[ face.c ];
 
 					var color1 = colorMiddle.clone();
-					color1.lerp( vertex1.y > 0 ? colorTop : colorBottom, Math.abs( vertex1.y ) / 2000 );
+					color1.lerp( vertex1.y > 0 ? colorTop : colorBottom, Math.abs( vertex1.y ) / 1000 );
 
 					var color2 = colorMiddle.clone();
-					color2.lerp( vertex2.y > 0 ? colorTop : colorBottom, Math.abs( vertex2.y ) / 2000 );
+					color2.lerp( vertex2.y > 0 ? colorTop : colorBottom, Math.abs( vertex2.y ) / 1000 );
 
 					var color3 = colorMiddle.clone();
-					color3.lerp( vertex3.y > 0 ? colorTop : colorBottom, Math.abs( vertex3.y ) / 2000 );
+					color3.lerp( vertex3.y > 0 ? colorTop : colorBottom, Math.abs( vertex3.y ) / 1000 );
 
 					face.vertexColors.push( color1, color2, color3 );
 
@@ -131,8 +160,8 @@
 
 				for ( var i = 0; i < 10000; i ++ ) {
 
-					vector.x = Math.random() * 2000 - 1000;
-					vector.z = Math.random() * 2000 - 1000;
+					vector.x = Math.random() * 4000 - 2000;
+					vector.z = Math.random() * 4000 - 2000;
 
 					var size = Math.random() * 2 + 1;
 					var angle = Math.random() * Math.PI;
@@ -164,9 +193,10 @@
 				var material = new THREE.MeshBasicMaterial( { opacity: 0.4, transparent: true } )
 
 				var mesh = new THREE.Mesh( geometry, material );
+				mesh.position.y = 2.5;
+				mesh.renderDepth = 1;
 				scene.add( mesh );
 
-				/*
 				// water
 
 				var geometry = new THREE.PlaneBufferGeometry( 100000, 100000 );
@@ -176,20 +206,20 @@
 					transparent: true
 				} );
 				water = new THREE.Mesh( geometry, material );
-				water.position.y = 40;
+				water.position.y = 2.;
 				water.rotation.x = - Math.PI / 2;
+				water.renderDepth = 2;
 				scene.add( water );
-				*/
 
 				//
 
 				var loader = new THREE.ObjectLoader();
-				loader.load( 'scene.json', function ( object ) {
+				loader.load( 'flightpath-test-5.json', function ( object ) {
 
 					var landscape = object.getObjectByName( 'lanscape' );
 
 					var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
-					reflection.material.color.setHex( 0xdac5c9 );
+					// reflection.material.color.setHex( 0xdac5c9 );
 					reflection.material.side = THREE.BackSide;
 					reflection.position.y = 7.7;
 					reflection.scale.y = -1;
@@ -210,7 +240,7 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				effect.setSize( window.innerWidth, window.innerHeight );
 
 			}
 
@@ -227,34 +257,27 @@
 
 				if ( cameraPath !== undefined ) {
 
-					var time = performance.now() / 50000;
+					var time = ( performance.now() / 40000 ) % 1;
 
-					var pointA = cameraPath.getPointAt( time % 1 );
-					var pointB = cameraPath.getPointAt( ( time + 0.01 ) % 1 );
+					var pointA = cameraPath.getPointAt( time );
+					var pointB = cameraPath.getPointAt( Math.min( time + 0.015, 1 ) );
 
 					pointA.z = -pointA.z;
 					pointB.z = -pointB.z;
 
-					camera.position.copy( pointA );
-					camera.lookAt( pointB );
-					
-					// camera.position.multiplyScalar( 0.75 );
-					// camera.position.multiplyScalar( 0.001 );
-					// camera.position.x += 589.94;
-					// camera.position.y += 1377;
-					// camera.position.z += 21602;
+					dolly.position.copy( pointA );
+					dolly.lookAt( pointB );
+
+					dolly.rotateY( Math.PI ); // look forward
 
 				}
 
-				// controls2.update( clock.getDelta() );
 				controls.update();
 
-				sky.position.copy( camera.position );
+				sky.position.copy( dolly.position );
 
-				/*
-				water.position.x = camera.position.x;
-				water.position.z = camera.position.z;
-				*/
+				water.position.x = dolly.position.x;
+				water.position.z = dolly.position.z;
 
 				effect.render( scene, camera );
 

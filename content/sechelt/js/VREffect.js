@@ -116,6 +116,10 @@ THREE.VREffect = function ( renderer, done ) {
 
 	};
 
+	this.setSize = function( width, height ) {
+		renderer.setSize( width, height );
+	};
+
 	this.setFullScreen = function( enable ) {
 		var renderer = this._renderer;
 		var vrHMD = this._vrHMD;
