@@ -12,7 +12,6 @@ function VRTransition(containerEl, contentEl, config) {
 };
 
 VRTransition.prototype.fadeIn = function (render) {
-  console.log('fadeIn');
   var self = this;
   this.renderFadeIn = render || this.renderFadeIn;
   if (this.fadeOutInProgress) {
@@ -29,26 +28,28 @@ VRTransition.prototype.fadeIn = function (render) {
       self.fadeOutPending = false;
     }
   }
-}
+};
 
 VRTransition.prototype.fadeOut = function (render) {
-  console.log('fadeOut');
   var self = this;
-  this.renderFadeOut = render || this.renderFadeOut;
-  if (this.fadeInInProgress) {
-    this.fadeOutPending = true;
-    return;
-  }
-  this.fadeOutInProgress = true;
-  this.renderFadeOut(this.el);
-  setTimeout(fadeOutFinished, this.duration);
-  function fadeOutFinished() {
-    self.fadeOutInProgress = false;
-    if (self.fadeInPending) {
-      self.fadeIn();
-      self.fadeInPending = false;
+  return new Promise( function(resolve, reject) {
+    self.renderFadeOut = render || self.renderFadeOut;
+    if (self.fadeInInProgress) {
+      self.fadeOutPending = true;
+      return;
     }
-  }
+    self.fadeOutInProgress = true;
+    self.renderFadeOut(self.el);
+    setTimeout(fadeOutFinished, self.duration);
+    function fadeOutFinished() {
+      self.fadeOutInProgress = false;
+      if (self.fadeInPending) {
+        self.fadeIn();
+        self.fadeInPending = false;
+      }
+      resolve();
+    }
+  });
 };
 
 VRTransition.prototype.renderFadeIn = function (el) {

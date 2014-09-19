@@ -132,7 +132,7 @@ window.VRManager = (function() {
     var newTab = new VRTab(url);
 
     newTab.hide();
-    this.transition.fadeOut(self.renderFadeOut);
+    
     newTab.mount(self.loader);
     if (self.loadingTab) {
       self.loadingTab.destroy();

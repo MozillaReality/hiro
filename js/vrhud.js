@@ -161,7 +161,8 @@ window.Hud = (function() {
     if (tile.url) {
       this.animationOut().then(function() {
         VRManager.stopHud();
-        VRManager.load(tile.url);
+        VRManager.transition.fadeOut(VRManager.renderFadeOut)
+          .then( VRManager.load(tile.url) );
       }, function(err) {
         console.log(err);
       });
