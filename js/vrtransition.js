@@ -12,6 +12,7 @@ function VRTransition(containerEl, contentEl, config) {
 };
 
 VRTransition.prototype.fadeIn = function (render) {
+  console.log('fadeIn');
   var self = this;
   this.renderFadeIn = render || this.renderFadeIn;
   if (this.fadeOutInProgress) {
@@ -31,6 +32,7 @@ VRTransition.prototype.fadeIn = function (render) {
 }
 
 VRTransition.prototype.fadeOut = function (render) {
+  console.log('fadeOut');
   var self = this;
   this.renderFadeOut = render || this.renderFadeOut;
   if (this.fadeInInProgress) {

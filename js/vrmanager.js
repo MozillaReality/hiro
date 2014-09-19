@@ -154,6 +154,7 @@ window.VRManager = (function() {
 
       // We'll do this elsewhere eventually
       newTab.start();
+
       self.transition.fadeIn(self.renderFadeIn);
     });
 
@@ -195,6 +196,7 @@ window.VRManager = (function() {
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
     self.cursor.updatePosition(state.orientation);
     // updates transition object
+    
     self.transition.update();
 
     for (var i = 0; i < self.cameras.length; i++) {

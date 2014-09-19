@@ -25,6 +25,8 @@
 
 		<script src="js/C4DLineLoader.js"></script>
 
+		<script src="../../js/vrclient.js"></script>
+
 		<script>
 
 			var camera, scene, renderer;
@@ -45,6 +47,9 @@
 
 			init();
 			animate();
+			VRClient.ready().then(function() {
+				console.log('kicked off ready');
+			});
 
 			function init() {
 
@@ -53,8 +58,6 @@
 				renderer.setClearColor( 0x404040 );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
-
-				//
 
 				scene = new THREE.Scene();
 				scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );

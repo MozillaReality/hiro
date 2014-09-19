@@ -24,9 +24,9 @@ VRScene.prototype.start = function() {
 	}
 
 	// listen for end of video
-	player.addEventListener('ended', function() {
-		VRClient.ended();
-	});
+	// player.addEventListener('ended', function() {
+	// 	VRClient.ended();
+	// });
 
 	requestAnimationFrame(tick);
 };
