@@ -54,7 +54,7 @@ function generateStar(id) {
   var transform =
     'rotateY(' + ra +  'deg) ' +
     'rotateX(' + dec + 'deg) ' +
-    'translate3d(0, 0, 500px) ' +
+    'translate3d(0, 0, 600px) ' +
     'rotateY(180deg)';
   starElement.setAttribute('id', 'star-' + id);
   starElement.classList.add('star');
@@ -102,7 +102,7 @@ function VRScene() {
   self.vr = {};
   self.running = false;
   cursor = new Cursor(container, cursorStyle);
-  generateStars(300);
+  generateStars(200);
 
   VRClient.getVR.then(function (vr) {
     self.vr.tracker = vr.position;
