@@ -142,7 +142,7 @@ window.Hud = (function() {
       new Tile('Sechelt', './content/sechelt/index.html', { x: 6, y: 2, w: 2, h: 2 })
     );
     hudGrid.addTile(
-      new Tile('Transition', './transition/basic/index.html', { x: 0, y: 3, w: 1, h: 1 })
+      new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 })
     );
 
     hudGrid.render();
@@ -157,35 +157,14 @@ window.Hud = (function() {
     tile.gridEl.classList.add('fav-selected');
 
     if (tile.url) {
-      VRManager.load(tile.url);
-
-      var animOutP = this.animationOut();
-      var animTitleP = this.animationTitle(tile);
-
-      Promise.all([animOutP, animTitleP]).then(function() {
+      this.animationOut().then(function() {
         VRManager.stopHud();
+        VRManager.load(tile.url);
       }, function(err) {
         console.log(err);
       });
     }
   };
-    // fav row 1
-    // hudGrid.addTile({
-    //   el: createFavorite('Cubes', './content/cubes/index.html'), x: 7, y: 0, w: 1, h: 1
-    // });
-    // hudGrid.addTile({
-    //   el: createFavorite('Skybox', './content/skybox/index.html'), x: 8, y: 0, w: 1, h: 1
-    // });
-    // hudGrid.addTile({
-    //   el: createFavorite('Theatre', './content/theater/theater.html'), x: 10, y: 0, w: 1, h: 1
-    // });
-    // hudGrid.addTile({
-    //   el: createFavorite('Planetarium', './content/planetarium/index.html'), x: 11, y: 0, w: 1, h: 1
-    // });
-    // hudGrid.addTile({
-    //   el: createFavorite('Sechelt', './content/sechelt/index.html'), x: 12, y: 0, w: 1, h: 1
-    // });
-
 
   Hud.prototype.animationOut = function() {
     var self = this;
@@ -203,22 +182,15 @@ window.Hud = (function() {
         el = shuffledTiles[i].gridEl;
         transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem',
           self.grid.opts.radius * -1 + 'rem'];
-
-        // transform selected element immediatly, transition the rest away.
-        if (self.currentSelection && self.currentSelection.gridEl.isEqualNode(el)) {
-          el.style.transform = 'scale(0) translateZ(' + transZ[0] + ')';
-          count++;
-        } else {
-          Velocity(el, { scaleX: 0, scaleY: 0, translateZ: transZ },
-            { easing: 'easeInQuad', duration: 1000, delay: i * 20 })
-            .then( function() {
-              count++;
-              if (count == shuffledTiles.length) {
-                self.transitioning = false;
-                resolve();
-              }
-            });
-        }
+        Velocity(el, { scaleX: 0, scaleY: 0, translateZ: transZ },
+          { easing: 'easeInQuad', duration: 1000, delay: i * 20 })
+          .then( function() {
+            count++;
+            if (count == shuffledTiles.length) {
+              self.transitioning = false;
+              resolve();
+            }
+          });        
       }
     });
     return p;

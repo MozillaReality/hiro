@@ -14,7 +14,6 @@ window.VRManager = (function() {
     self.log('Initializing Mozilla HIRO demo application v1');
 
     var transitionCanvas = document.createElement('canvas');
-    var transitionCanvas = document.createElement('canvas');
     self.transition = new VRTransition(self.container.querySelector('#transition'), transitionCanvas);
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
@@ -119,36 +118,6 @@ window.VRManager = (function() {
       }
     });
   }
-
-  VRManager.prototype.showTransition = function(url) {
-    console.log('transition');
-    var tab = new VRTab(url);
-
-    tab.hide();
-    tab.mount(self.transition);
-    tab.ready.then(function() {
-      tab.show();
-      tab.start();
-    }) ;
-    tab.load();
-  };
-
-  VRManager.prototype.showInterstitial = function() {
-    // if (interstitials && this.interstitials == null) {
-    //   this.interstitials = interstitials;
-    // }
-
-    // console.log(this.interstitials);
-    // var tab = new VRTab(url);
-
-    // tab.hide();
-    // tab.mount(self.transition);
-    // tab.ready.then(function() {
-    //   tab.show();
-    //   tab.start();
-    // }) ;
-    // tab.load();
-  };
 
 
   VRManager.prototype.log = function (msg) {
