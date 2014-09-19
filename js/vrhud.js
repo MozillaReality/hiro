@@ -28,7 +28,9 @@ var Tile = function (name, url, cords) {
     div.appendChild(label);
     div.classList.add('fav','threed');
     div.addEventListener('click', function(e) {
-      Hud.load(self);
+      if (VRManager.hudRunning) {
+        Hud.load(self);
+      }
     });
 
     VRManager.cursor.addHitElement(div);

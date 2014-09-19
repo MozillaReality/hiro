@@ -49,7 +49,7 @@ window.Cursor = (function() {
   };
 
   Cursor.prototype.enable = function() {
-    if (window.VRClient) {-
+    if (window.VRClient) {
       VRClient.sendMessage('disablecursor');
     }
     this.el.style.display = 'block';
