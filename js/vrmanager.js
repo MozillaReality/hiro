@@ -128,7 +128,7 @@ window.VRManager = (function() {
     var self = this;
 
     // wrest fullscreen back from the demo if necessary
-    self.log('loading url: ' + url);
+    console.log('loading url: ' + url);
     var newTab = new VRTab(url);
 
     newTab.hide();
@@ -196,7 +196,7 @@ window.VRManager = (function() {
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
     self.cursor.updatePosition(state.orientation);
     // updates transition object
-    
+
     self.transition.update();
 
     for (var i = 0; i < self.cameras.length; i++) {

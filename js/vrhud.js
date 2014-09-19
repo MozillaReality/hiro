@@ -158,22 +158,25 @@ window.Hud = (function() {
     this.currentSelection = tile;
     tile.gridEl.classList.add('fav-selected');
 
-    if (tile.url) {
-      this.animationOut().then(function() {
-        VRManager.stopHud();
-        VRManager.transition.fadeOut(VRManager.renderFadeOut)
-          .then( VRManager.load(tile.url) );
-      }, function(err) {
-        console.log(err);
-      });
+    if (!tile.url) {
+      return false;
     }
+
+    this.animationOut()
+      .then( function() {
+        VRManager.stopHud();
+        VRManager.transition.fadeOut( VRManager.renderFadeOut )
+          .then( function() {
+            VRManager.load(tile.url);
+          });
+    });
   };
 
   Hud.prototype.animationOut = function() {
     var self = this;
     var i, count = 0;
     var el, transZ, shuffledTiles;
-    var p = new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       if (self.transitioning) {
         reject('Already a transition in progress.');
       } else {
@@ -196,7 +199,6 @@ window.Hud = (function() {
           });        
       }
     });
-    return p;
   };
 
   Hud.prototype.animationIn = function() {

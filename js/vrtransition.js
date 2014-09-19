@@ -42,6 +42,7 @@ VRTransition.prototype.fadeOut = function (render) {
     self.renderFadeOut(self.el);
     setTimeout(fadeOutFinished, self.duration);
     function fadeOutFinished() {
+      console.log('fade out finished');
       self.fadeOutInProgress = false;
       if (self.fadeInPending) {
         self.fadeIn();
