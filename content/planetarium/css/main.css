@@ -20,8 +20,8 @@
 }
 
 .star {
-  width: 2px;
-  height: 2px;
+  width: 4px;
+  height: 4px;
   background-color: white;
   border-radius: 50%;
 }
@@ -51,9 +51,9 @@
 }
 
 .moon {
-  width: 60px;
-  height: 60px;
-  transform: rotateY(0deg) rotateX(30deg) translate3d(0, 0, 500px) translate(-100px, -150px) scaleX(-1);
+  width: 70px;
+  height: 70px;
+  transform: rotateY(0deg) rotateX(30deg) translate3d(0, 0, 600px) translate(-100px, -150px) scaleX(-1);
   background-image: url('../images/moon.png');
   background-size: contain;
 }
@@ -64,7 +64,7 @@
   width: 1000px; height: 1000px;
   background-color: rgb(38, 37, 13);
   background-image: url('../images/grass.jpg');
-  transform: translate(-500px, -500px) rotateX(90deg) translateZ(-200px);
+  transform: translate(-500px, -500px) translateY(250px) rotateX(90deg) translateZ(-200px);
 }
 
 @keyframes rotate {
