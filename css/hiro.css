@@ -131,7 +131,7 @@ body {
 }
 
 
-.loader, #transition {
+.host {
   position: absolute;
   top: 0;
   left: 0;
@@ -139,7 +139,7 @@ body {
   height: 100%;
 }
 
-.loader iframe, #transition iframe {
+.host iframe {
   position: absolute;
   top: 0;
   left: 0;
@@ -149,29 +149,3 @@ body {
 }
 
 
-#favorites {
-  transform: translate3d(0,0,0);
-}
-
-.fav {
-  font-size: 0.5rem;
-  text-transform: uppercase;
-  background: rgba(255,255,255,0.8);
-  color: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.fav a {
-  text-decoration: none;
-  color: black;
-}
-
-.fav-highlighted {
-  background: white;
-}
-
-.fav-selected {
-  background: orange;
-}

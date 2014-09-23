@@ -1,0 +1,70 @@
+
+/*
+// -------------------------------------
+// Fonts
+// -------------------------------------
+*/
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-Bold.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-Bold.ttf') format('truetype');
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-SemiBold.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-SemiBold.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-Regular.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-Regular.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-Light.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-Light.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-UltraLight.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-UltraLight.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-Hair.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-Hair.ttf') format('truetype');
+	font-weight: 200;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-Eight.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-Eight.ttf') format('truetype');
+	font-weight: 100;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/woff/FiraSans-UltraLightItalic.woff') format('woff'),
+	url('../fonts/ttf/FiraSans-UltraLightItalic.ttf') format('truetype');
+	font-weight: 300;
+	font-style: italic;
+}

@@ -1,4 +1,4 @@
-var Tile = function (name, url, cords) {
+var Tile = function (name, url, cords, siteInfo) {
   var self = this;
 
   self.name = name;
@@ -6,6 +6,7 @@ var Tile = function (name, url, cords) {
   self.cords = cords;
   self.gridEl = createGridTile();
   self.titleEl = createTitle();
+  self.siteInfo = siteInfo;
 
   function createTitle() {
     var div = document.createElement('div');
@@ -36,6 +37,18 @@ var Tile = function (name, url, cords) {
     VRManager.cursor.addHitElement(div);
     return div;
   }
+
+  self.getSiteInfo = function() {
+    var info = { 
+      '.title': this.name,
+      '.url': this.url
+    }
+    for (var key in self.siteInfo) {
+      info[key] = self.siteInfo[key];
+    }
+    return info;
+  }
+
   return self;
 };
 
@@ -129,22 +142,22 @@ window.Hud = (function() {
     self.grid = hudGrid;
 
     hudGrid.addTile(
-      new Tile('Three.js cubes', './content/cubes/index.html', { x: 0, y: 0, w: 2, h: 2 })
+      new Tile('Three.js cubes', './content/cubes/index.html', { x: 0, y: 0, w: 2, h: 2 }, { '.author': 'Mr Cube', '.tech': 'three.js, tween.js'})
     );
     hudGrid.addTile(
-      new Tile('Theater demo', './content/theater/theater.html', { x: 2, y: 0, w: 2, h: 2 })
+      new Tile('Theater demo', './content/theater/theater.html', { x: 2, y: 0, w: 2, h: 2 }, { '.author': 'Potch', '.tech': 'VR Dom'})
     );
     hudGrid.addTile(
-      new Tile('Skybox', './content/skybox/index.html', { x: 4, y: 0, w: 2, h: 2 })
+      new Tile('Skybox', './content/skybox/index.html', { x: 4, y: 0, w: 2, h: 2 }, { '.author': 'Casey', '.tech': 'VR Dom'})
     );
     hudGrid.addTile(
-      new Tile('Planetarium', './content/planetarium/index.html', { x: 4, y: 2, w: 2, h: 2 })
+      new Tile('Planetarium', './content/planetarium/index.html', { x: 4, y: 2, w: 2, h: 2 }, { '.author': 'Diego Marcos', '.tech': 'VR Dom'})
     );
     hudGrid.addTile(
-      new Tile('Sechelt', './content/sechelt/index.html', { x: 6, y: 2, w: 2, h: 2 })
+      new Tile('Sechelt', './content/sechelt/index.html', { x: 6, y: 2, w: 2, h: 2 }, { '.author': 'Mr Doob', '.tech': 'three.js, tween.js'})
     );
     hudGrid.addTile(
-      new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 })
+      new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
     );
 
     hudGrid.render();
@@ -167,7 +180,7 @@ window.Hud = (function() {
         VRManager.stopHud();
         VRManager.transition.fadeOut( VRManager.renderFadeOut )
           .then( function() {
-            VRManager.load(tile.url);
+            VRManager.load(tile.url, tile.getSiteInfo());
           });
     });
   };

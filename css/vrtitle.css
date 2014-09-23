@@ -1,0 +1,40 @@
+
+.sitetag {
+  text-transform: uppercase;
+  color: white;
+  letter-spacing: 0.05em;
+  margin: 0;
+  padding: 0;
+  width: 0rem;  /* tweens to 20rem in vrtile.js */
+  white-space: nowrap;
+  overflow: hidden;
+  transform: translate3d(-50%, -50%, -20rem);
+}
+
+.sitetag .author {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.sitetag .title {
+  font-size: 2em;
+  font-weight: 700;
+  padding: 8em 0 0.2em; 
+}
+
+.sitetag .url {
+  font-size: 1.5em;
+  font-weight: 500;
+  border: 0.2em solid white;
+  padding: 0.4em 0.5em;
+  display: inline-block; 
+}
+
+.sitetag .tech {
+  font-size: 1em;
+  font-weight: 500;
+  padding: 1em 0 0; 
+}

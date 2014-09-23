@@ -1,5 +1,4 @@
 // requires VRCursor
-
 window.VRManager = (function() {
   var baseTransform = "translate3d(0, 0, 0)";
 
@@ -17,9 +16,11 @@ window.VRManager = (function() {
     self.transition = new VRTransition(self.container.querySelector('#transition'), transitionCanvas);
     self.cameras = self.container.querySelectorAll('.camera');
     self.stage = self.container.querySelector('#stage');
-    self.loader = self.container.querySelector('.loader');
+    self.loader = self.container.querySelector('#loader');
     self.hud = self.container.querySelector('#hud');
     self.interstitial = self.container.querySelectorAll('#interstitial');
+    self.title = self.container.querySelector('#title');
+    self.titleTemplate = self.container.querySelector('template');
     self.cursor = new Cursor(self.hud);
     self.currentCursor = self.cursor;
 
@@ -124,11 +125,11 @@ window.VRManager = (function() {
     this.console.innerHTML += '<div>' + msg + '</div>';
   };
 
-  VRManager.prototype.load = function (url) {
+  VRManager.prototype.load = function (url, siteInfo) {
     var self = this;
 
     // wrest fullscreen back from the demo if necessary
-    console.log('loading url: ' + url);
+    self.log('loading url: ' + url);
     var newTab = new VRTab(url);
 
     newTab.hide();
@@ -156,6 +157,9 @@ window.VRManager = (function() {
       newTab.start();
 
       self.transition.fadeIn(self.renderFadeIn);
+      
+      var title = new VRTitle(self.title, self.titleTemplate, siteInfo);
+
     });
 
     newTab.load();

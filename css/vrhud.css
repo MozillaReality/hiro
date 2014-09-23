@@ -1,0 +1,27 @@
+
+#favorites {
+  transform: translate3d(0,0,0);
+}
+
+.fav {
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.8);
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.fav a {
+  text-decoration: none;
+  color: black;
+}
+
+.fav-highlighted {
+  background: white;
+}
+
+.fav-selected {
+  background: orange;
+}
