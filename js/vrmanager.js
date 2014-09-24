@@ -15,7 +15,6 @@ window.VRManager = (function() {
     var transitionCanvas = document.createElement('canvas');
     self.transition = new VRTransition(self.container.querySelector('#transition'), transitionCanvas);
     self.cameras = self.container.querySelectorAll('.camera');
-    self.stage = self.container.querySelector('#stage');
     self.loader = self.container.querySelector('#loader');
     self.hud = self.container.querySelector('#hud');
     self.interstitial = self.container.querySelectorAll('#interstitial');
@@ -115,7 +114,7 @@ window.VRManager = (function() {
 
     self.vrReady.then(function () {
       if (self.vrIsReady) {
-        self.log('\npress `f` to enter VR stage');
+        self.log('\npress `f` to enter VR');
       }
     });
   }
@@ -141,9 +140,6 @@ window.VRManager = (function() {
     self.loadingTab = newTab;
 
     newTab.ready.then(function () {
-      self.stopStage();
-      self.stage.style.display = 'none';
-
       self.log('cleaning up old demo');
       if (self.currentDemo) {
         self.currentDemo.destroy();
@@ -171,8 +167,8 @@ window.VRManager = (function() {
       self.cursor.enable();
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
       document.body.mozRequestPointerLock();
-      self.startStage();
-      self.startHud();
+      requestAnimationFrame(self.stageFrame.bind(self));
+      VRHud.start();
       self.cursor.enable();
     }
   };
@@ -184,47 +180,20 @@ window.VRManager = (function() {
     });
   };
 
-  VRManager.prototype.startStage = function () {
-    var self = this;
-    self.stageRunning = true;
-    requestAnimationFrame(self.stageFrame.bind(self));
-  };
-
-  VRManager.prototype.stopStage = function () {
-    self.stageRunning = false;
-  };
-
   VRManager.prototype.stageFrame = function () {
     var self = this;
     var state = self.positionDevice.getState();
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
     self.cursor.updatePosition(state.orientation);
-    // updates transition object
-
     self.transition.update();
-
     for (var i = 0; i < self.cameras.length; i++) {
-      self.cameras[i].style.transform = cssOrientationMatrix + " " + baseTransform;
+      // only apply transforms to cameras that have display
+      if (self.cameras[i].style.display !== 'none') {
+        self.cameras[i].style.transform = cssOrientationMatrix + " " + baseTransform;
+      }
     }
-
     self.cursor.updateHits();
-
-    if (self.stageRunning || self.hudRunning) {
-      requestAnimationFrame(self.stageFrame.bind(self));
-    }
-  };
-
-  VRManager.prototype.startHud = function() {
-    var currentDemo = this.currentDemo;
-    this.hud.style.display = 'initial';
-    this.hudRunning = true;
-    if (currentDemo) { currentDemo.sendMessage('disablecursor'); }
-    this.cursor.enable();
-  };
-
-  VRManager.prototype.stopHud = function() {
-    this.hud.style.display = 'none';
-    this.hudRunning = false;
+    requestAnimationFrame(self.stageFrame.bind(self));
   };
 
   return new VRManager('#container', '.launch .console');

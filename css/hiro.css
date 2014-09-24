@@ -103,34 +103,6 @@ body {
   pointer-events: none;
 }
 
-#stage .wall {
-  width: 800px;
-  height: 800px;
-  background-color: #002;
-  background-image: linear-gradient(to right, #fff 0px, rgba(255,255,255,0) 2px, rgba(255,255,255,0) 98px, #fff 100px), linear-gradient(to bottom, rgba(255,255,255,0) 98px, #fff 100px);
-  background-size: 100px 100px;
-  display: none;
-}
-#wall1 {
-  transform: translate(-50%, -50%) translate3d(0, 0, 400px);
-}
-#wall2 {
-  transform: translate(-50%, -50%) translate3d(0, 0, -400px);
-}
-#wall3 {
-  transform: translate(-50%, -50%) rotateY(90deg) translate3d(0, 0, 400px);
-}
-#wall4 {
-  transform: translate(-50%, -50%) rotateY(90deg) translate3d(0, 0, -400px);
-}
-#wall5 {
-  transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, 400px);
-}
-#wall6 {
-  transform: translate(-50%, -50%) rotateX(90deg) translate3d(0, 0, -400px);
-}
-
-
 .host {
   position: absolute;
   top: 0;

@@ -6,6 +6,7 @@ function VRTitle(container, t, data) {
 		t.content.querySelector(key).textContent = data[key];	
 	};
 	clone = document.importNode(t.content, true);
+	container.style.display = 'block';
 	container.appendChild(clone);
 	node = container.lastElementChild;
 	
@@ -15,6 +16,8 @@ function VRTitle(container, t, data) {
     	Velocity(node, { width: ['0rem', '20rem'] }, { easing: 'easeOutQuint', duration: 1000, delay: 3000 })
 		    .then( function() {
 		    	node.parentNode.removeChild(node);	
+		    	container.style.display = 'none';
 				});
 		});	
 }
+

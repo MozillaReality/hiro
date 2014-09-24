@@ -37,6 +37,9 @@ window.Cursor = (function() {
     if (msg.type === "disablecursor") {
       this.disable();
     }
+    if (msg.type === "enablecursor") {
+      this.enable();
+    }
   };
 
   Cursor.prototype.createCursor = function() {

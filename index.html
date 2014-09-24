@@ -21,17 +21,7 @@
       <!-- This is an inner element that will serve as a camera, moving its children around in the scene.
            This and all its children will have transform-style: preserve-3d set via the class, as well as
            transform-origin set to 0,0 -->
-      <div id="stage">
-        <div class="threed camera">
-          <div class="wall threed" id="wall1"></div>
-          <div class="wall threed" id="wall2"></div>
-          <div class="wall threed" id="wall3"></div>
-          <div class="wall threed" id="wall4"></div>
-          <div class="wall threed" id="wall5"></div>
-          <div class="wall threed" id="wall6"></div>
-        </div>
-      </div>
-
+      
       <!-- This is the container which external iframe content is loaded into. -->
       <div id="loader" class="host"></div>
 
@@ -42,7 +32,7 @@
       <div id="interstitial"></div>
 
       <!-- Interstitial container -->
-      <div id="title" class="threed camera">
+      <div id="title" class="threed camera" style="display: none">
         <template>
           <div class="sitetag threed">
             <div class="author"></div>
@@ -57,10 +47,8 @@
       
 
       <!-- This is the container which the HUD stuff loads into. -->
-      <div id="hud">
-        <div class="threed camera">
-          <div id="grid" class="threed"></div>
-        </div>
+      <div id="hud" class="threed camera" style="display: none">
+        <div id="grid" class="threed"></div>
       </div>
 
     </div>
@@ -73,8 +61,8 @@
     <script src="js/vrtab.js"></script>
     <script src="js/vrtransition.js"></script>
     <script src="js/vrmanager.js"></script>
-    <script src="js/vrclient.js"></script>
     <script src="js/vrhud.js"></script>
+    <script src="js/vrclient.js"></script>
     <script src="js/vrtitle.js"></script>
     <script type="text/javascript">
       function onkey(event) {
@@ -90,7 +78,7 @@
             VRManager.zeroSensor();
             break;
           case ' ':
-            Hud.toggle();
+            VRHud.toggle();
             break;
           case '1':
             VRManager.showTransition('transition/basic/index.html');

@@ -29,8 +29,8 @@ var Tile = function (name, url, cords, siteInfo) {
     div.appendChild(label);
     div.classList.add('fav','threed');
     div.addEventListener('click', function(e) {
-      if (VRManager.hudRunning) {
-        Hud.load(self);
+      if (VRHud.running) {
+        VRHud.load(self);
       }
     });
 
@@ -120,73 +120,123 @@ Grid.prototype.render = function () {
   }
 };
 
-// requires VRManager, Grid, Velocity
-window.Hud = (function() {
-  var self = this;
 
-  function Hud() {
+window.VRHud = (function() {
+  function VRHud() {
     var self = this;
+    self.container = VRManager.hud;
+    self.running = false;
     self.currentSelection = null;
-    self.transitioning = false;
-    self.grid = null;
+    self.transitioning = false; // true if animation is running
 
-    // create new main HUD grid
-    var hudGrid = new Grid({
-      tileWidth: 3.5,           //  tile width and height.
+    self.grid = new Grid({
+      units: 'rem', // units to use for grid
+      tileWidth: 3.5, //  tile width and height.
       tileHeight: 3.5,
-      radius: 30,               //  how far out to place the HUD from user.
-      tileGutter: 0.10,         //  space between tiles.
-      tileTransitionDepth: 5,    //  relative depth of tile when highlighted or selected.
-      container: document.getElementById('grid')
+      tileGutter: 0.10, //  space between tiles.
+      tileTransitionDepth: 5, //  relative depth of tile when highlighted or selected.
+      radius: 30, //  how far out to place the HUD from user.
+      container: self.container.querySelector('#grid')
     });
 
-    self.grid = hudGrid;
-
-    hudGrid.addTile(
+    self.grid.addTile(
       new Tile('Three.js cubes', './content/cubes/index.html', { x: 0, y: 0, w: 2, h: 2 }, { '.author': 'Mr Cube', '.tech': 'three.js, tween.js'})
     );
-    hudGrid.addTile(
+    self.grid.addTile(
       new Tile('Theater demo', './content/theater/theater.html', { x: 2, y: 0, w: 2, h: 2 }, { '.author': 'Potch', '.tech': 'VR Dom'})
     );
-    hudGrid.addTile(
+    self.grid.addTile(
       new Tile('Skybox', './content/skybox/index.html', { x: 4, y: 0, w: 2, h: 2 }, { '.author': 'Casey', '.tech': 'VR Dom'})
     );
-    hudGrid.addTile(
+    self.grid.addTile(
       new Tile('Planetarium', './content/planetarium/index.html', { x: 4, y: 2, w: 2, h: 2 }, { '.author': 'Diego Marcos', '.tech': 'VR Dom'})
     );
-    hudGrid.addTile(
+    self.grid.addTile(
       new Tile('Sechelt', './content/sechelt/index.html', { x: 6, y: 2, w: 2, h: 2 }, { '.author': 'Mr Doob', '.tech': 'three.js, tween.js'})
     );
-    hudGrid.addTile(
+    self.grid.addTile(
       new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
     );
+    
+    self.grid.render();
 
-    hudGrid.render();
-  }
+    self.start();
 
-  Hud.prototype.load = function(tile) {
-    if (this.currentSelection) {
-      this.currentSelection.gridEl.classList.remove('fav-selected');
+    return self;
+  };
+
+  VRHud.prototype.start = function() {
+    if (this.transitioning) {
+      return false;
+    }
+    if (!this.running) {
+      this.container.style.display = 'block';
+      this.animationIn();
+    }
+    var currentDemo = VRManager.currentDemo;
+    if (currentDemo) { currentDemo.sendMessage('disablecursor'); }
+    VRManager.cursor.enable();
+    
+    this.running = true;
+  };
+
+  VRHud.prototype.stop = function() {
+    var self = this;
+    if (self.transitioning) {
+      return false;
+    }
+    if (self.running) {
+      self.animationOut().then( function() {
+        self.container.style.display = 'none';
+      });
+      VRManager.cursor.disable();
+      var currentDemo = VRManager.currentDemo;
+      if (currentDemo) { currentDemo.sendMessage('enablecursor'); }
+    }
+    self.running = false;
+  };
+
+  VRHud.prototype.toggle = function() {
+    if (this.running) {
+      this.stop();
+    } else {
+      this.start();
+    }
+  };
+
+  VRHud.prototype.load = function(tile) {
+    var self = this;
+    if (self.currentSelection) {
+      self.currentSelection.gridEl.classList.remove('fav-selected');
     }
 
-    this.currentSelection = tile;
+    self.currentSelection = tile;
     tile.gridEl.classList.add('fav-selected');
 
     if (!tile.url) {
       return false;
     }
 
-    this.animationOut()
+    self.animationOut()
       .then( function() {
-        VRManager.stopHud();
+        self.stop();
         VRManager.transition.fadeOut( VRManager.renderFadeOut )
           .then( function() {
             VRManager.load(tile.url, tile.getSiteInfo());
           });
     });
+  }
+
+  VRHud.prototype.changeSelection = function(el) {
+    if (this.currentSelection) {
+      this.currentSelection.classList.remove('fav-selected');
+    }
+    this.currentSelection = el;
+    el.classList.add('fav-selected');
   };
 
-  Hud.prototype.underlayIn = function() {
+
+  VRHud.prototype.underlayIn = function() {
     var underlay = document.createElement('div');
     underlay.id = 'underlay';
 
@@ -195,7 +245,6 @@ window.Hud = (function() {
     var radius = this.grid.opts.radius + 5;
     var i, div;
     
-
     for ( i = 0; i < numPanels; i++ ) {
       div = document.createElement('div');
       
@@ -203,7 +252,7 @@ window.Hud = (function() {
       var transZ = radius * -1 + 'rem';
       var transY = (this.grid.rows + 1) * this.grid.opts.tileHeight / 2 * -1 + 'rem';
       var height = (this.grid.rows + 1) * this.grid.opts.tileHeight + 'rem';
-      var width = (radius * Math.tan(rotPerPanel * Math.PI/180))-0.06 + 'rem';
+      var width = (radius * Math.tan(rotPerPanel * Math.PI/180))-0.06 + 'rem';  // micro adjust gap between panels.
       
       div.style.width = width;
       div.style.height = height;
@@ -219,7 +268,7 @@ window.Hud = (function() {
     this.grid.container.appendChild(underlay);
   };
 
-  Hud.prototype.underlayOut = function() {
+  VRHud.prototype.underlayOut = function() {
     var myNode = document.getElementById("underlay");
     if (!myNode)
       return false;
@@ -230,45 +279,11 @@ window.Hud = (function() {
     myNode.parentNode.removeChild(myNode);
   };
 
-  Hud.prototype.animationOut = function() {
+  VRHud.prototype.animationIn = function() {
     var self = this;
     var i, count = 0;
     var el, transZ, shuffledTiles;
     return new Promise(function(resolve, reject) {
-      if (self.transitioning) {
-        reject('Already a transition in progress.');
-      } else {
-        self.transitioning = true;
-      }
-
-      shuffledTiles = shuffle(self.grid.tiles);
-      for (i = 0; i < shuffledTiles.length; i++) {
-        el = shuffledTiles[i].gridEl;
-        transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem',
-          self.grid.opts.radius * -1 + 'rem'];
-        Velocity(el, { scaleX: 0, scaleY: 0, translateZ: transZ },
-          { easing: 'easeInQuad', duration: 1000, delay: i * 20 })
-          .then( function() {
-            count++;
-            if (count == shuffledTiles.length) {
-              self.transitioning = false;
-              
-              resolve();
-
-              self.underlayOut();
-            }
-          });        
-      }
-    });
-  };
-
-
-
-  Hud.prototype.animationIn = function() {
-    var self = this;
-    var i, count = 0;
-    var el, transZ, shuffledTiles;
-    var p = new Promise(function(resolve, reject) {
       if (self.transitioning) {
         reject('Already a transition in progress.');
       } else {
@@ -293,68 +308,74 @@ window.Hud = (function() {
           });
         }
     });
-    return p;
   };
 
-  Hud.prototype.animationTitle = function(tile) {
+  VRHud.prototype.animationOut = function() {
     var self = this;
-    var clone, toX, toY, toRotY;
-    var p = new Promise(function(resolve, reject) {
-      // clone tile for animating, original tile is kept in tact and animated out of site by animateOut.
-      clone = tile.gridEl.cloneNode(true);
-      tile.gridEl.parentNode.appendChild(clone);
+    var i, count = 0;
+    var el, transZ, shuffledTiles;
+    return new Promise(function(resolve, reject) {
+      if (self.transitioning) {
+        reject('Already a transition in progress.');
+      } else {
+        self.transitioning = true;
+      }
 
-      toX = (tile.cords.w * self.grid.opts.tileWidth) / 2 * -1 + 'rem';
-      toY = (tile.cords.h * self.grid.opts.tileHeight) / 2 * -1 + 'rem';
-      toRotY = (tile.cords.w * self.grid.rotPerTile) / 2 + 'deg';
-
-      Velocity(clone, {
-        translateY: [toY, tile.cords.translateY],
-        rotateY: [toRotY, tile.cords.rotateY],
-        translateZ: [tile.cords.translateZ, tile.cords.translateZ]
-        },{ duration: 3000 })
+      shuffledTiles = shuffle(self.grid.tiles);
+      for (i = 0; i < shuffledTiles.length; i++) {
+        el = shuffledTiles[i].gridEl;
+        transZ = [(self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem',
+          self.grid.opts.radius * -1 + 'rem'];
+        Velocity(el, { scaleX: 0, scaleY: 0, translateZ: transZ },
+          { easing: 'easeInQuad', duration: 1000, delay: i * 20 })
           .then( function() {
-            clone.parentNode.removeChild(clone);
-            resolve();
-          });
+            count++;
+            if (count == shuffledTiles.length) {
+              self.transitioning = false;
+              resolve();
+              self.underlayOut();
+            }
+          });        
+      }
     });
-    return p;
   };
 
-  Hud.prototype.toggle = function() {
-    var self = this;
-    if (self.transitioning) {
-      return false;
-    }
-
-    if (VRManager.hudRunning) {
-      self.animationOut().then( function() {
-        VRManager.stopHud();
-      });
-    } else {
-      VRManager.startHud();
-      self.animationIn();
-    }
-  };
-
-  Hud.prototype.highlight = function(el, highlight) {
-    if (highlight) {
-      el.classList.add('fav-highlighted');
-    } else {
-      el.classList.remove('fav-highlighted');
-    }
-  };
-
-  Hud.prototype.changeSelection = function(el) {
-    if (this.currentSelection) {
-      this.currentSelection.classList.remove('fav-selected');
-    }
-    this.currentSelection = el;
-    el.classList.add('fav-selected');
-  };
-
-  return new Hud();
+  return new VRHud();
 })();
+
+
+// Hud.prototype.highlight = function(el, highlight) {
+//   if (highlight) {
+//     el.classList.add('fav-highlighted');
+//   } else {
+//     el.classList.remove('fav-highlighted');
+//   }
+// };
+
+// Hud.prototype.animationTitle = function(tile) {
+//   var self = this;
+//   var clone, toX, toY, toRotY;
+//   var p = new Promise(function(resolve, reject) {
+//     // clone tile for animating, original tile is kept in tact and animated out of site by animateOut.
+//     clone = tile.gridEl.cloneNode(true);
+//     tile.gridEl.parentNode.appendChild(clone);
+
+//     toX = (tile.cords.w * self.grid.opts.tileWidth) / 2 * -1 + 'rem';
+//     toY = (tile.cords.h * self.grid.opts.tileHeight) / 2 * -1 + 'rem';
+//     toRotY = (tile.cords.w * self.grid.rotPerTile) / 2 + 'deg';
+
+//     Velocity(clone, {
+//       translateY: [toY, tile.cords.translateY],
+//       rotateY: [toRotY, tile.cords.rotateY],
+//       translateZ: [tile.cords.translateZ, tile.cords.translateZ]
+//       },{ duration: 3000 })
+//         .then( function() {
+//           clone.parentNode.removeChild(clone);
+//           resolve();
+//         });
+//   });
+//   return p;
+// };
 
 // shuffle array
 function shuffle(array) {
