@@ -20,7 +20,7 @@ window.VRManager = (function() {
     self.hud = self.container.querySelector('#hud');
     self.interstitial = self.container.querySelectorAll('#interstitial');
     self.title = self.container.querySelector('#title');
-    self.titleTemplate = self.container.querySelector('template');
+    self.titleTemplate = self.title.querySelector('template');
     self.cursor = new Cursor(self.hud);
     self.currentCursor = self.cursor;
 

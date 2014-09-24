@@ -25,3 +25,7 @@
 .fav-selected {
   background: orange;
 }
+
+.underlay {
+  background: rgba(0,0,0,0.25);
+}

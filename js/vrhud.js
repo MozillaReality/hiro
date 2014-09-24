@@ -61,6 +61,7 @@ var Grid = function (opts) {
   self.cols = self.rows = 0;                // max grid extents
   self.container = opts.container;          // container where this grid will be injected into.
   self.el = document.createElement('div');  // element for grid contents
+  self.underlay = null;
   return self;
 };
 
@@ -185,6 +186,50 @@ window.Hud = (function() {
     });
   };
 
+  Hud.prototype.underlayIn = function() {
+    var underlay = document.createElement('div');
+    underlay.id = 'underlay';
+
+    var numPanels = 35;
+    var rotPerPanel = 360 / numPanels;
+    var radius = this.grid.opts.radius + 5;
+    var i, div;
+    
+
+    for ( i = 0; i < numPanels; i++ ) {
+      div = document.createElement('div');
+      
+      var rotY = i * rotPerPanel + 'deg';
+      var transZ = radius * -1 + 'rem';
+      var transY = (this.grid.rows + 1) * this.grid.opts.tileHeight / 2 * -1 + 'rem';
+      var height = (this.grid.rows + 1) * this.grid.opts.tileHeight + 'rem';
+      var width = (radius * Math.tan(rotPerPanel * Math.PI/180))-0.06 + 'rem';
+      
+      div.style.width = width;
+      div.style.height = height;
+      div.style.transform = 'translateZ(' + transZ + ') rotateY(' + rotY + ')';
+      div.classList.add('threed', 'underlay');
+
+      Velocity.hook(div, 'rotateY', rotY);
+      Velocity.hook(div, 'translateY', transY);
+      Velocity.hook(div, 'translateZ', transZ);
+
+      underlay.appendChild(div);
+    }
+    this.grid.container.appendChild(underlay);
+  };
+
+  Hud.prototype.underlayOut = function() {
+    var myNode = document.getElementById("underlay");
+    if (!myNode)
+      return false;
+
+    while (myNode.firstChild) {
+      myNode.removeChild(myNode.firstChild);
+    }
+    myNode.parentNode.removeChild(myNode);
+  };
+
   Hud.prototype.animationOut = function() {
     var self = this;
     var i, count = 0;
@@ -207,12 +252,17 @@ window.Hud = (function() {
             count++;
             if (count == shuffledTiles.length) {
               self.transitioning = false;
+              
               resolve();
+
+              self.underlayOut();
             }
           });        
       }
     });
   };
+
+
 
   Hud.prototype.animationIn = function() {
     var self = this;
@@ -224,6 +274,8 @@ window.Hud = (function() {
       } else {
         self.transitioning = true;
       }
+      
+      self.underlayIn();
 
       shuffledTiles = shuffle(self.grid.tiles);
       for (i = 0; i < shuffledTiles.length; i++) {

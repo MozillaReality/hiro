@@ -8,7 +8,7 @@
   width: 0rem;  /* tweens to 20rem in vrtile.js */
   white-space: nowrap;
   overflow: hidden;
-  transform: translate3d(-50%, -50%, -20rem);
+  transform: translate3d(-50%, -50%, -25rem);
 }
 
 .sitetag .author {
