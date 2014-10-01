@@ -1,38 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title></title>
-    <meta charset="utf-8">
-    <style type="text/css">
-    html, body {
-    	margin: 0;
-    	padding: 0;
-    	background: red;
-    }
-
-    .threed {
-		  transform-style: preserve-3d;
-		  position: absolute;
-		  top: 0; left: 0;
-		}
-		
-		#player {
-			transform: translate3d(-50%,-50%, -40rem);
-		}
-		
-    </style>
+	<head>
+		<title>VR WebGL boilerplate using three.js</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000;
+				color: #fff;
+				margin: 0px;
+				padding: 0;
+				overflow: hidden;
+			}
+		</style>
 	</head>
 	<body>
-		<div id="container">
-			<div id="camera" class="threed">
+		<script src="js/three.min.js"></script>
+		<script src="js/VRControls.js"></script>
+		<script src="js/VREffect.js"></script>
+		<script src="js/DeviceOrientationControls.js"></script>
+		<script src="js/StereoEffect.js"></script>
+
+		<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
+		<script src="js/vrclient.js"></script>
+		<script>
+			var parseURLSearch = function () {
+				var parameters = {};
+				var parts = window.location.search.substr( 1 ).split( '&' );
+				for ( var i = 0; i < parts.length; i ++ ) {
+					var parameter = parts[ i ].split( '=' );
+					parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+				}
+				return parameters;
+			}
+			var parameters = parseURLSearch();
+
+			var camera, scene, renderer;
+			var controls, effect;
+
+			var geometry, material, cube;
+
+			init();
+			animate();
+
+			function init() {
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.autoClear = false;
+				renderer.setClearColor( 0x000000 );
+				document.body.appendChild( renderer.domElement );
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
 				
-				<video id="player" class="threed" src="video.ogv" autoplay></video>
-			
-			
-		</div>
+				// parse url parameter and set appropriate rendering effect.
+				if ( parameters.mode === 'cardboard' ) {
+					controls = new THREE.DeviceOrientationControls( camera );
+					effect = new THREE.StereoEffect( renderer );
+				} else {
+					controls = new THREE.VRControls( camera );
+					effect = new THREE.VREffect( renderer );
+				}
+				effect.setSize( window.innerWidth, window.innerHeight );
+
+				// listen for double clicks to initiate full-screen/VR mode.
+				document.body.addEventListener( 'dblclick', function () {
+					effect.setFullScreen( true );
+				} );
+
+				// add sample object in scene
+				geometry = new THREE.BoxGeometry(10,10,10); 
+				material = new THREE.MeshNormalMaterial(); 
+				cube = new THREE.Mesh( geometry, material ); scene.add( cube );
+				cube.position.z = -20;
+				
+				// announce to JAVRIS host that we are ready to go.
+				VRClient.ready();
+
+
+				// announce to JAVRIS when this scene is finished
+				setTimeout( function() {
+					VRClient.ended();
+				}, 5000)
+				
+				window.addEventListener( 'resize', onWindowResize, false );
+				window.addEventListener( 'keypress', onKey, true);
+
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				effect.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function onKey(event) {
+        if (!(event.metaKey || event.altKey || event.ctrlKey)) {
+          event.preventDefault();
+        }
+
+        switch (event.key) {
+          case 'z': // z
+            VRClient.zeroSensor();
+            break;
+        }
+      }
+
+			function animate() {
+				cube.rotation.y += 0.01;
+
+				requestAnimationFrame( animate );
+				render();
+			}
+
+			function render() {
+				controls.update();
+				effect.render( scene, camera );
+			}
+		</script>
+
 	</body>
-	<script src="../../js/vrclient.js"></script>
-	<script src="../../js/vrutils.js"></script>
-	<script src="js/script.js"></script>
 </html>
