@@ -133,8 +133,20 @@ window.VRManager = (function() {
 
   VRManager.prototype.load = function (url, opts) {
     var self = this;
+    
+    if (opts.transition == undefined) {
+      transition = true;
+    } else {
+      transition = opts.transition
+    }      
 
-    self.transition.fadeOut( self.renderFadeOut ).then( function() {
+    if (transition) {
+      self.transition.fadeOut( self.renderFadeOut ).then( loadTab );
+    } else {
+      loadTab();
+    }
+
+    function loadTab() {
       self.log('loading url: ' + url);
       var newTab = new VRTab(url);
 
@@ -159,7 +171,9 @@ window.VRManager = (function() {
         // We'll do this elsewhere eventually
         newTab.start();
 
-        self.transition.fadeIn(self.renderFadeIn);
+        if (transition) {
+          self.transition.fadeIn(self.renderFadeIn);
+        }
         
         if (opts.showTitle && opts.siteInfo) {
           console.log(opts.siteInfo);
@@ -169,7 +183,7 @@ window.VRManager = (function() {
       });
 
       newTab.load();
-    });
+    }
   };
 
   VRManager.prototype.enableVR = function () {
