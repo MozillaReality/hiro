@@ -1,6 +1,10 @@
 // requires VRCursor
 window.VRManager = (function() {
   var baseTransform = "translate3d(0, 0, 0)";
+  // options
+  var START_WITH_HUD = false;
+  var START_WITH_INTRO = true;
+  
 
   function VRManager(container, console) {
     var self = this;
@@ -19,7 +23,7 @@ window.VRManager = (function() {
     self.hud = self.container.querySelector('#hud');
     self.interstitial = self.container.querySelectorAll('#interstitial');
     self.title = self.container.querySelector('#title');
-    self.titleTemplate = self.title.querySelector('template');
+    self.sequence = new VRSequence();
     self.cursor = new Cursor(self.hud);
     self.currentCursor = self.cursor;
 
@@ -107,6 +111,9 @@ window.VRManager = (function() {
             self.readyCallback();
           }
           break;
+        case 'ended':
+          self.sequence.next();
+          break;
         case 'progress':
           break;
       }
@@ -124,43 +131,45 @@ window.VRManager = (function() {
     this.console.innerHTML += '<div>' + msg + '</div>';
   };
 
-  VRManager.prototype.load = function (url, siteInfo) {
+  VRManager.prototype.load = function (url, opts) {
     var self = this;
 
-    // wrest fullscreen back from the demo if necessary
-    self.log('loading url: ' + url);
-    var newTab = new VRTab(url);
+    self.transition.fadeOut( self.renderFadeOut ).then( function() {
+      self.log('loading url: ' + url);
+      var newTab = new VRTab(url);
 
-    newTab.hide();
-    
-    newTab.mount(self.loader);
-    if (self.loadingTab) {
-      self.loadingTab.destroy();
-    }
-    self.loadingTab = newTab;
-
-    newTab.ready.then(function () {
-      self.log('cleaning up old demo');
-      if (self.currentDemo) {
-        self.currentDemo.destroy();
-      }
-      self.loadingTab = null;
-      self.currentDemo = newTab;
-
-      newTab.show();
-
-      // We'll do this elsewhere eventually
-      newTab.start();
-
-      self.transition.fadeIn(self.renderFadeIn);
+      newTab.hide();
       
-      if (siteInfo) {
-       var title = new VRTitle(self.title, self.titleTemplate, siteInfo);
+      newTab.mount(self.loader);
+      if (self.loadingTab) {
+        self.loadingTab.destroy();
       }
+      self.loadingTab = newTab;
 
+      newTab.ready.then(function () {
+        self.log('cleaning up old demo');
+        if (self.currentDemo) {
+          self.currentDemo.destroy();
+        }
+        self.loadingTab = null;
+        self.currentDemo = newTab;
+
+        newTab.show();
+
+        // We'll do this elsewhere eventually
+        newTab.start();
+
+        self.transition.fadeIn(self.renderFadeIn);
+        
+        if (opts.showTitle && opts.siteInfo) {
+          console.log(opts.siteInfo);
+          var title = new VRTitle(self.title, self.title.querySelector('template'), opts.siteInfo);
+        }
+
+      });
+
+      newTab.load();
     });
-
-    newTab.load();
   };
 
   VRManager.prototype.enableVR = function () {
@@ -170,8 +179,13 @@ window.VRManager = (function() {
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
       document.body.mozRequestPointerLock();
       requestAnimationFrame(self.stageFrame.bind(self));
-      VRHud.start();
-      self.cursor.enable();
+      
+      if (START_WITH_HUD) {
+        VRHud.start();
+      }
+      if (START_WITH_INTRO) {
+        this.sequence.start();
+      }
     }
   };
 

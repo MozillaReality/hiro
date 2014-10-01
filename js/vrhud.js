@@ -106,6 +106,8 @@ Grid.prototype.render = function () {
     Velocity.hook(tile.gridEl, 'rotateY', tile.cords.rotateY);
     Velocity.hook(tile.gridEl, 'translateY', tile.cords.translateY);
     Velocity.hook(tile.gridEl, 'translateZ', tile.cords.translateZ);
+    Velocity.hook(tile.gridEl, 'scaleX', 0);
+    Velocity.hook(tile.gridEl, 'scaleY', 0);
 
     // set element dimensions
     tile.gridEl.style.width = (tile.cords.w * opts.tileWidth) + ((tile.cords.w - 1) * opts.tileGutter) + 'rem';
@@ -125,7 +127,6 @@ window.VRHud = (function() {
   function VRHud() {
     var self = this;
     self.container = VRManager.hud;
-    self.startWithHud = true;
     self.running = false;
     self.currentSelection = null;
     self.transitioning = false; // true if animation is running
@@ -158,15 +159,12 @@ window.VRHud = (function() {
     self.grid.addTile(
       new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
     );
-
     self.grid.addTile(
-      new Tile('Intro', './sequence/1/index.html', { x: 1, y: 3, w: 1, h: 1 })
+      new Tile('Intro', './sequence/1/index.html', { x: 1, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
     );
     
     self.grid.render();
 
-    self.start();
-    
     return self;
   };
 
@@ -226,10 +224,10 @@ window.VRHud = (function() {
     self.animationOut()
       .then( function() {
         self.stop();
-        VRManager.transition.fadeOut( VRManager.renderFadeOut )
-          .then( function() {
-            VRManager.load(tile.url, tile.getSiteInfo());
-          });
+        VRManager.load(tile.url, {
+          showTitle: true,
+          siteInfo: tile.getSiteInfo()
+        });
     });
   }
 
@@ -289,6 +287,7 @@ window.VRHud = (function() {
     var self = this;
     var i, count = 0;
     var el, transZ, shuffledTiles;
+    
     return new Promise(function(resolve, reject) {
       if (self.transitioning) {
         reject('Already a transition in progress.');
@@ -298,12 +297,15 @@ window.VRHud = (function() {
       
       self.underlayIn();
 
+      // shuffle tiles so we get randomized transition in.
       shuffledTiles = shuffle(self.grid.tiles);
+
       for (i = 0; i < shuffledTiles.length; i++) {
         el = shuffledTiles[i].gridEl;
         transZ = [self.grid.opts.radius * -1 + 'rem',
           (self.grid.opts.radius + self.grid.opts.tileTransitionDepth) * -1 + 'rem']
-        Velocity(el, { scaleX: 1, scaleY: 1, translateZ: transZ },
+        
+        Velocity(el, { scaleX: [1, 0], scaleY: [1, 0], translateZ: transZ },
           { easing: 'easeOutCubic', duration: 200 + (i * 40), delay: i * 10, })
           .then( function() {
             count++;
