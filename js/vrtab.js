@@ -12,6 +12,10 @@ function VRTab(url) {
     self.listenFor('ready', resolve);
   });
 
+  self.ended = new Promise(function (resolve, reject) {
+    self.listenFor('ended', resolve);
+  });
+
   self.loaded = new Promise(function (resolve, reject) {
     iframe.addEventListener('load', resolve);
     iframe.addEventListener('error', reject);
@@ -33,12 +37,12 @@ VRTab.prototype.listenFor = function (type, handler) {
   function handle(e) {
     var href = self.iframe.contentWindow.location.href;
     console.log('saw message', href, e.source.location.href, e);
-    if (e.source.location.href ===  href &&
+    if (e.source.location.href === href &&
         e.data.type === type) {
+      console.log(e.data.type, href);
       handler(e.data);
     }
   }
-
   self.handlers.push(handle);
   window.addEventListener('message', handle);
 };

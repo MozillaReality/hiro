@@ -129,6 +129,11 @@ window.VRClient = (function() {
     return this.wait;
   };
 
+  // if this demo has an exit
+  VRClient.prototype.ended = function() {
+    this.sendMessage('ended');
+  }
+
   VRClient.prototype.getVR = function () {
     return this.getVR;
   };

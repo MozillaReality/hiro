@@ -125,6 +125,7 @@ window.VRHud = (function() {
   function VRHud() {
     var self = this;
     self.container = VRManager.hud;
+    self.startWithHud = true;
     self.running = false;
     self.currentSelection = null;
     self.transitioning = false; // true if animation is running
@@ -157,27 +158,32 @@ window.VRHud = (function() {
     self.grid.addTile(
       new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
     );
+
+    self.grid.addTile(
+      new Tile('Intro', './sequence/1/index.html', { x: 1, y: 3, w: 1, h: 1 })
+    );
     
     self.grid.render();
 
     self.start();
-
+    
     return self;
   };
 
   VRHud.prototype.start = function() {
     if (this.transitioning) {
       return false;
-    }
+    };
+
     if (!this.running) {
       this.container.style.display = 'block';
       this.animationIn();
+      VRManager.cursor.enable();
+      this.running = true;
     }
+
     var currentDemo = VRManager.currentDemo;
     if (currentDemo) { currentDemo.sendMessage('disablecursor'); }
-    VRManager.cursor.enable();
-    
-    this.running = true;
   };
 
   VRHud.prototype.stop = function() {

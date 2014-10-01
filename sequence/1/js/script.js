@@ -25,7 +25,8 @@ VRScene.prototype.start = function() {
 
 	// listen for end of video
 	player.addEventListener('ended', function() {
-		VRClient.ended();
+		console.log('ended');
+		VRClient.load('./sequence/2/index.html');
 	});
 
 	requestAnimationFrame(tick);

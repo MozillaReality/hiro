@@ -154,7 +154,9 @@ window.VRManager = (function() {
 
       self.transition.fadeIn(self.renderFadeIn);
       
-      var title = new VRTitle(self.title, self.titleTemplate, siteInfo);
+      if (siteInfo) {
+       var title = new VRTitle(self.title, self.titleTemplate, siteInfo);
+      }
 
     });
 
