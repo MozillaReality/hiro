@@ -19,7 +19,7 @@ var Tile = function (name, url, cords, siteInfo) {
 
     // create a link for label if present
     if (self.url !== undefined) {
-      label = document.createElement('a');
+      label = document.createElement('a');  
       label.href = self.url;
       label.appendChild(document.createTextNode(self.name));
     } else {
@@ -160,7 +160,7 @@ window.VRHud = (function() {
       new Tile('Interstitial', './Interstitial/spatial/index.html', { x: 0, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
     );
     self.grid.addTile(
-      new Tile('Intro', './sequence/1/index.html', { x: 1, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Cinema 4D, VR Dom'})
+      new Tile('Startup', './content/startup/index.html', { x: 1, y: 3, w: 1, h: 1 }, { '.author': 'Josh Carpenter', '.tech': 'Three.js, tween.js'})
     );
     
     self.grid.render();

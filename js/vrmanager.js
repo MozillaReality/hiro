@@ -2,8 +2,8 @@
 window.VRManager = (function() {
   var baseTransform = "translate3d(0, 0, 0)";
   // options
-  var START_WITH_HUD = false;
-  var START_WITH_INTRO = true;
+  var START_WITH_HUD = true;
+  var START_WITH_INTRO = false;
   
 
   function VRManager(container, console) {

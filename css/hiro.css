@@ -56,7 +56,7 @@ body {
  * entering fullscreen.  There's a -moz-full-screen selector that's useful for this.
  */
 #container {
-  background: #000;
+  background: #1DB992;
 }
 #container:-moz-full-screen {
   cursor: none;
