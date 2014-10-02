@@ -1,7 +1,5 @@
 function startup() {
 
-	console.log( "startup started" );
-
 	var cage;
 	var worldGeo;
 
@@ -12,8 +10,7 @@ function startup() {
 	var world = new THREE.Mesh( worldGeo, worldMat );
 	scene.add( world );
 
-
-	//explode objects function, from MrDoob
+	//function for exploding objects, from MrDoob
 	function explode( geometry, material ) {
 
 		var group = new THREE.Group();
@@ -41,13 +38,59 @@ function startup() {
 	}
 
 
+	//load the logo. 
+	//once loading is complete, trigger landing() to set up the scene
+	var logo
+	var loader = new THREE.ObjectLoader();
+
+	loader.load( 'images/hiro-logo-3.json', function ( object ) {
+
+		logo = object;
+		scene.add( logo );
+		landing();
+
+	} );
+
+
 	//------------- LOGO -------------//
+
+	function landing() {
+
+		logo.position.set( 0, 0, -8 );
+		
+		for ( var i = 0; i < logo.children.length; i++ ) {
+
+			//console.log("logo piece: " + logo.children[i] );
+
+			var piece = logo.children[i];
+			piece.rotation.set( 0, 0.5, 0 )
+			piece.children[0].material.transparent = true;
+			piece.children[0].material.opacity = 0;
+
+			new TWEEN.Tween( piece.rotation )
+				.to( { y: 0 }, 3000 )
+				.easing( TWEEN.Easing.Sinusoidal.InOut )
+				//.delay( 400 * i )
+				.start();
+
+			new TWEEN.Tween( piece.children[0].material )
+				.to( { opacity: 1 }, 3000 )
+				.start();
+
+		}
+
+		new TWEEN.Tween( logo.position )
+			.to( { z: -10 }, 3000 )
+			.easing( TWEEN.Easing.Sinusoidal.InOut )
+			.start();
+
+	}
 
 	function one() {
 	
-		console.log( scene );
+		//create
 
-		//create logo
+		//create Mozilla logo
 		var logo = new THREE.Mesh(
 			new THREE.PlaneGeometry( 3.8, 1, 1, 1 ), 
 			new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, map: THREE.ImageUtils.loadTexture( 'images/mozilla.png' ) } )
@@ -67,13 +110,36 @@ function startup() {
 			.easing( TWEEN.Easing.Quadratic.InOut )
 			.onComplete( function() {
 
-				new TWEEN.Tween( logo.material )
-					.to( { opacity: 0 }, duration/2 )
-					.easing( TWEEN.Easing.Quadratic.InOut )
-					.start();
+				console.log( 'logo transition complete' )
 
-				two();
+				//I want to add logic that listens for "f" press, and advances to next
+				//scene. But this does not work inside JAVRIS, presumably due to
+				//nested iframe issues.
 
+				function next( event ) {
+					
+					if (!(event.metaKey || event.altKey || event.ctrlKey)) {
+						event.preventDefault();
+					}
+
+					if ( event.charCode == 'o'.charCodeAt(0) ) {
+
+						console.log("rrrrrr")
+
+						new TWEEN.Tween( logo.material )
+							.to( { opacity: 0 }, duration/2 )
+							.easing( TWEEN.Easing.Quadratic.InOut )
+							.start();
+
+						two();
+
+					}
+
+				}
+
+				window.addEventListener( 'keypress', next, true);
+				
+				
 			})
 			.start();
 
@@ -321,7 +387,5 @@ function startup() {
 		*/
 
 	}
-
-	one();
-
+	
 }

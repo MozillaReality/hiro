@@ -73,6 +73,12 @@
     <script src="js/vrclient.js"></script>
     <script type="text/javascript">
 
+      function start() {
+
+        console.log( 'start sequence' );
+
+      }
+
       function onkey(event) {
         if (!(event.metaKey || event.altKey || event.ctrlKey)) {
           event.preventDefault();
@@ -95,6 +101,7 @@
       }
 
       window.addEventListener("keypress", onkey, true);
+      window.addEventListener("load", start, false)
 
     </script>
 

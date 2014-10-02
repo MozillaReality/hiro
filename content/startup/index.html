@@ -26,6 +26,7 @@
 		<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 		<script src="js/vrclient.js"></script>
 		<script>
+
 			var parseURLSearch = function () {
 				var parameters = {};
 				var parts = window.location.search.substr( 1 ).split( '&' );
@@ -35,16 +36,31 @@
 				}
 				return parameters;
 			}
+			
 			var parameters = parseURLSearch();
-
 			var camera, scene, renderer;
 			var controls, effect;
-
 			var geometry, material, cube;
 
-
 			function init() {
-				
+
+				/*
+				var loader = new THREE.ObjectLoader();
+				loader.load( 'images/hiro-logo.json', function ( object ) {
+
+					var landscape = object.getObjectByName( 'lanscape' );
+
+					var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
+					reflection.material.side = THREE.BackSide;
+					reflection.position.y = 7.7;
+					reflection.scale.y = -1;
+					landscape.parent.add( reflection );
+
+					scene.add( object );
+
+				} );
+				*/
+
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.autoClear = false;
 				renderer.setClearColor( 0x000000 );
@@ -66,13 +82,6 @@
 				document.body.addEventListener( 'dblclick', function () {
 					effect.setFullScreen( true );
 				} );
-
-				// add sample object in scene
-				geometry = new THREE.BoxGeometry(10,10,10); 
-				material = new THREE.MeshNormalMaterial(); 
-				cube = new THREE.Mesh( geometry, material ); 
-				//scene.add( cube );
-				cube.position.z = -20;
 				
 				// announce to JAVRIS host that we are ready to go.
 				VRClient.ready();
