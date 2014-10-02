@@ -2,12 +2,12 @@ function VRSequence() {
 	this.currentIndex = 0;
 
 	this.sequence = [{
-		showTitle: true,
+		showTitle: false,
 		siteInfo: {
-			'.url': './sequence/1/index.html',
-			'.title': 'Intro sequence',
+			'.url': './content/startup/index.html',
+			'.title': 'JAVRIS Startup',
 			'.author': 'Josh Carpenter', 
-			'.tech': 'Cinema 4D, VR Dom'
+			'.tech': 'Three.js, Tween.js'
 		}
 	},{
 		showTitle: false,

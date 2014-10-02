@@ -7,13 +7,14 @@ html, body {
 body {
   width: 100%;
   height: 100%;
-  background: #000;
+  background: red;
   overflow: hidden;
   margin: 0;
   font-size: 10px;
 }
 
 .launch {
+  display: none;
   position: absolute;
   top: 0;
   left: 0;
@@ -56,7 +57,7 @@ body {
  * entering fullscreen.  There's a -moz-full-screen selector that's useful for this.
  */
 #container {
-  background: #000;
+  background: #1DB992;
 }
 #container:-moz-full-screen {
   cursor: none;
