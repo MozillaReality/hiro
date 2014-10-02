@@ -11,6 +11,7 @@ function VRSequence() {
 		}
 	},{
 		showTitle: false,
+		transition: false,
 		siteInfo: {
 			'.url': './sequence/2/index.html'
 		}
