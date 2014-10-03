@@ -16,8 +16,7 @@ window.VRManager = (function() {
     self.log('Javascript Advanced VR Interaction System, Version 0.5\n\n');
     self.log('Initializing Mozilla HIRO demo application v1');
 
-    var transitionCanvas = document.createElement('canvas');
-    self.transition = new VRTransition(self.container.querySelector('#transition'), transitionCanvas);
+    self.transition = new VRTransition(self.container.querySelector('#transition'));
     self.cameras = self.container.querySelectorAll('.camera');
     self.loader = self.container.querySelector('#loader');
     self.hud = self.container.querySelector('#hud');
@@ -26,42 +25,6 @@ window.VRManager = (function() {
     self.sequence = new VRSequence();
     self.cursor = new Cursor(self.hud);
     self.currentCursor = self.cursor;
-
-    self.renderFadeOut = function(canvas, opacity) {
-      opacity = opacity || 0;
-      var context = canvas.getContext("2d");
-      var width = canvas.width;
-      var height = canvas.height;
-      if (opacity >= 1) {
-        return;
-      }
-      context.clearRect(0, 0, width , height);
-      context.globalAlpha = opacity;
-      context.fillStyle="rgb(0, 0, 0)";
-      context.fillRect(0, 0, width, height);
-      requestAnimationFrame(render);
-      function render() {
-        self.renderFadeOut(canvas, opacity + 0.1);
-      }
-    };
-
-    self.renderFadeIn = function(canvas, opacity) {
-      opacity = typeof opacity === "undefined"? 1 : opacity;
-      var context = canvas.getContext("2d");
-      var width = canvas.width;
-      var height = canvas.height;
-      if (opacity <= 0) {
-        return;
-      }
-      context.clearRect(0, 0, width , height);
-      context.globalAlpha = opacity;
-      context.fillStyle="rgb(0, 0, 0)";
-      context.fillRect(0, 0, width, height);
-      requestAnimationFrame(render);
-      function render() {
-        self.renderFadeIn(canvas, opacity - 0.1);
-      }
-    };
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
@@ -138,10 +101,10 @@ window.VRManager = (function() {
       transition = true;
     } else {
       transition = opts.transition
-    }      
+    } 
 
     if (transition) {
-      self.transition.fadeOut( self.renderFadeOut ).then( loadTab );
+      self.transition.fadeOut().then( loadTab );
     } else {
       loadTab();
     }
@@ -172,7 +135,7 @@ window.VRManager = (function() {
         newTab.start();
 
         if (transition) {
-          self.transition.fadeIn(self.renderFadeIn);
+          self.transition.fadeIn();
         }
         
         if (opts.showTitle && opts.siteInfo) {
@@ -215,7 +178,7 @@ window.VRManager = (function() {
     var state = self.positionDevice.getState();
     var cssOrientationMatrix = cssMatrixFromOrientation(state.orientation, true);
     self.cursor.updatePosition(state.orientation);
-    self.transition.update();
+    
     for (var i = 0; i < self.cameras.length; i++) {
       // only apply transforms to cameras that have display
       if (self.cameras[i].style.display !== 'none') {
