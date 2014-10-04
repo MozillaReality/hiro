@@ -1,4 +1,4 @@
-function VRTransition(containerEl, contentEl, config) {
+function VRTransition(containerEl) {
 
   //enable START_WITH_HUD
   //disable START_WITH_INTRO
@@ -11,17 +11,17 @@ function VRTransition(containerEl, contentEl, config) {
   //create a canvas element inside el
   //setup three.js scene for that canvas
   //including VR controllers
+  var self = this;
+  self.object = null;
 
-  var object;
   var el = containerEl;
   var camera, scene, renderer;
   var controls, effect;
-  var geometry, material, cube;
+  var geometry, material, mesh;
 
 
   //explode objects function, from MrDoob
   function explode( geometry, material ) {
-
     var group = new THREE.Group();
 
     for ( var i = 0; i < geometry.faces.length; i ++ ) {
@@ -41,17 +41,14 @@ function VRTransition(containerEl, contentEl, config) {
       group.add( mesh );
 
     }
-
     return group;
-
   }
 
 
   function init() {
-
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true  } );
     renderer.autoClear = false;
-    renderer.setClearColor( 0x000000 );
+    renderer.setClearColor( 0x000000, 0 );
     el.appendChild( renderer.domElement );
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -62,10 +59,11 @@ function VRTransition(containerEl, contentEl, config) {
     effect.setSize( window.innerWidth, window.innerHeight );
 
     //create object
-    object = new THREE.Object3D();
+    self.object = new THREE.Object3D();
+
     var geometry = new THREE.IcosahedronGeometry( 400, 1 );
     var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, side: THREE.DoubleSide } );
-    var mesh = new THREE.Mesh( geometry, material );
+    mesh = new THREE.Mesh( geometry, material );
     
     /*
     //break object into pieces
@@ -84,13 +82,15 @@ function VRTransition(containerEl, contentEl, config) {
     }
     */
 
-    object.add( mesh );
-    scene.add( object );
+
+    mesh.material.opacity = 0;
+
+    self.object.add( mesh );
+    scene.add( self.object );
 
   }
 
   function animate() {
-
     requestAnimationFrame( animate );
     render();
     TWEEN.update();
@@ -102,6 +102,7 @@ function VRTransition(containerEl, contentEl, config) {
   }
 
   init();
+
   animate();
 
   /*
@@ -119,79 +120,37 @@ function VRTransition(containerEl, contentEl, config) {
 
 };
 
-VRTransition.prototype.fadeIn = function (render) {
-
-  console.log( 'fadeIn' );
-
-
-
-  /*
+VRTransition.prototype.fadeIn = function () {
+  console.log('fadein');
   var self = this;
-  this.renderFadeIn = render || this.renderFadeIn;
-  if (this.fadeOutInProgress) {
-    this.fadeInPending = true;
-    return;
-  }
-  this.fadeInInProgress = true;
-  this.renderFadeIn(this.el);
-  setTimeout(fadeInFinished, this.duration);
-  function fadeInFinished() {
-    self.fadeInInProgress = false;
-    if (self.fadeOutPending) {
-      self.fadeOut();
-      self.fadeOutPending = false;
-    }
-  }
-  */
+  setTimeout(function() {
+    self.object.children[0].material.opacity = 0;  
+  }, 1000);
+  // new TWEEN.Tween( this.object.children[0].material )
+  //   .to( { opacity: 0 }, 1000 )
+  //   .start();
+
 };
 
-VRTransition.prototype.fadeOut = function (render) {
-
-  console.log( 'fadeOut' );
-
-
-
-
-  /*
+VRTransition.prototype.fadeOut = function () {
   var self = this;
   return new Promise( function(resolve, reject) {
-    self.renderFadeOut = render || self.renderFadeOut;
-    if (self.fadeInInProgress) {
-      self.fadeOutPending = true;
-      return;
-    }
-    self.fadeOutInProgress = true;
-    self.renderFadeOut(self.el);
-    setTimeout(fadeOutFinished, self.duration);
-    function fadeOutFinished() {
-      console.log('fade out finished');
-      self.fadeOutInProgress = false;
-      if (self.fadeInPending) {
-        self.fadeIn();
-        self.fadeInPending = false;
-      }
+    console.log('fadeout');
+
+    self.object.children[0].material.opacity = 1;
+
+    setTimeout(function() {
       resolve();
-    }
+    },1000)
+    
+    // new TWEEN.Tween( this.object.children[0].material )
+    //   .to( { opacity: 1 }, 1000 )
+    //   .onComplete(function() {
+    //     resolve();
+    //   })
+    //   .start();
   });
-  */
-};
-
-VRTransition.prototype.renderFadeIn = function (el) {
-
-
-  //el.classList.add('fadeIn');
-};
-
-VRTransition.prototype.renderFadeOut = function (el) {
   
 
-
-  //el.classList.remove('fadeIn');
-  //el.classList.add('fadeOut');
 };
 
-VRTransition.prototype.update = function () {
-  
-
-  //this.el.style.transform = 'translate(-50%, -50%) translate3d(0, 0, ' + this.z  + 'rem) rotateY(0) rotateX(0)';
-};
