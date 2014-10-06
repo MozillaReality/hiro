@@ -1,0 +1,42 @@
+{
+	"favorites": [{
+		"name": "Three.js cubes",
+		"url": "./content/cubes/index.html",
+		"position": { "x": 0, "y": 0 }, 
+		"dimensions": { "width": 2, "height": 2 },
+		"author": "Mr Doob",
+		"tech": "three.js"
+	},
+	{
+		"name": "Theater demo",
+		"url": "./content/theater/theater.html",
+		"position": { "x": 2, "y": 0 }, 
+		"dimensions": { "width": 2, "height": 2 },
+		"author": "Potch",
+		"tech": "DOM VR"
+	},
+	{
+		"name": "Skybox",
+		"url": "./content/skybox/index.html",
+		"position": { "x": 4, "y": 0 }, 
+		"dimensions": { "width": 2, "height": 2 },
+		"author": "Casey Yee",
+		"tech": "DOM VR"
+	},
+	{
+		"name": "Planetarium",
+		"url": "./content/planetarium/index.html",
+		"position": { "x": 4, "y": 2 }, 
+		"dimensions": { "width": 2, "height": 2 },
+		"author": "Diego Marcos",
+		"tech": "DOM VR"
+	},
+	{
+		"name": "Sechelt",
+		"url": "./content/sechelt/index.html",
+		"position": { "x": 6, "y": 2 }, 
+		"dimensions": { "width": 2, "height": 2 },
+		"author": "Diego Marcos",
+		"tech": "DOM VR"
+	}]
+}

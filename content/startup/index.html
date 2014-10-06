@@ -61,6 +61,7 @@
 				} );
 				*/
 
+
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.autoClear = false;
 				renderer.setClearColor( 0x000000 );
@@ -78,11 +79,11 @@
 				}
 				effect.setSize( window.innerWidth, window.innerHeight );
 
-				// listen for double clicks to initiate full-screen/VR mode.
-				document.body.addEventListener( 'dblclick', function () {
-					effect.setFullScreen( true );
-				} );
-				
+				// bypass stereo/vr effect when in full-screen mode.
+				if (!parent.document.mozFullScreen) {
+					effect = renderer;
+				}
+
 				// announce to JAVRIS host that we are ready to go.
 				VRClient.ready();
 
@@ -121,7 +122,6 @@
 			}
 
 			function animate() {
-
 				requestAnimationFrame( animate );
 				render();
 				TWEEN.update();

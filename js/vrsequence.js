@@ -4,7 +4,7 @@ function VRSequence() {
 	this.sequence = [{
 		showTitle: false,
 		siteInfo: {
-			'.url': './content/startup/index.html',
+			'.url': './content/intro/1/index.html',
 			'.title': 'JAVRIS Startup',
 			'.author': 'Josh Carpenter', 
 			'.tech': 'Three.js, Tween.js'
@@ -13,7 +13,7 @@ function VRSequence() {
 		showTitle: false,
 		transition: false,
 		siteInfo: {
-			'.url': './sequence/2/index.html'
+			'.url': './content/intro/2/index.html'
 		}
 	},{
 		showTitle: true,

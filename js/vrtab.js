@@ -36,7 +36,7 @@ VRTab.prototype.listenFor = function (type, handler) {
 
   function handle(e) {
     var href = self.iframe.contentWindow.location.href;
-    console.log('saw message', href, e.source.location.href, e);
+    //console.log('saw message', href, e.source.location.href, e);
     if (e.source.location.href === href &&
         e.data.type === type) {
       console.log(e.data.type, href);
