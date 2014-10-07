@@ -91,7 +91,7 @@ window.VRManager = (function() {
       if (self.vrIsReady) {
         self.log('\npress `f` to enter VR');
 
-        self.startup();
+        //self.startup();
       }
     });
   }
@@ -177,11 +177,10 @@ window.VRManager = (function() {
   VRManager.prototype.enableVR = function () {
     var self = this;
     if (self.vrIsReady) {
-      
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
       
       // reserve pointer lock for the cursor.
-      // document.body.mozRequestPointerLock();
+      document.body.mozRequestPointerLock();
       
       // if (START_WITH_HUD) {
       //   self.hud.start();
