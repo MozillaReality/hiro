@@ -1,26 +1,15 @@
-function VRTransition(containerEl) {
-
-  //enable START_WITH_HUD
-  //disable START_WITH_INTRO
-  
-  //it starts with HUD
-  //open cubes scene
-  //it cross fades
-
-  //assign el variable to containerEl
-  //create a canvas element inside el
-  //setup three.js scene for that canvas
-  //including VR controllers
+function VRTransition() {
   var self = this;
-  self.object = null;
+  this.visible = false;
+  //create object
+  self.object = new THREE.Object3D();
 
-  var el = containerEl;
-  var camera, scene, renderer;
-  var controls, effect;
-  var geometry, material, mesh;
-
-
-  //explode objects function, from MrDoob
+  var geometry = new THREE.IcosahedronGeometry( 400, 1 );
+  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, side: THREE.DoubleSide } );
+  mesh = new THREE.Mesh( geometry, material );
+  self.object.visible = this.visible;
+  self.object.add(mesh);
+/*  
   function explode( geometry, material ) {
     var group = new THREE.Group();
 
@@ -44,88 +33,43 @@ function VRTransition(containerEl) {
     return group;
   }
 
+  //break object into pieces
+  var pieces = explode( geometry, material );
 
-  function init() {
-    renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true  } );
-    renderer.autoClear = false;
-    renderer.setClearColor( 0x000000, 0 );
-    el.appendChild( renderer.domElement );
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+  //set initial state of pieces
+  for ( var i = 0; i < pieces.children.length; i ++ ) {
 
-    //parse url parameter and set appropriate rendering effect
-    controls = new THREE.VRControls( camera );
-    effect = new THREE.VREffect( renderer );
-    effect.setSize( window.innerWidth, window.innerHeight );
+    var object = pieces.children[ i ];
+    var destY = object.position.y;
 
-    //create object
-    self.object = new THREE.Object3D();
+    object.position.setY( destY - 100 );
+    object.material.opacity = 0;
+    object.scale.set( 0.1, 0.1, 0.1 )
 
-    var geometry = new THREE.IcosahedronGeometry( 400, 1 );
-    var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, side: THREE.DoubleSide } );
-    mesh = new THREE.Mesh( geometry, material );
-    
-    /*
-    //break object into pieces
-    var pieces = explode( geometry, material );
-
-    //set initial state of pieces
-    for ( var i = 0; i < pieces.children.length; i ++ ) {
+  }
+*/
   
-      var object = pieces.children[ i ];
-      var destY = object.position.y;
-      
-      object.position.setY( destY - 100 );
-      object.material.opacity = 0;
-      object.scale.set( 0.1, 0.1, 0.1 )
+  //mesh.material.opacity = 0;
+}
 
-    }
-    */
+VRTransition.prototype.init = function() {
+  return this.object;
+}
 
-
-    mesh.material.opacity = 0;
-
-    self.object.add( mesh );
-    scene.add( self.object );
-
-  }
-
-  function animate() {
-    requestAnimationFrame( animate );
-    render();
-    TWEEN.update();
-  }
-
-  function render() {
-    controls.update();
-    effect.render( scene, camera );
-  }
-
-  init();
-
-  animate();
-
-  /*
-  var el =  contentEl || document.createElement('div');
-  el.classList.add("transition");
-  el.classList.add("threed");
-  el.width = "1200";
-  el.height = "900";
-  this.el = el;
-  containerEl.appendChild(el);
-  config = config || {};
-  this.duration = config.duration || 1200;
-  this.z = config.z || -1;
-  */
-
-};
+VRTransition.prototype.update = function() {
+  // update loop
+}
 
 VRTransition.prototype.fadeIn = function () {
-  console.log('fadein');
   var self = this;
+
+  // temporary set opacity to 0 after some time.
+  // todo: replace with animation
   setTimeout(function() {
-    self.object.children[0].material.opacity = 0;  
+    self.object.visible = false;
+    self.visible = false;
   }, 1000);
+  
   // new TWEEN.Tween( this.object.children[0].material )
   //   .to( { opacity: 0 }, 1000 )
   //   .start();
@@ -134,11 +78,14 @@ VRTransition.prototype.fadeIn = function () {
 
 VRTransition.prototype.fadeOut = function () {
   var self = this;
+
+  // temporary set opacity to 1, resolve promise after some time.
+  // todo: replace with animation
   return new Promise( function(resolve, reject) {
-    console.log('fadeout');
-
-    self.object.children[0].material.opacity = 1;
-
+    console.log(self);
+    self.object.visible = true;
+    self.visible = true;
+    
     setTimeout(function() {
       resolve();
     },1000)
@@ -150,7 +97,5 @@ VRTransition.prototype.fadeOut = function () {
     //   })
     //   .start();
   });
-  
-
 };
 

@@ -39,7 +39,7 @@
 			
 			var parameters = parseURLSearch();
 			var camera, scene, renderer;
-			var controls, effect;
+			var controls, effect, vrEffect;
 			var geometry, material, cube;
 
 			function init() {
@@ -70,18 +70,20 @@
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
 				
 				// parse url parameter and set appropriate rendering effect.
-				if ( parameters.mode === 'cardboard' ) {
-					controls = new THREE.DeviceOrientationControls( camera );
-					effect = new THREE.StereoEffect( renderer );
-				} else {
-					controls = new THREE.VRControls( camera );
-					effect = new THREE.VREffect( renderer );
-				}
-				effect.setSize( window.innerWidth, window.innerHeight );
+				// if ( parameters.mode === 'cardboard' ) {
+				// 	controls = new THREE.DeviceOrientationControls( camera );
+				// 	effect = new THREE.StereoEffect( renderer );
+				// } else {
+				controls = new THREE.VRControls( camera );
+				vrEffect = new THREE.VREffect( renderer );
+				
+				vrEffect.setSize( window.innerWidth, window.innerHeight );
 
 				// bypass stereo/vr effect when in full-screen mode.
 				if (!parent.document.mozFullScreen) {
 					effect = renderer;
+				} else {
+					effect = vrEffect;
 				}
 
 				// announce to JAVRIS host that we are ready to go.
@@ -102,6 +104,11 @@
 			}
 
 			function onWindowResize() {
+				// switch renderer to stereo if fs
+				if (parent.document.mozFullScreen) {
+					console.log('switch to vrEffect');
+					effect = vrEffect;
+				}
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 

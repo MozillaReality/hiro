@@ -91,7 +91,7 @@ window.VRManager = (function() {
       if (self.vrIsReady) {
         self.log('\npress `f` to enter VR');
 
-        //self.startup();
+        self.startup();
       }
     });
   }

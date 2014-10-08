@@ -7,22 +7,38 @@ function VRHud() {
 };
 
 VRHud.prototype.show = function() {
-	if (!this.visible) {
-		this.layout.visible = true;
-		this.visible = true;
-	} 
+	var self = this;
+	return new Promise(function(resolve, reject) {
+		if (!self.visible) {
+			self.layout.visible = true;
+			self.visible = true;
+			// transition in
+			// todo: replace with animation
+			setTimeout(function() {
+				resolve();
+			}, 500);
+		} 
+	});
 }
 
 VRHud.prototype.hide = function() {
-	if (this.visible) {
-		this.layout.visible = false;
-		this.visible = false;
-	}	
+	var self = this;
+	return new Promise(function(resolve, reject) {
+		if (self.visible) {
+			// transition out
+			// todo: replace with animation
+			setTimeout(function() {
+				self.layout.visible = false;
+				self.visible = false;	
+				resolve();
+			}, 500);
+		}
+	});
 }
 
-VRHud.prototype.init = function(dom, camera, favorites) {
-	this.layout = new THREE.Group( dom, camera );
-	var layout = this.layout;
+VRHud.prototype.init = function(favorites) {
+	this.layout = new THREE.Group();
+	var layout = this.layout;	
 	layout.visible = this.visible;
 
 	var geometry = new THREE.PlaneGeometry( 1, 1 );
@@ -74,8 +90,7 @@ VRHud.prototype.init = function(dom, camera, favorites) {
 			});
 
 			button.addEventListener('click', function(e) {
-				VRManager.load(this.userData.favorite.url);
-				VRManager.ui.toggleHud();
+				VRManager.ui.load(this.userData.favorite.url)
 			});
 
 			layout.add(button);			

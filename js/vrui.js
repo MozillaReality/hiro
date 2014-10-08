@@ -5,8 +5,10 @@ function VRUi(container) {
 	this.container = container;	
 	this.active = false;
 	this.settings = null;
+	this.rafFunctions = []; 
 	this.hud = new VRHud();
 	this.cursor = new VRCursor();
+	this.transition = new VRTransition();
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
 	
 	// main
@@ -14,6 +16,19 @@ function VRUi(container) {
 	this.initSettings();
 	this.initKeyboardControls();
 	return this;
+};
+
+VRUi.prototype.load = function(url) {
+	var self = this;
+	
+	this.hud.hide()
+		.then(function() {
+			self.transition.fadeOut()
+			.then(function() {
+				VRManager.load(url);
+				self.transition.fadeIn();
+			})
+		});
 };
 
 VRUi.prototype.toggleHud = function() {
@@ -24,7 +39,7 @@ VRUi.prototype.toggleHud = function() {
 		this.hud.hide();
 		this.cursor.disable();
 	}
-}
+};
 
 VRUi.prototype.initSettings = function() {
 	var self = this;
@@ -82,14 +97,20 @@ VRUi.prototype.initSettings = function() {
 
 	Promise.all([userSettingsP, uiSettingsP]).then(function(values) {
 		self.settings = parseSettings(values);
-		var hudLayout = self.hud.init(self.renderer.domElement, self.camera, self.settings.favorites);
+		var hudLayout = self.hud.init(self.settings.favorites);
 		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, hudLayout);
+		var transitionLayout = self.transition.init();
+		
 		self.hudLayout = hudLayout;
+		
+		// todo: these need to be moved into top init
 		self.scene.add(hudLayout);
 		self.scene.add(cursorLayout);
+		self.scene.add(transitionLayout);
+		
 		self.start();
 	});
-}
+};
 
 
 VRUi.prototype.initRenderer = function() {
@@ -101,24 +122,27 @@ VRUi.prototype.initRenderer = function() {
   this.effect = new THREE.VREffect( this.renderer );
   this.effect.setSize( window.innerWidth, window.innerHeight );
   this.container.appendChild(this.renderer.domElement);
-}
+};
 
 VRUi.prototype.start = function() {
 	this.active = true;
 	this.animate();
-}
+};
 
 VRUi.prototype.stop = function() {
 	this.active = false;
-}
+};
 
 VRUi.prototype.animate = function() {
+	var self = this;
 	if (!this.active) {
 		return false;
 	}
-	this.controls.update();
-	this.effect.render(this.scene, this.camera);
 
+	self.controls.update();
+	self.transition.update();
+	this.effect.render(this.scene, this.camera);
+	
 	requestAnimationFrame(this.animate.bind(this));
 }
 
