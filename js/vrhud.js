@@ -1,10 +1,30 @@
 'use strict';
 
 function VRHud() {
+	this.visible = false;
+	this.layout = null;
+	return this;
 };
 
+VRHud.prototype.show = function() {
+	if (!this.visible) {
+		this.layout.visible = true;
+		this.visible = true;
+	} 
+}
+
+VRHud.prototype.hide = function() {
+	if (this.visible) {
+		this.layout.visible = false;
+		this.visible = false;
+	}	
+}
+
 VRHud.prototype.init = function(dom, camera, favorites) {
-	var layout = new THREE.Group( dom, camera );
+	this.layout = new THREE.Group( dom, camera );
+	var layout = this.layout;
+	layout.visible = this.visible;
+
 	var geometry = new THREE.PlaneGeometry( 1, 1 );
 	var texture = null;
 	
@@ -53,9 +73,12 @@ VRHud.prototype.init = function(dom, camera, favorites) {
 
 			button.addEventListener('click', function(e) {
 				VRManager.load(this.userData.favorite.url);
+				VRManager.ui.toggleHud();
 			});
 
+			
 			layout.add(button);
+			
 		}
 	}
 

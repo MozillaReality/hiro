@@ -2,7 +2,7 @@
 
 function VRUi(container) {
 	var self = this;
-	this.container = container;
+	this.container = container;	
 	this.active = false;
 	this.settings = null;
 	this.hud = new VRHud();
@@ -10,11 +10,21 @@ function VRUi(container) {
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
 	
 	// main
-	this.initSettings();
 	this.initRenderer();
-	
+	this.initSettings();
+	this.initKeyboardControls();
 	return this;
 };
+
+VRUi.prototype.toggleHud = function() {
+	if (!this.hud.visible) {
+		this.hud.show();
+		this.cursor.enable();
+	} else {
+		this.hud.hide();
+		this.cursor.disable();
+	}
+}
 
 VRUi.prototype.initSettings = function() {
 	var self = this;
@@ -112,3 +122,26 @@ VRUi.prototype.animate = function() {
 	requestAnimationFrame(this.animate.bind(this));
 }
 
+ VRUi.prototype.initKeyboardControls = function() {
+ 	var self = this;
+
+  function onkey(event) {
+    if (!(event.metaKey || event.altKey || event.ctrlKey)) {
+      event.preventDefault();
+    }
+
+    switch (event.key) {
+      case 'f': // f
+        VRManager.enableVR();
+        break;
+      case 'z': // z
+        VRManager.zeroSensor();
+        break;
+      case ' ':
+        self.toggleHud();
+        break;
+    }
+  }
+
+  window.addEventListener("keypress", onkey, true);
+}

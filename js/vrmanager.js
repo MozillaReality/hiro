@@ -203,7 +203,7 @@ window.VRManager = (function() {
     });
   };
 
-  
+ 
 
   return new VRManager('#container');
 

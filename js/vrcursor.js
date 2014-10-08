@@ -1,12 +1,33 @@
 function VRCursor() {
+  this.enabled = false;
+  this.context = null;
+  this.layout = null;
 }
 
+// enable cursor with context, otherwise pick last
+VRCursor.prototype.enable = function(context) {
+  if (context) {
+    this.context = context;
+  }
+  if (!this.enabled) {
+    this.enabled = true;
+    this.layout.visible = true;
+  }
+};
+
+VRCursor.prototype.disable = function() {
+  if (this.enabled) {
+    this.enabled = false;
+    this.layout.visible = false;
+  }
+}
 // requires three.js dom and camera to initialize cursor.
 VRCursor.prototype.init = function( dom, camera, context ) {
   this.dom = dom;
   this.camera = camera;
   this.context = context;
-  var layout = new THREE.Group();
+  var layout = this.layout = new THREE.Group();
+  layout.visible = this.enabled;
   var raycaster = new THREE.Raycaster();
   var cursorPivot = new THREE.Object3D();
   var cursor = new THREE.Mesh(
@@ -56,15 +77,13 @@ VRCursor.prototype.bindEvents = function() {
   body.addEventListener("click", onMouseClicked, false); 
 }
 
-// set context for cursor to be active in.
-VRCursor.prototype.setContext = function(context) {
-  this.context = context;
-}
-
 // VR Cursor events
 VRCursor.prototype.onMouseMoved = function(e) {
   e.preventDefault();
-
+  if (!this.enabled) {
+    return false;
+  }
+  
   // move VR cursor
   var pixelsToDegreesFactor = 0.00025;
   var x = (this.position.x * pixelsToDegreesFactor) % 360;
@@ -97,6 +116,9 @@ VRCursor.prototype.onMouseMoved = function(e) {
 
 VRCursor.prototype.onMouseClicked = function(e) {
   e.preventDefault();
+  if (!this.enabled) {
+    return false;
+  }
   if (this.objectMouseOver) {
     this.objectMouseOver.dispatchEvent(this.events.clickEvent);
   }

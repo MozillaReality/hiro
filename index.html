@@ -84,25 +84,7 @@
     <script type="text/javascript">
 
       
-      function onkey(event) {
-        if (!(event.metaKey || event.altKey || event.ctrlKey)) {
-          event.preventDefault();
-        }
-
-        switch (event.key) {
-          case 'f': // f
-            VRManager.enableVR();
-            break;
-          case 'z': // z
-            VRManager.zeroSensor();
-            break;
-          case ' ':
-            VRManager.hud.toggle();
-            break;
-        }
-      }
-
-      window.addEventListener("keypress", onkey, true);
+      
 
     </script>
 
