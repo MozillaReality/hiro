@@ -49,7 +49,9 @@ VRHud.prototype.init = function(dom, camera, favorites) {
 
 			var material = new THREE.MeshBasicMaterial({ map : tex });
 			
-			var x = fav.ui.x;
+			var centerOffsetX = tex.image.width / 2;
+			var centerOffsetY = tex.image.height / 2;
+			var x = fav.ui.x-centerOffsetX;
 			var y = fav.ui.y;
 			
 			var button = new THREE.Mesh( geometry, material );
@@ -76,9 +78,7 @@ VRHud.prototype.init = function(dom, camera, favorites) {
 				VRManager.ui.toggleHud();
 			});
 
-			
-			layout.add(button);
-			
+			layout.add(button);			
 		}
 	}
 
