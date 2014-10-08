@@ -19,7 +19,7 @@ VRHud.prototype.show = function() {
 			}, 500);
 		} 
 	});
-}
+};
 
 VRHud.prototype.hide = function() {
 	var self = this;
@@ -34,7 +34,7 @@ VRHud.prototype.hide = function() {
 			}, 500);
 		}
 	});
-}
+};
 
 VRHud.prototype.init = function(favorites) {
 	this.layout = new THREE.Group();
@@ -115,4 +115,4 @@ VRHud.prototype.init = function(favorites) {
 	});
 
 	return layout;
-}
+};

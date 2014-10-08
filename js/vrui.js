@@ -23,6 +23,7 @@ VRUi.prototype.load = function(url) {
 	
 	this.hud.hide()
 		.then(function() {
+			self.cursor.disable();
 			self.transition.fadeOut()
 			.then(function() {
 				VRManager.load(url);
@@ -32,6 +33,10 @@ VRUi.prototype.load = function(url) {
 };
 
 VRUi.prototype.toggleHud = function() {
+	if (!this.active) {
+		return false;
+	}
+
 	if (!this.hud.visible) {
 		this.hud.show();
 		this.cursor.enable();
@@ -107,8 +112,6 @@ VRUi.prototype.initSettings = function() {
 		self.scene.add(hudLayout);
 		self.scene.add(cursorLayout);
 		self.scene.add(transitionLayout);
-		
-		self.start();
 	});
 };
 
@@ -133,17 +136,25 @@ VRUi.prototype.stop = function() {
 	this.active = false;
 };
 
+VRUi.prototype.reset = function() {
+	var self = this;
+	
+	self.cursor.disable();
+	self.hud.hide().then(function() {
+		self.stop();	
+	})
+};
+
 VRUi.prototype.animate = function() {
 	var self = this;
-	if (!this.active) {
-		return false;
-	}
-
+	
 	self.controls.update();
 	self.transition.update();
 	this.effect.render(this.scene, this.camera);
 	
-	requestAnimationFrame(this.animate.bind(this));
+	if (this.active) {
+		requestAnimationFrame(this.animate.bind(this));
+	}
 }
 
  VRUi.prototype.initKeyboardControls = function() {

@@ -106,7 +106,6 @@
 			function onWindowResize() {
 				// switch renderer to stereo if fs
 				if (parent.document.mozFullScreen) {
-					console.log('switch to vrEffect');
 					effect = vrEffect;
 				}
 				camera.aspect = window.innerWidth / window.innerHeight;

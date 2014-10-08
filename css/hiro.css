@@ -33,62 +33,15 @@ body {
   margin: 0;
 }
 
-
-
-/* keeping style block in body to make it easier to see the relationship between elements */
-
-/* Container is nothing special; it's the element that is made full screen.
- * When non-fullscreen, you can add transforms to this element to make the scene
- * make sense in 2D (instead of being centered around the top left).  That transform
- * will cascade down to children when fullscreen though, so make sure to remove it when
- * entering fullscreen.  There's a -moz-full-screen selector that's useful for this.
- */
+/* containing element that will be made fullscreen */
 #container {
 }
+
 #container:-moz-full-screen {
-  cursor: none; 
-  display: block;
-}
-/*#container:not(:-moz-full-screen) {
-  display: none;
-}
-#container:not(:-moz-full-screen) {
-  transform: translate(50vw, 50vh);
-}*/
-
-/* All threed-class elements have preserve-3d; preserve-3d is NOT inherited.  (There's an open
- * discussion on w3-style about adding a new transform-style that is like preserve-3d but is
- * inherited.)
- *
- * position: absolute; and 0,0 is also set because we'll position these elements fully using
- * 3D transforms.  Their CSS position is irrelevant for us.  Without this, their CSS position
- * will come into play as well as their transform.
- *
- * When in fullscreen VR, the 0,0,0 position is at the center of the viewport and not the top
- * left.
- *
- * We don't modify the original transform-origin here (50% 50% 0), because that can be useful
- * for moving elements around by their center point.  But it could also be set to 0,0,0 to
- * make it completely clear exactly where/how 3D objects are moving.
- */
-.threed {
-  transform-style: preserve-3d;
-  position: absolute;
-  top: 0; left: 0;
+  cursor: none; /* hides cursor in fullscreen VR mode */
 }
 
-/* The camera div just serves as a way to set up a modelview transform for the entire rest of the
- * scene.  The transform that's set on it needs to be the *inverse* of where you want the camera
- * to be; that is, if you want the camera to be at (0, 0, 500), then the transform needs to be
- * set to (0, 0, -500).  The transform-origin is set here because we want to go from the origin
- */
-.camera {
-  transform-origin: 0 0 0;
-  /* the transform itself is set programatically, since it needs to take into account the HMD orientation */
-  pointer-events: none;
-}
-
-.host {
+.fit {
   position: absolute;
   top: 0;
   left: 0;
@@ -96,7 +49,7 @@ body {
   height: 100%;
 }
 
-.host iframe {
+.fit iframe {
   position: absolute;
   top: 0;
   left: 0;

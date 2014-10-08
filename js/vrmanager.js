@@ -15,16 +15,10 @@ window.VRManager = (function() {
     self.log('Javascript Advanced VR Interaction System, Version 0.5\n\n');
     self.log('Initializing Mozilla HIRO demo application v1');
 
-    //self.transition = new VRTransition(self.container.querySelector('#transition'));
-    //self.cameras = self.container.querySelectorAll('.camera');
     self.loader = self.container.querySelector('#loader');
     self.ui = new VRUi(self.container.querySelector('#ui'));
-    //self.hud = new VRHud(self.container.querySelector('#hud'));
-    // self.title = self.container.querySelector('#title');
     self.sequence = new VRSequence();
-    // self.cursor = new Cursor(self.hud);
-    // self.currentCursor = self.cursor;
-
+    
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
       if (navigator.getVRDevices) {
@@ -113,28 +107,9 @@ window.VRManager = (function() {
     }
   };
 
-  /**
-  * @param {string} url to load
-  * @param {object} opts - configuration options
-  * @param {boolean} opts.transition - enable transition
-  * @param {boolean} opts.showTitle - enable title for site to be loaded
-  * @param {object} opts.siteInfo - info about site to render into titling
-  **/
   VRManager.prototype.load = function (url, opts) {
     var self = this;
     
-    // if (opts.transition == undefined) {
-    //   transition = true;
-    // } else {
-    //   transition = opts.transition
-    // } 
-
-    // if (transition) {
-    //   self.transition.fadeOut().then( loadTab );
-    // } else {
-    //   loadTab();
-    // }
-
     self.log('loading url: ' + url);
     var newTab = new VRTab(url);
     newTab.hide();
@@ -154,20 +129,8 @@ window.VRManager = (function() {
 
       // We'll do this elsewhere eventually
       newTab.start();
-
-      // if (transition) {
-      //   self.transition.fadeIn();
-      // }
-      
-      // if (opts.showTitle && opts.siteInfo) {
-      //   console.log(opts.siteInfo);
-      //   var title = new VRTitle(self.title, self.title.querySelector('template'), opts.siteInfo);
-      // }
-
     });
-
     newTab.load();
-
   };
 
   
@@ -182,17 +145,18 @@ window.VRManager = (function() {
       // reserve pointer lock for the cursor.
       document.body.mozRequestPointerLock();
       
-      // if (START_WITH_HUD) {
-      //   self.hud.start();
-      // }
       if (START_WITH_INTRO) {
         this.sequence.start();
       }
+
+      this.ui.start();
     }
   };
 
   VRManager.prototype.exitVR = function() {
+    console.log('exit vr');
     this.unloadCurrent();
+    this.ui.reset();
     this.startup();
   };
 
@@ -202,8 +166,6 @@ window.VRManager = (function() {
       self.positionDevice.zeroSensor();
     });
   };
-
- 
 
   return new VRManager('#container');
 
