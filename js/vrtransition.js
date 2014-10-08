@@ -10,6 +10,8 @@ function VRTransition() {
   self.object.visible = this.visible;
   self.object.add(mesh);
 /*  
+  todo: explode animation needs to be enabled.
+
   function explode( geometry, material ) {
     var group = new THREE.Group();
 

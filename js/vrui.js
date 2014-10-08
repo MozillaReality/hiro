@@ -18,6 +18,19 @@ function VRUi(container) {
 	return this;
 };
 
+// temporary wireframe lines for testing purposes.
+/*
+todo: bug: the gridlines from the UI renderer to not match content.
+*/
+VRUi.prototype.gridlines = function() {
+	var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
+	var material = new THREE.MeshBasicMaterial( { color: 0x0000ff, wireframe: true } );
+	var cube = new THREE.Mesh( geometry, material );
+	cube.scale.set( 50, 50, 50);
+
+	return cube;
+}
+
 VRUi.prototype.load = function(url) {
 	var self = this;
 	
@@ -102,16 +115,21 @@ VRUi.prototype.initSettings = function() {
 
 	Promise.all([userSettingsP, uiSettingsP]).then(function(values) {
 		self.settings = parseSettings(values);
+
+		/*
+		todo: these initialization steps should happen elsewhere
+		this is not well placed.
+		*/
 		var hudLayout = self.hud.init(self.settings.favorites);
 		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, hudLayout);
 		var transitionLayout = self.transition.init();
 		
 		self.hudLayout = hudLayout;
 		
-		// todo: these need to be moved into top init
 		self.scene.add(hudLayout);
 		self.scene.add(cursorLayout);
 		self.scene.add(transitionLayout);
+		self.scene.add(self.gridlines());
 	});
 };
 
@@ -158,6 +176,10 @@ VRUi.prototype.animate = function() {
 }
 
  VRUi.prototype.initKeyboardControls = function() {
+ 	/* 
+ 	todo: Entering VR mode should be done with a button and not a 
+ 	keyboard key.  This could be part of the startup scene.
+ 	*/
  	var self = this;
 
   function onkey(event) {

@@ -12,10 +12,10 @@
 		"tech": "DOM VR"
 	},
 	{
-		"name": "Skybox",
-		"url": "./content/skybox/index.html",
+		"name": "Hiro intro",
+		"url": "./content/startup/index.html",
 		"author": "Casey Yee",
-		"tech": "DOM VR"
+		"tech": "Three js"
 	},
 	{
 		"name": "Planetarium",

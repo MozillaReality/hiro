@@ -10,6 +10,14 @@ function startup() {
 	var world = new THREE.Mesh( worldGeo, worldMat );
 	scene.add( world );
 
+
+	var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
+	var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	var cube = new THREE.Mesh( geometry, material );
+	cube.scale.set( 50, 50, 50);
+	scene.add(cube);
+
+
 	//function for exploding objects, from MrDoob
 	function explode( geometry, material ) {
 

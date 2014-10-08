@@ -126,6 +126,15 @@ VRCursor.prototype.onMouseClicked = function(e) {
 
 // Detect intersections with three.js scene objects (context) and dispatch mouseover and mouseout events.
 VRCursor.prototype.updateCursorIntersection = function() {
+  /* 
+  todo: The raycasting is projected from the camera position outwards.  We need to take 
+  into account the position of the VR cursor and cast tha ray from the camera position
+  through the VR cursor outwards.
+
+  The accuracy of the raycast also needs to be addressed in the onMouseMove handler.  The
+  pixels distribution in VR mode with the distortion is not linear so the pixelsToDegreesFactor
+  will change depending on where the cursor is relative to the viewport.
+  */
   var camera = this.camera;
   var raycaster = this.raycaster;
   var cursor = this.cursor;
