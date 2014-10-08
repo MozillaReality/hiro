@@ -48,27 +48,41 @@ function startup() {
 
 	//load the logo. 
 	//once loading is complete, trigger landing() to set up the scene
-	var logo
+	var logo;
+	var tagline;
 	var loader = new THREE.ObjectLoader();
 
 	loader.load( 'images/hiro-logo-3.json', function ( object ) {
 
 		logo = object;
 		scene.add( logo );
+
+	});
+
+	loader.load( 'images/hiro-tagline.json', function ( object ) {
+
+		tagline = object;
+		scene.add( tagline );
 		landing();
 
-	} );
+	});
 
 
-	//------------- LOGO -------------//
+	//------------- LANDING PAGE -------------//
 
 	function landing() {
+	
+		//animate in the tagline
+
+		tagline.position.set( 0, 0, -200 );
+		tagline.scale.set( 1, 1, 1 );
+		tagline.rotation.set( 0, 0, 0 );
+
+		//animate in the individual letters of the HIRO logo
 
 		logo.position.set( 0, 0, -8 );
-		
-		for ( var i = 0; i < logo.children.length; i++ ) {
 
-			//console.log("logo piece: " + logo.children[i] );
+		for ( var i = 0; i < logo.children.length; i++ ) {
 
 			var piece = logo.children[i];
 			piece.rotation.set( 0, 0.5, 0 )
@@ -94,11 +108,11 @@ function startup() {
 
 	}
 
-	function one() {
-	
-		//create
+	//------------- LOGO -------------//
 
-		//create Mozilla logo
+	function one() {
+
+		//create mozilla logo
 		var logo = new THREE.Mesh(
 			new THREE.PlaneGeometry( 3.8, 1, 1, 1 ), 
 			new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, map: THREE.ImageUtils.loadTexture( 'images/mozilla.png' ) } )
