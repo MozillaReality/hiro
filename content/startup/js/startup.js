@@ -11,11 +11,14 @@ function startup() {
 	scene.add( world );
 
 
-	var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
-	var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-	var cube = new THREE.Mesh( geometry, material );
-	cube.scale.set( 50, 50, 50);
-	scene.add(cube);
+	/*
+	todo: test geometry to match up VRUi scene to content (this).  See VRUi bug: for more info.
+	*/
+	// var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
+	// var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	// var cube = new THREE.Mesh( geometry, material );
+	// cube.scale.set( 50, 50, 50);
+	// scene.add(cube);
 
 
 	//function for exploding objects, from MrDoob

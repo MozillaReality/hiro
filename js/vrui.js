@@ -129,7 +129,7 @@ VRUi.prototype.initSettings = function() {
 		self.scene.add(hudLayout);
 		self.scene.add(cursorLayout);
 		self.scene.add(transitionLayout);
-		self.scene.add(self.gridlines());
+		//self.scene.add(self.gridlines());
 	});
 };
 

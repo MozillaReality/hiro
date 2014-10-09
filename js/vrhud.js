@@ -55,7 +55,10 @@ VRHud.prototype.init = function(favorites) {
 		
 		for (i = 0; i < favorites.length; i++) {
 			fav = favorites[i];
-			
+			if (fav.ui == undefined) {
+				console.warn('No ui for "' + fav.name + '" found.  Render and copy Dom2three output into data/ui.');
+				continue;
+			}
 			var tex = texture.clone();
 			tex.repeat.x = fav.ui.width / tex.image.width;
 			tex.repeat.y = fav.ui.height / tex.image.height;
