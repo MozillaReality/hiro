@@ -37,24 +37,24 @@ VRCursor.prototype.init = function( dom, camera, context ) {
 
   // set the depth of cursor
   cursor.position.z = -28;
-  
+
   this.raycaster = raycaster;
   this.cursorPivot = cursorPivot;
   this.cursor = cursor;
-  
+
   cursorPivot.add(cursor);
   layout.add(cursorPivot);
-  
+
   // set origin VR cursor positioning
   this.position = {
     x: 0,
     y: 0
   }
   this.objectMouseOver = null;
-  
+
   // bind "real" mouse events.
-  this.bindEvents(); 
-  
+  this.bindEvents();
+
   return layout;
 }
 
@@ -74,7 +74,7 @@ VRCursor.prototype.bindEvents = function() {
   var onMouseClicked = this.onMouseClicked.bind(this);
 
   body.addEventListener("mousemove", onMouseMoved, false);
-  body.addEventListener("click", onMouseClicked, false); 
+  body.addEventListener("click", onMouseClicked, false);
 }
 
 // VR Cursor events
@@ -83,7 +83,7 @@ VRCursor.prototype.onMouseMoved = function(e) {
   if (!this.enabled) {
     return false;
   }
-  
+
   // move VR cursor
   var pixelsToDegreesFactor = 0.00025;
   var x = (this.position.x * pixelsToDegreesFactor) % 360;
@@ -126,8 +126,8 @@ VRCursor.prototype.onMouseClicked = function(e) {
 
 // Detect intersections with three.js scene objects (context) and dispatch mouseover and mouseout events.
 VRCursor.prototype.updateCursorIntersection = function() {
-  /* 
-  todo: The raycasting is projected from the camera position outwards.  We need to take 
+  /*
+  todo: The raycasting is projected from the camera position outwards.  We need to take
   into account the position of the VR cursor and cast tha ray from the camera position
   through the VR cursor outwards.
 
@@ -139,19 +139,26 @@ VRCursor.prototype.updateCursorIntersection = function() {
   var raycaster = this.raycaster;
   var cursor = this.cursor;
 
-  var x = this.position.x / (window.innerWidth/2);
-  var y = -(this.position.y / (window.innerHeight/2));
-  var vector = new THREE.Vector3(x, y, 1).unproject( camera );
+  var cursporPosition = cursor.matrixWorld.getPosition();
+  vector = new THREE.Vector3(cursporPosition.x, cursporPosition.y, cursporPosition.z);
+
+  // Draws RAY
+  // var geometry = new THREE.Geometry();
+  // geometry.vertices.push( camera.position );
+  // geometry.vertices.push( vector.sub( camera.position ).normalize().multiplyScalar(5000) );
+  // this.scene.remove(this.line);
+  // this.line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000}));
+  // this.scene.add(this.line);
 
   raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
-  
+
   var intersects = raycaster.intersectObjects( this.context.children );
   var intersected;
   var i;
-  
+
   var objectMouseOver = this.objectMouseOver;
   var events = this.events;
-  
+
   if (intersects.length == 0 && objectMouseOver !== null) {
     this.objectMouseOver.dispatchEvent(events.mouseOutEvent);
     this.objectMouseOver = null;
@@ -167,8 +174,8 @@ VRCursor.prototype.updateCursorIntersection = function() {
       if (intersected !== null) {
         intersected.dispatchEvent(events.mouseOverEvent);
       }
-      
+
       this.objectMouseOver = intersected;
     }
-  } 
+  }
 };
