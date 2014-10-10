@@ -2,15 +2,15 @@
 
 function VRUi(container) {
 	var self = this;
-	this.container = container;	
+	this.container = container;
 	this.active = false;
 	this.settings = null;
-	this.rafFunctions = []; 
+	this.rafFunctions = [];
 	this.hud = new VRHud();
 	this.cursor = new VRCursor();
 	this.transition = new VRTransition();
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
-	
+
 	// main
 	this.initRenderer();
 	this.initSettings();
@@ -33,7 +33,7 @@ VRUi.prototype.gridlines = function() {
 
 VRUi.prototype.load = function(url) {
 	var self = this;
-	
+
 	this.hud.hide()
 		.then(function() {
 			self.cursor.disable();
@@ -65,11 +65,11 @@ VRUi.prototype.initSettings = function() {
 	function getJson(url) {
 		return new Promise( function(resolve, reject) {
 			var xhr = new XMLHttpRequest();
-			
+
 			xhr.onload = function() {
 				resolve(JSON.parse(xhr.response));
 			}
-			
+
 			xhr.onerror = function() {
 				reject(new Error('Some kind of network error, XHR failed.'))
 			}
@@ -123,9 +123,9 @@ VRUi.prototype.initSettings = function() {
 		var hudLayout = self.hud.init(self.settings.favorites);
 		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, hudLayout);
 		var transitionLayout = self.transition.init();
-		
+
 		self.hudLayout = hudLayout;
-		
+
 		self.scene.add(hudLayout);
 		self.scene.add(cursorLayout);
 		self.scene.add(transitionLayout);
@@ -156,28 +156,31 @@ VRUi.prototype.stop = function() {
 
 VRUi.prototype.reset = function() {
 	var self = this;
-	
+
 	self.cursor.disable();
 	self.hud.hide().then(function() {
-		self.stop();	
+		self.stop();
 	})
 };
 
 VRUi.prototype.animate = function() {
 	var self = this;
-	
+	var controls = self.controls;
+	var headQuat = controls.getVRState().hmd.rotation;
+
 	self.controls.update();
 	self.transition.update();
+	self.cursor.update(headQuat);
 	this.effect.render(this.scene, this.camera);
-	
+
 	if (this.active) {
 		requestAnimationFrame(this.animate.bind(this));
 	}
 }
 
  VRUi.prototype.initKeyboardControls = function() {
- 	/* 
- 	todo: Entering VR mode should be done with a button and not a 
+ 	/*
+ 	todo: Entering VR mode should be done with a button and not a
  	keyboard key.  This could be part of the startup scene.
  	*/
  	var self = this;

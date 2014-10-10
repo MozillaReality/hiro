@@ -84,15 +84,6 @@ VRCursor.prototype.onMouseMoved = function(e) {
     return false;
   }
 
-  // move VR cursor
-  var pixelsToDegreesFactor = 0.00025;
-  var x = (this.position.x * pixelsToDegreesFactor) % 360;
-  var y = (this.position.y * pixelsToDegreesFactor) % 360;
-  var cursorPivot = this.cursorPivot;
-  var cursor = this.cursor;
-  cursorPivot.rotation.x = 2 * Math.PI * -y;
-  cursorPivot.rotation.y = 2 * Math.PI * -x;
-
   var movementX = e.mozMovementX || 0;
   var movementY = e.mozMovementY || 0;
   // var elHalfWidth = this.elWidth / 2;
@@ -124,6 +115,25 @@ VRCursor.prototype.onMouseClicked = function(e) {
   }
 }
 
+VRCursor.prototype.update = function(headQuat) {
+  // move VR cursor
+  var cursorPivot = this.cursorPivot;
+  var cursor = this.cursor;
+  var pixelsToDegreesFactor = 0.00025;
+  var x = (this.position.x * pixelsToDegreesFactor) % 360;
+  var y = (this.position.y * pixelsToDegreesFactor) % 360;
+  var xAngle = - y * 2 * Math.PI;
+  var yAngle = - x * 2 * Math.PI;
+  var rotation = new THREE.Euler(xAngle, yAngle, 0);
+  var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
+  var pivotQuat = new THREE.Quaternion()
+  .fromArray(headQuat)
+  .multiply(mouseQuat)
+  .normalize();
+  cursorPivot.setRotationFromQuaternion(pivotQuat);
+  this.updateCursorIntersection();
+};
+
 // Detect intersections with three.js scene objects (context) and dispatch mouseover and mouseout events.
 VRCursor.prototype.updateCursorIntersection = function() {
   /*
@@ -139,8 +149,8 @@ VRCursor.prototype.updateCursorIntersection = function() {
   var raycaster = this.raycaster;
   var cursor = this.cursor;
 
-  var cursporPosition = cursor.matrixWorld.getPosition();
-  vector = new THREE.Vector3(cursporPosition.x, cursporPosition.y, cursporPosition.z);
+  var cursporPosition = cursor.matrixWorld;
+  vector = new THREE.Vector3().setFromMatrixPosition(cursporPosition);
 
   // Draws RAY
   // var geometry = new THREE.Geometry();
