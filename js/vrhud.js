@@ -1,8 +1,36 @@
 'use strict';
 
 function VRHud() {
+	var self = this;
 	this.visible = false;
-	this.layout = null;
+	this.layout = new THREE.Group();
+	this.layout.visible = this.visible;
+	this.data = null;
+	this.texture = null;
+
+	this.ready = new Promise(function(resolve, reject) {
+		var loadData = new Promise(function(resolve, reject) {
+			var d23 = new DOM2three('../data/ui/index.json','hud');
+			d23.onload = function() {
+				resolve(this.root);
+			};
+		});
+
+		var loadTexture = new Promise(function(resolve, reject) {
+			var texture = THREE.ImageUtils.loadTexture('../data/ui/index.png', undefined, function() {
+				resolve(texture);
+			});
+		});
+
+		Promise.all([loadData, loadTexture])
+			.then( function(data) {
+				self.makeLayout(data[0], data[1])
+					.then( function() {
+						resolve();
+					})
+			});
+	});
+
 	return this;
 };
 
@@ -17,7 +45,7 @@ VRHud.prototype.show = function() {
 			setTimeout(function() {
 				resolve();
 			}, 500);
-		} 
+		}
 	});
 };
 
@@ -29,93 +57,83 @@ VRHud.prototype.hide = function() {
 			// todo: replace with animation
 			setTimeout(function() {
 				self.layout.visible = false;
-				self.visible = false;	
+				self.visible = false;
 				resolve();
 			}, 500);
 		}
 	});
 };
 
-VRHud.prototype.init = function(favorites) {
-	this.layout = new THREE.Group();
-	var layout = this.layout;	
-	layout.visible = this.visible;
+VRHud.prototype.makeLayout = function(data, texture) {
+	var self = this;
+	return new Promise( function(resolve, reject) {
+		var items = data.items;
+		var layout = self.layout;
+		var geometry = new THREE.PlaneGeometry( 1, 1 );
 
-	var geometry = new THREE.PlaneGeometry( 1, 1 );
-	var texture = null;
-	
-	var loadTexture = new Promise( function(resolve, reject) {
-		texture = THREE.ImageUtils.loadTexture('../data/ui/index.png', undefined, function() {
-			resolve();
-		});
-	});
+		items.forEach(function(item) {
+			if (item.display) {
+				var tex = texture.clone();
+				var rect = item.rectangle;
 
-	function createMeshes() {
-		var i, fav;
-		
-		for (i = 0; i < favorites.length; i++) {
-			fav = favorites[i];
-			if (fav.ui == undefined) {
-				console.warn('No ui for "' + fav.name + '" found.  Render and copy Dom2three output into data/ui.');
-				continue;
+				tex.repeat.x = rect.width / tex.image.width;
+				tex.repeat.y = rect.height / tex.image.height;
+				tex.offset.x = rect.x / tex.image.width;
+				tex.offset.y = 1 - ((rect.y + rect.height) / tex.image.height );
+				tex.needsUpdate = true;
+
+				var material = new THREE.MeshBasicMaterial({ map : tex });
+
+				var centerOffsetX = tex.image.width / 2;
+				var centerOffsetY = tex.image.height / 2;
+				var x = rect.x + (rect.width / 2) - centerOffsetX;
+				var y = rect.y + (rect.height / 2) - centerOffsetY;
+
+				var button = new THREE.Mesh( geometry, material );
+				button.position.set( x, - y, 0 );
+
+				button.scale.set( rect.width, rect.height, 1 );
+				button.userData.position = new THREE.Vector2( x, y );
+
+				if (item.userData && item.userData.url) {
+					button.addEventListener('mouseover', function(e) {
+						if (material) {
+							material.color.set( 0x0f0ff );
+							material.needsUpdate = true;
+						}
+					});
+
+					button.addEventListener('mouseout', function(e) {
+						if (material) {
+							material.color.set( 0xffffff );
+							material.needsUpdate = true;
+						}
+					});
+
+					button.addEventListener('click', function(e) {
+						VRManager.ui.load(item.userData.url);
+					});
+				}
+
+				layout.add(button);
 			}
-			var tex = texture.clone();
-			tex.repeat.x = fav.ui.width / tex.image.width;
-			tex.repeat.y = fav.ui.height / tex.image.height;
-			tex.offset.x = fav.ui.x / tex.image.width;
-			tex.offset.y = 1 - ((fav.ui.y + fav.ui.height) / tex.image.height );
-			tex.needsUpdate = true;
 
-			var material = new THREE.MeshBasicMaterial({ map : tex });
-			
-			var centerOffsetX = tex.image.width / 2;
-			var centerOffsetY = tex.image.height / 2;
-			var x = fav.ui.x-centerOffsetX;
-			var y = fav.ui.y;
-			
-			var button = new THREE.Mesh( geometry, material );
-			button.position.set( x, - y, 0 );
-			button.scale.set( fav.ui.height, fav.ui.height, 1 );
-			button.userData.position = new THREE.Vector2( x, y );
-			button.userData.favorite = fav;
-			button.addEventListener('mouseover', function(e) {
-				if (this.material) {
-					this.material.color.set( 0x0f0ff );
-					this.material.needsUpdate = true;
-				}
-			});
+		});
 
-			button.addEventListener('mouseout', function(e) {
-				if (this.material) {
-					this.material.color.set( 0xffffff );	
-					this.material.needsUpdate = true;
-				}
-			});
+		function bend( group, amount ) {
+			var vector = new THREE.Vector3();
 
-			button.addEventListener('click', function(e) {
-				VRManager.ui.load(this.userData.favorite.url)
-			});
-
-			layout.add(button);			
+			for ( var i = 0; i < group.children.length; i ++ ) {
+				var element = group.children[ i ];
+				//element.position.z = -800;
+				element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
+				element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
+				element.lookAt( vector.set( 0, element.position.y, 0 ) );
+			}
 		}
-	}
 
-	function bend( group, amount ) {
-		var vector = new THREE.Vector3();
+		bend( layout, 600 );
 
-		for ( var i = 0; i < group.children.length; i ++ ) {
-			var element = group.children[ i ];
-			element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-			element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-			element.lookAt( vector.set( 0, element.position.y, 0 ) );
-		}
-	}
-
-	// main
-	loadTexture.then(function() {
-		createMeshes()
-		bend( layout, 500 );
+		resolve();
 	});
-
-	return layout;
-};
+}

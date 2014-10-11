@@ -1,0 +1,131 @@
+{
+	"ui": {
+		"title": {
+			"page": "http://localhost:8000/index-title.html",
+			"datapath": "title"
+		},
+		"hud": {
+			"page": "http://localhost:8000/index-layout.html",
+			"datapath": "hud",
+			"items":[
+				{
+					"selector": "#widgets",
+					"display": true
+				},
+				{
+					"selector": "#site-location",
+					"display": true,
+					"content": [{
+							"selector": ".authors",
+							"content": "Your Name"
+						},{
+							"selector": ".title h1",
+							"content": "Site title"
+						}]
+				},
+
+				{
+					"selector": "#favorites"
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "Sechelt"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Josh Carpenter, Mr. Doob",
+						"tech": "three.js"
+					}
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "Information Dive"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Eric, Josh Carpenter",
+						"tech": "WebGL"
+					}
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "EleVR Video"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Someone Great",
+						"tech": "WebGL"
+					}
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "Leap motion"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Someone Great",
+						"tech": "WebGL"
+					}
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "Reddit"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Someone Great",
+						"tech": "WebGL"
+					}
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "Vizicities"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Someone Great",
+						"tech": "WebGL"
+					}
+				},
+				{
+					"selector": "#favorites-template",
+					"clone": true,
+					"display": true,
+					"content": [{
+						"selector": ".fav-inner",
+						"content": "Panorama viewer"
+					}],
+					"userData": {
+						"url": "./content/sechelt/index.html",
+						"author": "Someone Great",
+						"tech": "WebGL"
+					}
+				}
+			]
+		}
+	}
+}
