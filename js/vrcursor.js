@@ -116,41 +116,44 @@ VRCursor.prototype.onMouseClicked = function(e) {
 }
 
 VRCursor.prototype.update = function(headQuat) {
-  // move VR cursor
   var cursorPivot = this.cursorPivot;
   var cursor = this.cursor;
   var pixelsToDegreesFactor = 0.00025;
+  // Rotation in degrees
   var x = (this.position.x * pixelsToDegreesFactor) % 360;
   var y = (this.position.y * pixelsToDegreesFactor) % 360;
+  // To Radians
   var xAngle = - y * 2 * Math.PI;
   var yAngle = - x * 2 * Math.PI;
+  // Quaternion expressing the mouse orientation
   var rotation = new THREE.Euler(xAngle, yAngle, 0);
   var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
+  // If head quaternion is null we make the identity so
+  // it doesn't affect the rotation composition
+  if (headQuat[0] === 0 &&
+      headQuat[1] === 0 &&
+      headQuat[2] === 0) {
+    headQuat[3] = 1;
+  }
+  // Multiplies head and mouse rotation to calculate the final
+  // position of the cursor
   var pivotQuat = new THREE.Quaternion()
   .fromArray(headQuat)
   .multiply(mouseQuat)
   .normalize();
   cursorPivot.setRotationFromQuaternion(pivotQuat);
+  // It updates hits
   this.updateCursorIntersection();
 };
 
 // Detect intersections with three.js scene objects (context) and dispatch mouseover and mouseout events.
 VRCursor.prototype.updateCursorIntersection = function() {
-  /*
-  todo: The raycasting is projected from the camera position outwards.  We need to take
-  into account the position of the VR cursor and cast tha ray from the camera position
-  through the VR cursor outwards.
-
-  The accuracy of the raycast also needs to be addressed in the onMouseMove handler.  The
-  pixels distribution in VR mode with the distortion is not linear so the pixelsToDegreesFactor
-  will change depending on where the cursor is relative to the viewport.
-  */
   var camera = this.camera;
   var raycaster = this.raycaster;
   var cursor = this.cursor;
 
-  var cursporPosition = cursor.matrixWorld;
-  vector = new THREE.Vector3().setFromMatrixPosition(cursporPosition);
+  var cursorPosition = cursor.matrixWorld;
+  vector = new THREE.Vector3().setFromMatrixPosition(cursorPosition);
 
   // Draws RAY
   // var geometry = new THREE.Geometry();

@@ -5,6 +5,10 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
+			html, body {
+  			height: 100%;
+			}
+
 			body {
 				background-color: #000;
 				color: #fff;
@@ -12,6 +16,7 @@
 				padding: 0;
 				overflow: hidden;
 			}
+
 			canvas {
 				position: absolute;
 			  top: 0;
@@ -43,7 +48,7 @@
 				}
 				return parameters;
 			}
-			
+
 			var parameters = parseURLSearch();
 			var camera, scene, renderer;
 			var controls, effect, vrEffect;
@@ -75,7 +80,7 @@
 				document.body.appendChild( renderer.domElement );
 				scene = new THREE.Scene();
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-				
+
 				// parse url parameter and set appropriate rendering effect.
 				// if ( parameters.mode === 'cardboard' ) {
 				// 	controls = new THREE.DeviceOrientationControls( camera );
@@ -83,7 +88,7 @@
 				// } else {
 				controls = new THREE.VRControls( camera );
 				vrEffect = new THREE.VREffect( renderer );
-				
+
 				vrEffect.setSize( window.innerWidth, window.innerHeight );
 
 				// bypass stereo/vr effect when in full-screen mode.
@@ -98,19 +103,20 @@
 
 				startup();
 
-				// accounce to JAVRIS host when you are done with this scene.  
+				// accounce to JAVRIS host when you are done with this scene.
 				// If this is part of a VRSequence, this will tell JAVRIS to move onto the next scene.
-				
+
 				// setTimeout( function() {
-				// 	VRClient.ended(); 
+				// 	VRClient.ended();
 				// }, 5000)
-				
+
 				window.addEventListener( 'resize', onWindowResize, false );
 				window.addEventListener( 'keypress', onKey, true);
 
 			}
 
 			function onWindowResize() {
+				console.log("IFRAME RESIZE " + window.innerWidth + " " + window.innerHeight);
 				// switch renderer to stereo if fs
 				if (parent.document.mozFullScreen) {
 					effect = vrEffect;
@@ -122,7 +128,7 @@
 			}
 
 			function onKey(event) {
-				
+
 				if (!(event.metaKey || event.altKey || event.ctrlKey)) {
 					event.preventDefault();
 				}

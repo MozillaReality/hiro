@@ -1,7 +1,7 @@
 window.VRManager = (function() {
   // options
   var START_WITH_INTRO = false;
-  
+
   /**
   * @param {string} dom container to load JAVRIS experience into.
   **/
@@ -18,7 +18,7 @@ window.VRManager = (function() {
     self.loader = self.container.querySelector('#loader');
     self.ui = new VRUi(self.container.querySelector('#ui'));
     self.sequence = new VRSequence();
-    
+
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
       if (navigator.getVRDevices) {
@@ -109,7 +109,7 @@ window.VRManager = (function() {
 
   VRManager.prototype.load = function (url, opts) {
     var self = this;
-    
+
     self.log('loading url: ' + url);
     var newTab = new VRTab(url);
     newTab.hide();
@@ -133,7 +133,7 @@ window.VRManager = (function() {
     newTab.load();
   };
 
-  
+
   /*
   This runs when user enters VR mode.
   */
@@ -141,10 +141,10 @@ window.VRManager = (function() {
     var self = this;
     if (self.vrIsReady) {
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
-      
+
       // reserve pointer lock for the cursor.
       document.body.mozRequestPointerLock();
-      
+
       if (START_WITH_INTRO) {
         this.sequence.start();
       }

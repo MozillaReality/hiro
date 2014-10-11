@@ -27,7 +27,6 @@ VRUi.prototype.gridlines = function() {
 	var material = new THREE.MeshBasicMaterial( { color: 0x0000ff, wireframe: true } );
 	var cube = new THREE.Mesh( geometry, material );
 	cube.scale.set( 50, 50, 50);
-
 	return cube;
 }
 
@@ -129,7 +128,7 @@ VRUi.prototype.initSettings = function() {
 		self.scene.add(hudLayout);
 		self.scene.add(cursorLayout);
 		self.scene.add(transitionLayout);
-		//self.scene.add(self.gridlines());
+		self.scene.add(self.gridlines());
 	});
 };
 
@@ -139,10 +138,12 @@ VRUi.prototype.initRenderer = function() {
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+
   this.controls = new THREE.VRControls( this.camera );
   this.effect = new THREE.VREffect( this.renderer );
   this.effect.setSize( window.innerWidth, window.innerHeight );
   this.container.appendChild(this.renderer.domElement);
+  this.initResizeHandler();
 };
 
 VRUi.prototype.start = function() {
@@ -178,7 +179,7 @@ VRUi.prototype.animate = function() {
 	}
 }
 
- VRUi.prototype.initKeyboardControls = function() {
+VRUi.prototype.initKeyboardControls = function() {
  	/*
  	todo: Entering VR mode should be done with a button and not a
  	keyboard key.  This could be part of the startup scene.
@@ -204,4 +205,15 @@ VRUi.prototype.animate = function() {
   }
 
   window.addEventListener("keypress", onkey, true);
-}
+};
+
+VRUi.prototype.initResizeHandler = function() {
+	var effect = this.effect;
+	var camera = this.camera;
+	function onWindowResize() {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		effect.setSize( window.innerWidth, window.innerHeight );
+	}
+	window.addEventListener( 'resize', onWindowResize, false );
+};

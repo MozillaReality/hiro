@@ -2,7 +2,7 @@ function VRTab(url) {
   var self = this;
   var iframe = document.createElement('iframe');
   iframe.setAttribute('allowfullscreen', '');
-
+  iframe.setAttribute('frameBorder', '0');
   self.handlers = [];
 
   self.iframe = iframe;
@@ -20,6 +20,8 @@ function VRTab(url) {
     iframe.addEventListener('load', resolve);
     iframe.addEventListener('error', reject);
   });
+
+  window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
 }
 
 VRTab.prototype.sendMessage = function (type, data) {
@@ -76,4 +78,11 @@ VRTab.prototype.start = function () {
   self.loaded.then(function () {
     self.sendMessage('start');
   });
+};
+
+VRTab.prototype.onWindowResize = function () {
+  // This triggers the resize event within the iframe when the parent window resizes
+  var iframe = this.iframe;
+  var height = iframe.contentWindow.document.body.scrollHeight;
+  iframe.height = height;
 };
