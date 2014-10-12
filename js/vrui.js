@@ -40,7 +40,7 @@ VRUi.prototype.gridlines = function() {
 	return cube;
 }
 
-VRUi.prototype.load = function(url) {
+VRUi.prototype.load = function(url, userData) {
 	var self = this;
 
 	this.hud.hide()
@@ -48,6 +48,9 @@ VRUi.prototype.load = function(url) {
 			self.cursor.disable();
 			self.transition.fadeOut()
 			.then(function() {
+				self.hud.updateLive(self.hud.uiData, '.authors', userData.author);
+				self.hud.updateLive(self.hud.uiData, '.title h1', userData.title);
+
 				VRManager.load(url);
 				self.transition.fadeIn();
 			})

@@ -5,7 +5,7 @@ function VRHud() {
 	this.visible = false;
 	this.layout = new THREE.Group();
 	this.layout.visible = this.visible;
-	this.data = null;
+	this.uiData = null;
 	this.texture = null;
 
 	this.ready = new Promise(function(resolve, reject) {
@@ -24,15 +24,11 @@ function VRHud() {
 
 		Promise.all([loadData, loadTexture])
 			.then( function(data) {
-				var uiData = data[0]
-				self.makeLayout(uiData, data[1])
+				self.uiData = data[0];
+				self.makeLayout(self.uiData, data[1])
 					.then( function() {
-
-						self.updateLive(uiData, '.authors', 'TEST AUTHOR');
-						self.updateLive(uiData, '.title h1', 'TEST TITLE OF SITE');
-
 						var date = new Date;
-						self.updateLive(uiData, '.clock-time', date.getHours() + ':' + date.getMinutes());
+						self.updateLive(self.uiData, '.clock-time', date.getHours() + ':' + date.getMinutes());
 
 						resolve();
 					})
@@ -80,6 +76,8 @@ VRHud.prototype.updateLive = function(data, selector, text) {
 		if (item.content) {
 			item.content.forEach(function(content) {
 				if (content.hasOwnProperty('canvas') && content.selector == selector) {
+					console.log('updating: ', selector, text);
+
 					var context = content.canvas.context;
 
 					// clear existing text
@@ -92,6 +90,8 @@ VRHud.prototype.updateLive = function(data, selector, text) {
 						content.canvas.x,
 						content.canvas.y
 					);
+
+					content.canvas.texture.needsUpdate = true;
 				}
 			})
 		}
@@ -128,7 +128,6 @@ VRHud.prototype.makeLayout = function(data, texture) {
 				var y = rect.y + (rect.height / 2) - centerOffsetY;
 
 				// material
-
 				var materials = [new THREE.MeshBasicMaterial({ map : tex })];
 
 				if (item.content) {
@@ -167,6 +166,8 @@ VRHud.prototype.makeLayout = function(data, texture) {
 							var cmaterial = new THREE.MeshBasicMaterial( { map: ctexture, side:THREE.DoubleSide } );
     					cmaterial.transparent = true;
 
+    					content.canvas.texture = ctexture;
+
     					materials.push(cmaterial);
 						}
 					});
@@ -201,7 +202,7 @@ VRHud.prototype.makeLayout = function(data, texture) {
 					});
 
 					button.addEventListener('click', function(e) {
-						VRManager.ui.load(item.userData.url);
+						VRManager.ui.load(item.userData.url, item.userData);
 					});
 				};
 
