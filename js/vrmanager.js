@@ -77,7 +77,7 @@ window.VRManager = (function() {
 
     document.addEventListener('mozfullscreenchange', function(e) {
       if (document.mozFullScreenElement == null) {
-        self.exitVR();
+        //self.exitVR();
       }
     });
 
@@ -91,7 +91,7 @@ window.VRManager = (function() {
   }
 
   VRManager.prototype.startup = function() {
-    this.load('../content/startup/index.html');
+    //this.load('../content/startup/index.html');
   };
 
   VRManager.prototype.log = function (msg) {
