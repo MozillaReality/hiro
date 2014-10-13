@@ -5,34 +5,22 @@ function VRHud() {
 	this.visible = false;
 	this.layout = new THREE.Group();
 	this.layout.visible = this.visible;
-	this.uiData = null;
-	this.texture = null;
+	this.d23 = null;
 
 	this.ready = new Promise(function(resolve, reject) {
-		var loadData = new Promise(function(resolve, reject) {
-			var d23 = new DOM2three('../data/hud/index.json','hud');
-			d23.onload = function() {
-				resolve(this.root);
-			};
-		});
+		var d23 = new DOM2three('../data/hud/index.json');
 
-		var loadTexture = new Promise(function(resolve, reject) {
-			var texture = THREE.ImageUtils.loadTexture('../data/hud/index.png', undefined, function() {
-				resolve(texture);
-			});
-		});
+		d23.onload = function() {
+			self.d23 = this;
 
-		Promise.all([loadData, loadTexture])
-			.then( function(data) {
-				self.uiData = data[0];
-				self.makeLayout(self.uiData, data[1])
-					.then( function() {
-						var date = new Date;
-						self.updateLive(self.uiData, '.clock-time', date.getHours() + ':' + date.getMinutes());
+			self.makeLayout(d23.data, d23.texture)
+				.then( function() {
+					var date = new Date;
+					self.updateLive(d23.data, '.clock-time', date.getHours() + ':' + date.getMinutes());
 
-						resolve();
-					})
-			});
+					resolve();
+				})
+		};
 	});
 
 	return this;
@@ -102,7 +90,6 @@ VRHud.prototype.updateLive = function(data, selector, text) {
 
 VRHud.prototype.makeLayout = function(data, texture) {
 	var self = this;
-
 	return new Promise( function(resolve, reject) {
 		var items = data.items;
 		var layout = self.layout;

@@ -77,7 +77,7 @@ window.VRManager = (function() {
 
     document.addEventListener('mozfullscreenchange', function(e) {
       if (document.mozFullScreenElement == null) {
-        //self.exitVR();
+        self.exitVR();
       }
     });
 

@@ -6,6 +6,7 @@ function VRUi(container) {
 	this.active = false;
 	this.hud = new VRHud();
 	this.cursor = new VRCursor();
+	this.title = new VRTitle();
 	this.transition = new VRTransition();
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
 
@@ -18,6 +19,10 @@ function VRUi(container) {
 		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 		self.scene.add(cursorLayout);
 	})
+
+	this.title.ready.then(function() {
+		self.scene.add(self.title.mesh);
+	});
 
 	this.scene.add(self.transition.init());
 
@@ -48,10 +53,12 @@ VRUi.prototype.load = function(url, userData) {
 			self.cursor.disable();
 			self.transition.fadeOut()
 			.then(function() {
-				self.hud.updateLive(self.hud.uiData, '.authors', userData.author);
-				self.hud.updateLive(self.hud.uiData, '.title h1', userData.title);
+				self.hud.updateLive(self.hud.d23.data, '.authors', userData.author);
+				self.hud.updateLive(self.hud.d23.data, '.title h1', userData.title);
 
 				VRManager.load(url);
+
+				self.title.show(userData);
 				self.transition.fadeIn();
 			})
 		});
