@@ -82,6 +82,7 @@ VRUi.prototype.toggleHud = function() {
 VRUi.prototype.initRenderer = function() {
 	this.renderer = new THREE.WebGLRenderer( { alpha: true } );
   this.renderer.setClearColor( 0x000000, 0 );
+
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
 
