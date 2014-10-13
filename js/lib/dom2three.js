@@ -46,36 +46,55 @@ DOM2three.prototype.loadTexture = function(src) {
 }
 
 DOM2three.prototype.setText = function(selector, text) {
-	var item = this.item;
 	var select = this.getNode(selector);
 
+	console.log('setting text for: ',select);
+
 	if (!select) {
-		console.warn('Nothing found for '+select);
+		console.warn('Nothing found for ',select);
 		return false;
 	};
 
-	console.log(select.rectangle, select.canvas);
+	var context = select.canvasMaterial.context;
 
-	var context = select.canvas.context;
-
-	context.clearRect(select.rectangle.x,
-		select.rectangle.y,
-		select.rectangle.width,
-		select.rectangle.height);
+	console.log('clearing canvas');
+	context.clearRect(0,
+		0,
+		select.canvasMaterial.canvas.width,
+		select.canvasMaterial.canvas.height);
 
 	context.fillText(text,
-		select.canvas.x,
-		select.canvas.y
+		select.canvasMaterial.x,
+		select.canvasMaterial.y
 	);
 
-	select.canvas.texture.needsUpdate = true;
+	select.canvasMaterial.texture.needsUpdate = true;
 
 }
 
-DOM2three.prototype.getMesh = function(selector) {
+DOM2three.prototype.getAllDisplayItems = function() {
+	var items = this.data.items;
+	var collection = [];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+
+		if (item.display) {
+			collection.push(item);
+		}
+	};
+
+	return collection;
+}
+
+DOM2three.prototype.makeMesh = function(item) {
+	if (!item) {
+		console.error('no item specified');
+		return false;
+	}
 	var self = this;
+
+	// geometry
 	var geometry = new THREE.PlaneGeometry( 1, 1 );
-	var item = this.getNode(selector);
 
 	// texture positioning
 	var rect = item.rectangle;
@@ -118,12 +137,20 @@ DOM2three.prototype.getMesh = function(selector) {
 	mesh.position.set( x, -y, 0);
 	mesh.scale.set( rect.width, rect.height, 1 );
 	mesh.userData.position = new THREE.Vector2( x, y );
+	mesh.userData.item = item;
 
 	item.mesh = mesh;
 
 	self.item = item;
 
 	return mesh;
+}
+
+DOM2three.prototype.getMesh = function(selector) {
+	var self = this;
+	var item = this.getNode(selector);
+
+	return self.makeMesh(item);
 }
 
 DOM2three.prototype.createCanvasMaterials = function(item) {
@@ -142,10 +169,11 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 			context.font = content.font;
 			context.fillStyle = content.fillStyle;
 
-			content.canvas = {};
-			content.canvas.context = context;
-			content.canvas.x = content.rectangle.x - rect.x;
-			content.canvas.y = content.rectangle.y - rect.y + content.rectangle.height;
+			content.canvasMaterial = {};
+			content.canvasMaterial.canvas = canvas;
+			content.canvasMaterial.context = context;
+			content.canvasMaterial.x = content.rectangle.x - rect.x;
+			content.canvasMaterial.y = content.rectangle.y - rect.y + content.rectangle.height;
 
 			var texture = new THREE.Texture(canvas);
 			texture.needsUpdate = true;
@@ -153,7 +181,7 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 			var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.DoubleSide } );
 			material.transparent = true;
 
-			content.canvas.texture = texture;
+			content.canvasMaterial.texture = texture;
 
 			materials.push(material);
 		}

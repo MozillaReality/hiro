@@ -21,12 +21,11 @@ function VRTitle() {
 	return this;
 }
 
-VRTitle.prototype.show = function(userData) {
+VRTitle.prototype.show = function(item) {
 	var self = this;
 
-	console.log(self.d23);
-	self.d23.setText('.authors', userData.author);
-	self.d23.setText('.title h1', userData.title);
+	self.d23.setText('.authors', item.userData.author);
+	self.d23.setText('.title h1', item.userData.title);
 
 	self.visible = true;
 	// todo: replace with animation

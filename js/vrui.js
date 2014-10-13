@@ -13,9 +13,9 @@ function VRUi(container) {
 	// main
 	this.initRenderer();
 
-	this.scene.add(this.hud.layout);
-
 	this.hud.ready.then(function() {
+		self.scene.add(self.hud.layout);
+
 		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 		self.scene.add(cursorLayout);
 	})
@@ -45,7 +45,7 @@ VRUi.prototype.gridlines = function() {
 	return cube;
 }
 
-VRUi.prototype.load = function(url, userData) {
+VRUi.prototype.load = function(url, item) {
 	var self = this;
 
 	this.hud.hide()
@@ -53,12 +53,13 @@ VRUi.prototype.load = function(url, userData) {
 			self.cursor.disable();
 			self.transition.fadeOut()
 			.then(function() {
-				self.hud.updateLive(self.hud.d23.data, '.authors', userData.author);
-				self.hud.updateLive(self.hud.d23.data, '.title h1', userData.title);
+
+				self.hud.d23.setText('.authors', item.userData.author);
+				self.hud.d23.setText('.title h1', item.userData.title);
 
 				VRManager.load(url);
 
-				self.title.show(userData);
+				self.title.show(item);
 				self.transition.fadeIn();
 			})
 		});

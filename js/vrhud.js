@@ -13,13 +13,11 @@ function VRHud() {
 		d23.onload = function() {
 			self.d23 = this;
 
-			self.makeLayout(d23.data, d23.texture)
-				.then( function() {
-					var date = new Date;
-					self.updateLive(d23.data, '.clock-time', date.getHours() + ':' + date.getMinutes());
-
-					resolve();
-				})
+			self.makeLayout().then(function() {
+				var date = new Date;
+				self.d23.setText('.clock-time', date.getHours() + ':' + date.getMinutes());
+				resolve();
+			});
 		};
 	});
 
@@ -57,152 +55,47 @@ VRHud.prototype.hide = function() {
 };
 
 
-VRHud.prototype.updateLive = function(data, selector, text) {
-	var items = data.items;
-
-	items.forEach(function(item) {
-		if (item.content) {
-			item.content.forEach(function(content) {
-				if (content.hasOwnProperty('canvas') && content.selector == selector) {
-					console.log('updating: ', selector, text);
-
-					var context = content.canvas.context;
-
-					// clear existing text
-					context.clearRect(content.canvas.clearRect.x,
-						content.canvas.clearRect.y,
-						content.canvas.clearRect.width,
-						content.canvas.clearRect.height);
-
-					context.fillText(text,
-						content.canvas.x,
-						content.canvas.y
-					);
-
-					content.canvas.texture.needsUpdate = true;
-				}
-			})
-		}
-	});
-
-};
-
-
-VRHud.prototype.makeLayout = function(data, texture) {
+VRHud.prototype.makeLayout = function() {
 	var self = this;
 	return new Promise( function(resolve, reject) {
-		var items = data.items;
 		var layout = self.layout;
-		var geometry = new THREE.PlaneGeometry( 1, 1 );
+		var items = self.d23.getAllDisplayItems();
 
-		items.forEach(function(item) {
-			// render anyhting that has display flag set
-			if (item.display) {
-				var rect = item.rectangle;
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
 
-				// texture positioning
-				var tex = texture.clone();
-				tex.repeat.x = rect.width / tex.image.width;
-				tex.repeat.y = rect.height / tex.image.height;
-				tex.offset.x = rect.x / tex.image.width;
-				tex.offset.y = 1 - ((rect.y + rect.height) / tex.image.height );
-				tex.needsUpdate = true;
+			var mesh = self.d23.makeMesh(item);
 
-				// object positioning
-				var centerOffsetX = tex.image.width / 2;
-				var centerOffsetY = tex.image.height / 2;
-				var x = rect.x + (rect.width / 2) - centerOffsetX;
-				var y = rect.y + (rect.height / 2) - centerOffsetY;
+			// make interactable if item has userData.url
+			if (item.userData && item.userData.url) {
+				mesh.addEventListener('mouseover', function(e) {
+					var material = e.target.material;
+					if (material) {
+						material.color.set( 0x1796da );
+						material.needsUpdate = true;
+					}
+				});
 
-				// material
-				var materials = [new THREE.MeshBasicMaterial({ map : tex })];
+				mesh.addEventListener('mouseout', function(e) {
+					var material = e.target.material;
+					if (material) {
+						material.color.set( 0xffffff );
+						material.needsUpdate = true;
+					}
+				});
 
-				if (item.content) {
-					item.content.forEach( function(content) {
+				mesh.addEventListener('click', function(e) {
+					var item = e.target.userData.item;
+					VRManager.ui.load(item.userData.url, item);
+				});
+			};
 
-						if (content.hasOwnProperty('canvas')) {
-							// create a canvas element for canvas enabled selector
-							var canvas = document.createElement('canvas');
-							// set to parent element width/height
-							canvas.width = rect.width;
-							canvas.height = rect.height;
+			layout.add( mesh );
+		};
 
-							var context = canvas.getContext('2d');
-							// set canvas text styles
-							context.font = content.font;
-							context.fillStyle = content.fillStyle;
-
-							// persist values for use later when we want to change contents
-							content.canvas = {};
-							content.canvas.context = context;
-							content.canvas.x = content.rectangle.x - rect.x;
-							content.canvas.y = content.rectangle.y - rect.y + content.rectangle.height;
-							content.canvas.width = content.rectangle.width;
-							content.canvas.height = content.rectangle.height;
-							content.canvas.clearRect = {
-								x: content.rectangle.x - rect.x,
-								y: content.rectangle.y - rect.y,
-								width: content.rectangle.width,
-								height: content.rectangle.height
-							};
-
-							// create new material from canvas
-							var ctexture = new THREE.Texture(canvas);
-							ctexture.needsUpdate = true;
-
-							var cmaterial = new THREE.MeshBasicMaterial( { map: ctexture, side:THREE.DoubleSide } );
-    					cmaterial.transparent = true;
-
-    					content.canvas.texture = ctexture;
-
-    					materials.push(cmaterial);
-						}
-					});
-				}
-
-				var button;
-				if (materials.length > 1) {
-					button = THREE.SceneUtils.createMultiMaterialObject( geometry, materials );
-				} else {
-					button = new THREE.Mesh( geometry, materials[0] );
-				}
-				button.position.set( x, - y, 0 );
-				button.scale.set( rect.width, rect.height, 1 );
-				// cache button position to be used later for animation/positioning.
-				button.userData.position = new THREE.Vector2( x, y );
-
-				// make interactable if button has userData.url
-				if (item.userData && item.userData.url) {
-					var material = materials[0];	// assume first material
-					button.addEventListener('mouseover', function(e) {
-						if (material) {
-							material.color.set( 0x1796da );
-							material.needsUpdate = true;
-						}
-					});
-
-					button.addEventListener('mouseout', function(e) {
-						if (material) {
-							material.color.set( 0xffffff );
-							material.needsUpdate = true;
-						}
-					});
-
-					button.addEventListener('click', function(e) {
-						VRManager.ui.load(item.userData.url, item.userData);
-					});
-				};
-
-				item.object = button;
-
-				layout.add(button);
-			}
-
-		});
 
 		function bend( group, amount ) {
 			var vector = new THREE.Vector3();
-
 			for ( var i = 0; i < group.children.length; i ++ ) {
 				var element = group.children[ i ];
 				//element.position.z = -800;
