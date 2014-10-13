@@ -48,8 +48,6 @@ DOM2three.prototype.loadTexture = function(src) {
 DOM2three.prototype.setText = function(selector, text) {
 	var select = this.getNode(selector);
 
-	console.log('setting text for: ',select);
-
 	if (!select) {
 		console.warn('Nothing found for ',select);
 		return false;
@@ -57,7 +55,6 @@ DOM2three.prototype.setText = function(selector, text) {
 
 	var context = select.canvasMaterial.context;
 
-	console.log('clearing canvas');
 	context.clearRect(0,
 		0,
 		select.canvasMaterial.canvas.width,
@@ -137,6 +134,7 @@ DOM2three.prototype.makeMesh = function(item) {
 	mesh.position.set( x, -y, 0);
 	mesh.scale.set( rect.width, rect.height, 1 );
 	mesh.userData.position = new THREE.Vector2( x, y );
+	mesh.userData.scale = new THREE.Vector2( rect.width, rect.height );
 	mesh.userData.item = item;
 
 	item.mesh = mesh;

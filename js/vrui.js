@@ -118,6 +118,11 @@ VRUi.prototype.animate = function() {
 	self.controls.update();
 	self.transition.update();
 	self.cursor.update(headQuat);
+
+	// tween
+	TWEEN.update();
+
+	// three.js render
 	this.effect.render(this.scene, this.camera);
 
 	if (this.active) {

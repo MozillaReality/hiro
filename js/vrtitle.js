@@ -11,9 +11,9 @@ function VRTitle() {
 		d23.onload = function() {
 			var mesh = d23.getMesh('#site-title');
 			mesh.position.set(0, 0, -500);
+			mesh.scale.set(0.00001, 0.00001, 1);
 			mesh.visible = self.visible;
 			self.mesh = mesh;
-
 			resolve();
 		};
 	});
@@ -29,16 +29,48 @@ VRTitle.prototype.show = function(item) {
 
 	self.visible = true;
 	// todo: replace with animation
-	setTimeout(function() {
+
+	setTimeout(animate, 3000);
+
+	function animate() {
 		self.mesh.visible = true;
-		self.hide();
-	}, 3000);
+
+		self.animateIn(self.mesh).then(function() {
+			setTimeout(function() {
+				self.hide();
+			}, 3000);
+		});
+	}
 }
 
 VRTitle.prototype.hide = function() {
 	self = this;
 	self.visible = false;
-	setTimeout(function() {
+	self.animateOut(self.mesh).then(function() {
 		self.mesh.visible = false;
-	}, 3000)
+	});
 }
+
+VRTitle.prototype.animateOut = function(mesh) {
+	return new Promise(function(resolve, reject) {
+		var tween = new TWEEN.Tween( mesh.scale )
+			.to({ x: 0.00001, y: 0.00001 }, 500 )
+			.easing(TWEEN.Easing.Exponential.Out)
+			.onComplete(function() {
+				resolve();
+			})
+			.start();
+	});
+};
+
+VRTitle.prototype.animateIn = function(mesh) {
+	return new Promise(function(resolve, reject) {
+		var tween = new TWEEN.Tween( mesh.scale )
+			.to(mesh.userData.scale, 1000 )
+			.easing(TWEEN.Easing.Exponential.Out)
+			.onComplete(function() {
+				resolve();
+			})
+			.start();
+	});
+};

@@ -12,10 +12,10 @@ function VRHud() {
 
 		d23.onload = function() {
 			self.d23 = this;
-
 			self.makeLayout().then(function() {
 				var date = new Date;
 				self.d23.setText('.clock-time', date.getHours() + ':' + date.getMinutes());
+				self.setInitial();
 				resolve();
 			});
 		};
@@ -24,17 +24,26 @@ function VRHud() {
 	return this;
 };
 
+
+VRHud.prototype.setInitial = function() {
+	var layout = this.layout;
+	if (!this.visible) {
+		for (var i = 0; i < layout.children.length; i++) {
+			var mesh = layout.children[i];
+			mesh.scale.set(0.00001, 0.00001, 1);
+		}
+	}
+};
+
 VRHud.prototype.show = function() {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 		if (!self.visible) {
 			self.layout.visible = true;
 			self.visible = true;
-			// transition in
-			// todo: replace with animation
-			setTimeout(function() {
+			self.animateScaleIn(self.layout).then(function() {
 				resolve();
-			}, 500);
+			});
 		}
 	});
 };
@@ -43,15 +52,43 @@ VRHud.prototype.hide = function() {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 		if (self.visible) {
-			// transition out
-			// todo: replace with animation
-			setTimeout(function() {
+			self.animateScaleOut(self.layout).then(function() {
 				self.layout.visible = false;
 				self.visible = false;
 				resolve();
-			}, 500);
+			});
 		}
 	});
+};
+
+VRHud.prototype.animateScaleOut = function(layout) {
+	return new Promise(function(resolve, reject) {
+		for (var i = 0; i < layout.children.length; i++) {
+			var mesh = layout.children[i];
+			var tween = new TWEEN.Tween( mesh.scale )
+				.to({ x: 0.00001, y: 0.00001 }, 500 )
+				.easing(TWEEN.Easing.Exponential.Out)
+				.onComplete(function() {
+					resolve();
+				})
+				.start();
+		}
+	});
+};
+
+VRHud.prototype.animateScaleIn = function(layout) {
+	return new Promise(function(resolve, reject) {
+		for (var i = 0; i < layout.children.length; i++) {
+			var mesh = layout.children[i];
+			var tween = new TWEEN.Tween( mesh.scale )
+				.to(mesh.userData.scale, 500)
+				.easing(TWEEN.Easing.Quintic.Out)
+				.onComplete(function() {
+					resolve();
+				})
+				.start();
+		}
+	})
 };
 
 
