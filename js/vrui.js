@@ -143,20 +143,20 @@ VRUi.prototype.initKeyboardControls = function() {
       event.preventDefault();
     }
 
-    switch (event.key) {
-      case 'f': // f
+    switch (event.keyCode) {
+      case 70: // f
         VRManager.enableVR();
         break;
-      case 'z': // z
+      case 90: // z
         VRManager.zeroSensor();
         break;
-      case ' ':
+      case 32: // space
         self.toggleHud();
         break;
     }
   }
 
-  window.addEventListener("keypress", onkey, true);
+  window.addEventListener("keydown", onkey, true);
 
   document.getElementById('launch-button').addEventListener('click', function() {
 		VRManager.enableVR();
