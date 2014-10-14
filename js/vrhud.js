@@ -100,7 +100,7 @@ VRHud.prototype.makeLayout = function() {
 
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-
+			item.sound = new VRSound(['/sounds/click.mp3'],  275, 1);
 			var mesh = self.d23.makeMesh(item);
 
 			// make interactable if item has userData.url
@@ -123,13 +123,13 @@ VRHud.prototype.makeLayout = function() {
 
 				mesh.addEventListener('click', function(e) {
 					var item = e.target.userData.item;
+					item.sound.play();
 					VRManager.ui.load(item.userData.url, item);
 				});
 			};
 
 			layout.add( mesh );
 		};
-
 
 		function bend( group, amount ) {
 			var vector = new THREE.Vector3();

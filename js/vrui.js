@@ -162,9 +162,11 @@ VRUi.prototype.initResizeHandler = function() {
 	var effect = this.effect;
 	var camera = this.camera;
 	function onWindowResize() {
-		camera.aspect = window.innerWidth / window.innerHeight;
+		var innerWidth = window.innerWidth;
+		var innweHeight =  window.innerHeight;
+		camera.aspect = innerWidth / innweHeight;
 		camera.updateProjectionMatrix();
-		effect.setSize( window.innerWidth, window.innerHeight );
+		effect.setSize( innerWidth, innweHeight );
 	}
 	window.addEventListener( 'resize', onWindowResize, false );
 };
