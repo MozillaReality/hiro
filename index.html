@@ -5,51 +5,27 @@
     <title>JAVRIS</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/hiro.css">
-    <link rel="stylesheet" href="css/fira.css">
-    <link rel="stylesheet" href="css/vrhud.css">
-    <link rel="stylesheet" href="css/vrtitle.css">
-    <link rel="stylesheet" href="css/vrtransition.css">
+    <link rel="stylesheet" href="fonts/fira/fira.css">
   </head>
   <body>
     <!-- this is a containing element that will be made fullscreen -->
     <div id="container">
-
-      <!-- This is an inner element that will serve as a camera, moving its children around in the scene.
-           This and all its children will have transform-style: preserve-3d set via the class, as well as
-           transform-origin set to 0,0 -->
-      
       <!-- This is the container which external iframe content is loaded into. -->
-      <div id="loader" class="host"></div>
-
-      <!-- This is the container which transition overlays will be drawn into -->
-      <!-- <div id="transition" class="host"></div> -->
-      
-      <!-- Interstitial container -->
-      <!-- <div id="interstitial"></div> -->
-
-      <!-- Interstitial container -->
-      <!-- <div id="title" class="threed camera" style="display: none">
-        <template>
-          <div class="sitetag threed">
-            <div class="author"></div>
-            <div class="title"></div>
-            <div class="url"></div>
-            <div class="tech"></div>
-          </div>
-        </template>
-      </div> -->
-
-      <!-- Template for site title -->
-      
+      <div id="loader" class="fit"></div>
 
       <!-- This is the container in which all the UI elements load into -->
-      <div id="ui" class="host"></div>
+      <div id="ui" class="fit"></div>
 
     </div>
     <div class="launch">
-      <pre class="console"></pre>
-    </div>
+      <button id="launch-button">Launch VR</button>
 
+      <br/>
+
+      <div class="instruction">
+        <span class="instruction-letter">Z</span> &nbsp; to center view
+      </div>
+    </div>
 
     <script src="js/vendor/three.min.js"></script>
     <script src="js/vendor/tween.min.js"></script>
@@ -57,54 +33,20 @@
     <script src="js/vendor/VREffect.js"></script>
     <script src="js/vendor/DeviceOrientationControls.js"></script>
     <script src="js/vendor/StereoEffect.js"></script>
-    
+
+    <script src="js/lib/dom2three.js"></script>
+
     <script src="js/vrutils.js"></script>
-    <!--
-    <script src="js/vrcursor.js"></script>
-  -->
-
     <script src="js/vrtab.js"></script>
-
-    <!--
     <script src="js/vrtransition.js"></script>
-    <script src="js/vrtitle.js"></script>
-    -->
-    
-    
+    <script src="js/vrsound.js"></script>
     <script src="js/vrcursor.js"></script>
+    <script src="js/vrtitle.js"></script>
     <script src="js/vrhud.js"></script>
-    <script src="js/vrui.js"></script>
-    
-    
     <script src="js/vrsequence.js"></script>
-   
+    <script src="js/vrui.js"></script>
     <script src="js/vrmanager.js"></script>
-    
+
     <script src="js/vrclient.js"></script>
-    <script type="text/javascript">
-
-      
-      function onkey(event) {
-        if (!(event.metaKey || event.altKey || event.ctrlKey)) {
-          event.preventDefault();
-        }
-
-        switch (event.key) {
-          case 'f': // f
-            VRManager.enableVR();
-            break;
-          case 'z': // z
-            VRManager.zeroSensor();
-            break;
-          case ' ':
-            VRManager.hud.toggle();
-            break;
-        }
-      }
-
-      window.addEventListener("keypress", onkey, true);
-
-    </script>
-
   </body>
 </html>

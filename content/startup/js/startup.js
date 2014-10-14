@@ -10,6 +10,17 @@ function startup() {
 	var world = new THREE.Mesh( worldGeo, worldMat );
 	scene.add( world );
 
+
+	/*
+	todo: test geometry to match up VRUi scene to content (this).  See VRUi bug: for more info.
+	*/
+	// var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
+	// var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	// var cube = new THREE.Mesh( geometry, material );
+	// cube.scale.set( 50, 50, 50);
+	// scene.add(cube);
+
+
 	//function for exploding objects, from MrDoob
 	function explode( geometry, material ) {
 
@@ -38,7 +49,7 @@ function startup() {
 	}
 
 
-	//load the logo. 
+	//load the logo.
 	//once loading is complete, trigger landing() to set up the scene
 	var logo;
 	var tagline;
@@ -47,6 +58,7 @@ function startup() {
 	loader.load( 'images/hiro-logo-3.json', function ( object ) {
 
 		logo = object;
+		//logo.position.set(0,0,0);
 		scene.add( logo );
 
 	});
@@ -63,7 +75,7 @@ function startup() {
 	//------------- LANDING PAGE -------------//
 
 	function landing() {
-	
+
 		//animate in the tagline
 
 		tagline.position.set( 0, 0, -200 );
@@ -106,7 +118,7 @@ function startup() {
 
 		//create mozilla logo
 		var logo = new THREE.Mesh(
-			new THREE.PlaneGeometry( 3.8, 1, 1, 1 ), 
+			new THREE.PlaneGeometry( 3.8, 1, 1, 1 ),
 			new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, map: THREE.ImageUtils.loadTexture( 'images/mozilla.png' ) } )
 		);
 		logo.position.set( 0, 0, -15 );
@@ -131,7 +143,7 @@ function startup() {
 				//nested iframe issues.
 
 				function next( event ) {
-					
+
 					if (!(event.metaKey || event.altKey || event.ctrlKey)) {
 						event.preventDefault();
 					}
@@ -152,8 +164,8 @@ function startup() {
 				}
 
 				window.addEventListener( 'keypress', next, true);
-				
-				
+
+
 			})
 			.start();
 
@@ -164,54 +176,54 @@ function startup() {
 	function two() {
 
 		var duration = 5000;
-	
+
 		//create holder
 		cage = new THREE.Object3D();
 		var geometry = new THREE.IcosahedronGeometry( 400, 1 );
 		var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, side: THREE.DoubleSide } );
-		
+
 		// explode geometry into objects
 		var group = explode( geometry, material );
-	
+
 		// animate objects
 		for ( var i = 0; i < group.children.length; i ++ ) {
-	
+
 			var object = group.children[ i ];
 			var destY = object.position.y;
-			
+
 			object.position.setY( destY - 100 );
 			object.material.opacity = 0;
 			object.scale.set( 0.1, 0.1, 0.1 )
-	
+
 			var delay = - ( object.position.x / 400 ) + ( object.position.y + 200 ) / 400;
-	
+
 			new TWEEN.Tween( object.position )
 				.to( { y: destY }, duration )
 				.delay( ( 1 - delay ) * 200 )
 				.easing( TWEEN.Easing.Sinusoidal.InOut )
 				.start();
-	
+
 			new TWEEN.Tween( object.scale )
 				.to( { x:1, y:1, z:1 }, duration )
 				.delay( ( 1 - delay ) * 200 )
 				.easing( TWEEN.Easing.Sinusoidal.InOut )
 				.start();
-	
+
 			new TWEEN.Tween( object.material )
 				.to( { opacity: 1 }, duration )
 				.easing( TWEEN.Easing.Sinusoidal.InOut )
 				.start();
-	
+
 		}
-	
+
 		new TWEEN.Tween( cage.rotation )
 			.to( { x: 1 }, duration )
 			.easing( TWEEN.Easing.Quadratic.InOut )
 			.onComplete( function () {
-	
+
 				three();
 				//console.log( "completed first phase" );
-	
+
 			})
 			.start();
 
@@ -233,7 +245,7 @@ function startup() {
 		scene.add( world );
 
 		//warp vars
-		var warp = new THREE.Object3D();	
+		var warp = new THREE.Object3D();
 		var quantity = 25;
 		var gateSize = 10;
 		var spread = 10;
@@ -304,7 +316,7 @@ function startup() {
 
 		//create gates
 		for ( var i = 0; i < quantity; i++ ) {
-	
+
 			zVal = i * spread + ( Math.pow( 1.3,i ) ) + coreSize;
 
 			var g1 = new Gate;
@@ -314,11 +326,11 @@ function startup() {
 			g2.position.set( 0, 0, 0 - zVal );
 
 			warp.add( g1, g2 );
-	
+
 		}
 
 		warp.position.set( 0, 0, 0 - travelDistance )
-	
+
 		//first half of warp
 		new TWEEN.Tween( warp.position )
 			.to( { z: 0 }, duration/2 )
@@ -346,7 +358,7 @@ function startup() {
 
 			.onComplete( function() {
 
-				
+
 
 			})
 			.start();
@@ -362,7 +374,7 @@ function startup() {
 			})
 			.start();
 
-		
+
 		scene.add( warp );
 
 	}
@@ -381,7 +393,7 @@ function startup() {
 
 			//create logo
 			var title = new THREE.Mesh(
-				new THREE.PlaneGeometry( 10.2, 5.66, 1, 1 ), 
+				new THREE.PlaneGeometry( 10.2, 5.66, 1, 1 ),
 				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/siteloaded-1.png' ) } )
 			);
 			title.scale.set( 0.5, 0.5, 0.5 )
@@ -401,5 +413,5 @@ function startup() {
 		*/
 
 	}
-	
+
 }

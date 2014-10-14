@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>VR WebGL boilerplate using three.js</title>
+		<title>HIRO Intro</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
+			html, body {
+  			height: 100%;
+  			width: 100%;
+  			padding: 0;
+  			margin: 0;
+  			overflow: hidden;
+			}
+
 			body {
 				background-color: #000;
 				color: #fff;
-				margin: 0px;
-				padding: 0;
-				overflow: hidden;
+			}
+
+			canvas {
+				position: absolute;
+			  top: 0;
+			  left: 0;
+			  width: 100%;
+			  height: 100%;
 			}
 		</style>
 	</head>
@@ -36,10 +49,10 @@
 				}
 				return parameters;
 			}
-			
+
 			var parameters = parseURLSearch();
 			var camera, scene, renderer;
-			var controls, effect;
+			var controls, effect, vrEffect;
 			var geometry, material, cube;
 
 			function init() {
@@ -68,20 +81,22 @@
 				document.body.appendChild( renderer.domElement );
 				scene = new THREE.Scene();
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-				
+
 				// parse url parameter and set appropriate rendering effect.
-				if ( parameters.mode === 'cardboard' ) {
-					controls = new THREE.DeviceOrientationControls( camera );
-					effect = new THREE.StereoEffect( renderer );
-				} else {
-					controls = new THREE.VRControls( camera );
-					effect = new THREE.VREffect( renderer );
-				}
-				effect.setSize( window.innerWidth, window.innerHeight );
+				// if ( parameters.mode === 'cardboard' ) {
+				// 	controls = new THREE.DeviceOrientationControls( camera );
+				// 	effect = new THREE.StereoEffect( renderer );
+				// } else {
+				controls = new THREE.VRControls( camera );
+				vrEffect = new THREE.VREffect( renderer );
+
+				vrEffect.setSize( window.innerWidth, window.innerHeight );
 
 				// bypass stereo/vr effect when in full-screen mode.
 				if (!parent.document.mozFullScreen) {
 					effect = renderer;
+				} else {
+					effect = vrEffect;
 				}
 
 				// announce to JAVRIS host that we are ready to go.
@@ -89,27 +104,33 @@
 
 				startup();
 
-				// accounce to JAVRIS host when you are done with this scene.  
+				// accounce to JAVRIS host when you are done with this scene.
 				// If this is part of a VRSequence, this will tell JAVRIS to move onto the next scene.
-				
+
 				// setTimeout( function() {
-				// 	VRClient.ended(); 
+				// 	VRClient.ended();
 				// }, 5000)
-				
+
 				window.addEventListener( 'resize', onWindowResize, false );
 				window.addEventListener( 'keypress', onKey, true);
 
 			}
 
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
+				// switch renderer to stereo if fs
+				if (parent.document.mozFullScreen) {
+					effect = vrEffect;
+				}
+				var innerWidth = window.innerWidth;
+				var innweHeight =  window.innerHeight;
+				camera.aspect = innerWidth / innweHeight;
 				camera.updateProjectionMatrix();
 
-				effect.setSize( window.innerWidth, window.innerHeight );
+				effect.setSize( innerWidth, innweHeight );
 			}
 
 			function onKey(event) {
-				
+
 				if (!(event.metaKey || event.altKey || event.ctrlKey)) {
 					event.preventDefault();
 				}

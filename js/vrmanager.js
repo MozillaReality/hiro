@@ -1,7 +1,7 @@
 window.VRManager = (function() {
   // options
   var START_WITH_INTRO = false;
-  
+
   /**
   * @param {string} dom container to load JAVRIS experience into.
   **/
@@ -9,43 +9,32 @@ window.VRManager = (function() {
     var self = this;
     self.container = document.querySelector(container);
 
-    self.console = document.querySelector('.launch .console');
-    self.log('\n\nStarting JS-DOS...');
-    self.log('\n\nHIMEM is testing virtual memory...done.');
-    self.log('Javascript Advanced VR Interaction System, Version 0.5\n\n');
-    self.log('Initializing Mozilla HIRO demo application v1');
 
-    //self.transition = new VRTransition(self.container.querySelector('#transition'));
-    //self.cameras = self.container.querySelectorAll('.camera');
     self.loader = self.container.querySelector('#loader');
     self.ui = new VRUi(self.container.querySelector('#ui'));
-    //self.hud = new VRHud(self.container.querySelector('#hud'));
-    // self.title = self.container.querySelector('#title');
     self.sequence = new VRSequence();
-    // self.cursor = new Cursor(self.hud);
-    // self.currentCursor = self.cursor;
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
       if (navigator.getVRDevices) {
-        self.log('looking for virtual reality hardware...');
+        console.log('looking for virtual reality hardware...');
         navigator.getVRDevices().then(function (devices) {
-          self.log('found ' + devices.length + ' devices');
+          console.log('found ' + devices.length + ' devices');
           for (var i = 0; i < devices.length; ++i) {
             if (devices[i] instanceof HMDVRDevice && !self.hmdDevice) {
               self.hmdDevice = devices[i];
-              self.log('found head mounted display device');
+              console.log('found head mounted display device');
             }
             if (devices[i] instanceof PositionSensorVRDevice &&
                 devices[i].hardwareUnitId == self.hmdDevice.hardwareUnitId &&
                 !self.positionDevice) {
               self.positionDevice = devices[i];
-              self.log('found motion tracking devices');
+              console.log('found motion tracking devices');
               break;
             }
           }
           if (self.hmdDevice && self.positionDevice) {
-            self.log('VR devices found.');
+            console.log('VR devices found.');
             self.vrIsReady = true;
             resolve();
             return;
@@ -56,7 +45,7 @@ window.VRManager = (function() {
         reject('no VR implementation found!');
       }
     }).catch(function (err) {
-      self.log('Error locating VR devices: ' + err);
+      console.log('Error locating VR devices: ' + err);
     });
 
     window.addEventListener("message", function (e) {
@@ -89,9 +78,9 @@ window.VRManager = (function() {
 
     self.vrReady.then(function () {
       if (self.vrIsReady) {
-        self.log('\npress `f` to enter VR');
+        console.log('VR Ready');
 
-        //self.startup();
+        self.startup();
       }
     });
   }
@@ -107,35 +96,16 @@ window.VRManager = (function() {
   VRManager.prototype.unloadCurrent = function() {
     var self = this;
 
-    self.log('cleaning up old demo');
+    console.log('cleaning up old demo');
     if (self.currentDemo) {
       self.currentDemo.destroy();
     }
   };
 
-  /**
-  * @param {string} url to load
-  * @param {object} opts - configuration options
-  * @param {boolean} opts.transition - enable transition
-  * @param {boolean} opts.showTitle - enable title for site to be loaded
-  * @param {object} opts.siteInfo - info about site to render into titling
-  **/
   VRManager.prototype.load = function (url, opts) {
     var self = this;
-    
-    // if (opts.transition == undefined) {
-    //   transition = true;
-    // } else {
-    //   transition = opts.transition
-    // } 
 
-    // if (transition) {
-    //   self.transition.fadeOut().then( loadTab );
-    // } else {
-    //   loadTab();
-    // }
-
-    self.log('loading url: ' + url);
+    console.log('loading url: ' + url);
     var newTab = new VRTab(url);
     newTab.hide();
     newTab.mount(self.loader);
@@ -154,23 +124,11 @@ window.VRManager = (function() {
 
       // We'll do this elsewhere eventually
       newTab.start();
-
-      // if (transition) {
-      //   self.transition.fadeIn();
-      // }
-      
-      // if (opts.showTitle && opts.siteInfo) {
-      //   console.log(opts.siteInfo);
-      //   var title = new VRTitle(self.title, self.title.querySelector('template'), opts.siteInfo);
-      // }
-
     });
-
     newTab.load();
-
   };
 
-  
+
   /*
   This runs when user enters VR mode.
   */
@@ -178,21 +136,22 @@ window.VRManager = (function() {
     var self = this;
     if (self.vrIsReady) {
       self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
-      
+
       // reserve pointer lock for the cursor.
       document.body.mozRequestPointerLock();
-      
-      // if (START_WITH_HUD) {
-      //   self.hud.start();
-      // }
+
       if (START_WITH_INTRO) {
         this.sequence.start();
       }
+
+      this.ui.start();
     }
   };
 
   VRManager.prototype.exitVR = function() {
+    console.log('Exiting VR mode');
     this.unloadCurrent();
+    this.ui.reset();
     this.startup();
   };
 
@@ -202,8 +161,6 @@ window.VRManager = (function() {
       self.positionDevice.zeroSensor();
     });
   };
-
-  
 
   return new VRManager('#container');
 
