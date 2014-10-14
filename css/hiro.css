@@ -35,7 +35,6 @@ body {
 #launch-button:hover, #launch-button:active {
   background: #00CAF2;
   color: #fff;
-  font-size: 1rem;
 }
 
 .instruction {
@@ -58,9 +57,10 @@ body {
 #container {
 }
 
-#container:-moz-full-screen {
+#container:-moz-full-screen, #container:-webkit-full-screen {
   cursor: none; /* hides cursor in fullscreen VR mode */
 }
+
 
 .fit {
   position: absolute;

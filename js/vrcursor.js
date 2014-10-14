@@ -84,8 +84,14 @@ VRCursor.prototype.onMouseMoved = function(e) {
     return false;
   }
 
-  var movementX = e.mozMovementX || 0;
-  var movementY = e.mozMovementY || 0;
+  var movementX = e.movementX ||
+      e.mozMovementX ||
+      e.webkitMovementX || 0;
+
+  var movementY = e.movementY ||
+      e.mozMovementY ||
+      e.webkitMovementY || 0;
+
   // var elHalfWidth = this.elWidth / 2;
   // var elHalfHeight = this.elHeight / 2;
   // var minX = -elHalfWidth;

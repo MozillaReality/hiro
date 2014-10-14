@@ -135,10 +135,24 @@ window.VRManager = (function() {
   VRManager.prototype.enableVR = function () {
     var self = this;
     if (self.vrIsReady) {
-      self.container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
+      // full screen
+      var fs = self.container;
+      if (fs.requestFullscreen) {
+        fs.requestFullscreen({ vrDisplay: self.hmdDevice });
+      } else if (fs.mozRequestFullScreen) {
+        fs.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
+      } else if (fs.webkitRequestFullScreen) {
+        fs.webkitRequestFullScreen({ vrDisplay: self.hmdDevice });
+      }
 
       // reserve pointer lock for the cursor.
-      document.body.mozRequestPointerLock();
+      var bodyEl = document.body;
+
+      bodyEl.requestPointerLock = bodyEl.requestPointerLock ||
+        bodyEl.mozRequestPointerLock ||
+        bodyEl.webkitRequestPointerLock;
+
+      bodyEl.requestPointerLock();
 
       if (START_WITH_INTRO) {
         this.sequence.start();
