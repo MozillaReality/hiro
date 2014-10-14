@@ -13,7 +13,7 @@ function VRHud() {
 
 		d23.onload = function() {
 			self.d23 = this;
-			self.setBackground();
+			//self.setBackground();
 			self.makeLayout().then(function() {
 				var date = new Date;
 				self.d23.setText('.clock-time', date.getHours() + ':' + date.getMinutes());
@@ -32,7 +32,6 @@ VRHud.prototype.setBackground = function() {
 	var material = new THREE.MeshBasicMaterial( {color: 0x00000, side:THREE.DoubleSide, transparent: true, opacity: 0.5 } );
 	var cylinder = new THREE.Mesh( geometry, material );
 	cylinder.renderDepth = 1;
-	//cylinder.position.set(0,0, -1000);
 	this.layout.add( cylinder );
 }
 

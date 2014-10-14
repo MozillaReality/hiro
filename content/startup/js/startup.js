@@ -58,6 +58,7 @@ function startup() {
 	loader.load( 'images/hiro-logo-3.json', function ( object ) {
 
 		logo = object;
+		//logo.position.set(0,0,0);
 		scene.add( logo );
 
 	});

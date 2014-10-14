@@ -157,6 +157,10 @@ VRUi.prototype.initKeyboardControls = function() {
   }
 
   window.addEventListener("keypress", onkey, true);
+
+  document.getElementById('launch-button').addEventListener('click', function() {
+		VRManager.enableVR();
+  });
 };
 
 VRUi.prototype.initResizeHandler = function() {

@@ -12,6 +12,8 @@ function DOM2three(uiJson) {
 	self.loadJson(uiJson)
 		.then( function(response) {
 				return JSON.parse(response)
+			}, function(err) {
+				console.error('Error parsing JSON ', err);
 			})
 		.then( function(response) {
 			self.data = response;
@@ -38,7 +40,7 @@ bits for three.js layouts
 DOM2three.prototype.loadTexture = function(src) {
 	var self = this;
 	return new Promise(function(resolve, reject) {
-		var texture = THREE.ImageUtils.loadTexture(self.path+src, undefined, function() {
+		var texture = THREE.ImageUtils.loadTexture(self.path + src, undefined, function() {
 			self.texture = texture;
 			resolve(texture);
 		});
@@ -115,7 +117,8 @@ DOM2three.prototype.makeMesh = function(item) {
 
 	// materials
 	// map the base texture to object.
-	var materials = [new THREE.MeshBasicMaterial({ map : tex, depthWrite: false, depthTest: false })];
+	//var materials = [new THREE.MeshBasicMaterial({ map : tex, depthWrite: false, depthTest: false })];
+	var materials = [new THREE.MeshBasicMaterial({ map : tex })];
 
 	// create additional materials for each replaceable piece of content.
 	if (item.content) {
