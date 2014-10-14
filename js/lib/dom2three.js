@@ -115,7 +115,7 @@ DOM2three.prototype.makeMesh = function(item) {
 
 	// materials
 	// map the base texture to object.
-	var materials = [new THREE.MeshBasicMaterial({ map : tex })];
+	var materials = [new THREE.MeshBasicMaterial({ map : tex, depthWrite: false, depthTest: false })];
 
 	// create additional materials for each replaceable piece of content.
 	if (item.content) {
@@ -176,7 +176,7 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 			var texture = new THREE.Texture(canvas);
 			texture.needsUpdate = true;
 
-			var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.DoubleSide } );
+			var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.FrontSide } );
 			material.transparent = true;
 
 			content.canvasMaterial.texture = texture;
