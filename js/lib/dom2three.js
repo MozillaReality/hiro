@@ -1,6 +1,6 @@
 'use strict';
 
-function DOM2three(uiJson) {
+function DOM2three(uiJson, opts) {
 	var self = this;
 	self.path = null;
 	self.data = null;
@@ -8,6 +8,10 @@ function DOM2three(uiJson) {
 	self.texture = null;
 	self.mesh = null;
 	self.item = null;
+
+	// options
+	self.opts = opts || {};
+	self.centerLayoutTo = self.opts.centerLayoutTo || null;
 
 	self.loadJson(uiJson)
 		.then( function(response) {
@@ -93,7 +97,7 @@ DOM2three.prototype.makeMesh = function(item) {
 	var self = this;
 
 	// geometry
-	var geometry = new THREE.PlaneGeometry( 1, 1 );
+	var geometry = new THREE.PlaneBufferGeometry( 1, 1 );
 
 	// texture positioning
 	var rect = item.rectangle;
@@ -106,8 +110,18 @@ DOM2three.prototype.makeMesh = function(item) {
 	item.texture = tex;
 
 	// positioning
-	var centerOffsetX = tex.image.width / 2;
+	var	centerOffsetX;
+
+	var centerItem = self.opts.centerLayoutTo;
+	if (centerItem) {
+		var node = self.getNode(centerItem);
+		centerOffsetX = node.rectangle.x + (node.rectangle.width / 2);
+	} else {
+		centerOffsetX = tex.image.height / 2;
+	}
+
 	var centerOffsetY = tex.image.height / 2;
+
 	var x = rect.x + (rect.width / 2) - centerOffsetX;
 	var y = rect.y + (rect.height / 2) - centerOffsetY;
 	item.position = {

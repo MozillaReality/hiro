@@ -1,18 +1,18 @@
 function VRTransition() {
-  
+
   var self = this;
   this.visible = false;
-  
+
   //create object
   self.object = new THREE.Object3D();
   self.object.visible = this.visible;
 
   var geometry = new THREE.IcosahedronGeometry( 25, 1 );
   var material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 1, side: THREE.DoubleSide } );
-  
+
   //fragment function: returns a group of meshes created from the faces of the geometry that is passed in
   function fragment( geometry, material ) {
-    
+
     var group = new THREE.Group();
 
     for ( var i = 0; i < geometry.faces.length; i ++ ) {
@@ -74,17 +74,17 @@ VRTransition.prototype.fadeOut = function () {
   var self = this;
 
   return new Promise( function(resolve, reject) {
-    
+
     self.object.visible = true;
     self.visible = true;
-    
+
     var pieces = self.object.children[0];
-    
+
     for ( var i = 0; i < pieces.children.length; i ++ ) {
 
       var object = pieces.children[i];
       var delay = i * 18;
-      
+
       var destZ = object.position.z;
       object.position.setZ( destZ - 5 );
       new TWEEN.Tween( object.position )
@@ -131,7 +131,7 @@ VRTransition.prototype.fadeIn = function () {
     //var destY = object.position.y + 100;
 
     new TWEEN.Tween( object.scale )
-      .to( { x:0, y:0, z:0  }, 500 )
+      .to( { x:0.001, y:0.001, z:0.001  }, 500 )
       .easing( TWEEN.Easing.Cubic.In )
       //.delay(50)
       .start();
@@ -142,7 +142,7 @@ VRTransition.prototype.fadeIn = function () {
       },1200)
 
   }
-  
+
 };
 
 

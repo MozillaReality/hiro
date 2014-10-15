@@ -10,7 +10,7 @@ function VRTitle() {
 
 		d23.onload = function() {
 			var mesh = d23.getMesh('#site-title');
-			mesh.position.set(0, 0, -500);
+			mesh.position.set(0, -73.5, -601);
 			mesh.scale.set(0.00001, 0.00001, 1);
 			mesh.visible = self.visible;
 			self.mesh = mesh;
@@ -27,12 +27,10 @@ VRTitle.prototype.show = function(item) {
 	self.d23.setText('.authors', item.userData.author);
 	self.d23.setText('.title h1', item.userData.title);
 
-	self.visible = true;
-	// todo: replace with animation
-
-	setTimeout(animate, 3000);
+	setTimeout(animate, 2000);
 
 	function animate() {
+		self.visible = true;
 		self.mesh.visible = true;
 
 		self.animateIn(self.mesh).then(function() {
@@ -45,8 +43,8 @@ VRTitle.prototype.show = function(item) {
 
 VRTitle.prototype.hide = function() {
 	self = this;
-	self.visible = false;
 	self.animateOut(self.mesh).then(function() {
+		self.visible = false;
 		self.mesh.visible = false;
 	});
 }
@@ -74,3 +72,4 @@ VRTitle.prototype.animateIn = function(mesh) {
 			.start();
 	});
 };
+

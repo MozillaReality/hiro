@@ -31,8 +31,8 @@ VRCursor.prototype.init = function( dom, camera, context ) {
   var raycaster = new THREE.Raycaster();
   var cursorPivot = new THREE.Object3D();
   var cursor = new THREE.Mesh(
-    new THREE.PlaneGeometry( 1, 1 ),
-    new THREE.MeshBasicMaterial( { color: 0x00ff00, side: THREE.DoubleSide } )
+    new THREE.SphereGeometry( 0.5, 5, 5 ),
+    new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } )
   );
 
   // set the depth of cursor

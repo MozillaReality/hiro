@@ -9,7 +9,9 @@ function VRHud() {
 	this.d23 = null;
 
 	this.ready = new Promise(function(resolve, reject) {
-		var d23 = new DOM2three('../data/hud/index.json');
+		var d23 = new DOM2three('../data/hud/index.json', {
+			centerLayoutTo: '#site-location'
+		});
 
 		d23.onload = function() {
 			self.d23 = this;

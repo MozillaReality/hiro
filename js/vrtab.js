@@ -83,8 +83,6 @@ VRTab.prototype.start = function () {
 VRTab.prototype.onWindowResize = function () {
   // This triggers the resize event within the iframe when the parent window resizes
   var iframe = this.iframe;
-  var height = iframe.contentWindow.document.body.scrollHeight;
   iframe.height = window.innerHeight;
   iframe.height = window.innerWidth;
-
 };
