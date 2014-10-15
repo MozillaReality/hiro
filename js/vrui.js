@@ -156,9 +156,9 @@ VRUi.prototype.initKeyboardControls = function() {
     }
 
     switch (event.keyCode) {
-      // case 70: // f
-      //   VRManager.enableVR();
-      //   break;
+      case 70: // f
+        VRManager.enableVR();
+        break;
       case 90: // z
         VRManager.zeroSensor();
         break;
