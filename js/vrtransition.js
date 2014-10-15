@@ -1,18 +1,18 @@
 function VRTransition() {
+  
   var self = this;
   this.visible = false;
+  
   //create object
   self.object = new THREE.Object3D();
-
-  var geometry = new THREE.IcosahedronGeometry( 400, 1 );
-  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, side: THREE.DoubleSide } );
-  mesh = new THREE.Mesh( geometry, material );
   self.object.visible = this.visible;
-  self.object.add(mesh);
-/*  
-  todo: explode animation needs to be enabled.
 
-  function explode( geometry, material ) {
+  var geometry = new THREE.IcosahedronGeometry( 25, 1 );
+  var material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 1, side: THREE.DoubleSide } );
+  
+  //fragment function: returns a group of meshes created from the faces of the geometry that is passed in
+  function fragment( geometry, material ) {
+    
     var group = new THREE.Group();
 
     for ( var i = 0; i < geometry.faces.length; i ++ ) {
@@ -29,29 +29,37 @@ function VRTransition() {
 
       var mesh = new THREE.Mesh( geometry2, material );
       mesh.position.sub( geometry2.center() );
+
+      var wireframe = new THREE.Mesh(
+        geometry2,
+        new THREE.MeshBasicMaterial( { color: 0xCCCCCC, wireframe: true, wireframeLinewidth: 3 } )
+      )
+      wireframe.position.sub( geometry2.center() );
+
+      mesh.add( wireframe );
       group.add( mesh );
 
     }
     return group;
   }
 
-  //break object into pieces
-  var pieces = explode( geometry, material );
+  //fragment the geometry
+  var pieces = fragment( geometry, material );
 
-  //set initial state of pieces
-  for ( var i = 0; i < pieces.children.length; i ++ ) {
+  //sort the pieces
+  pieces.children.sort( function ( a, b ) {
 
-    var object = pieces.children[ i ];
-    var destY = object.position.y;
+    return a.position.z - b.position.z;
+    //return a.position.x - b.position.x;     // sort x
+    //return b.position.y - a.position.y;   // sort y
 
-    object.position.setY( destY - 100 );
-    object.material.opacity = 0;
-    object.scale.set( 0.1, 0.1, 0.1 )
+  } );
 
-  }
-*/
-  
-  //mesh.material.opacity = 0;
+  pieces.rotation.set( 0, 0, 0 )
+
+  //add pieces to holder object
+  self.object.add( pieces );
+
 }
 
 VRTransition.prototype.init = function() {
@@ -62,42 +70,79 @@ VRTransition.prototype.update = function() {
   // update loop
 }
 
-VRTransition.prototype.fadeIn = function () {
-  var self = this;
-
-  // temporary set opacity to 0 after some time.
-  // todo: replace with animation
-  setTimeout(function() {
-    self.object.visible = false;
-    self.visible = false;
-  }, 1000);
-  
-  // new TWEEN.Tween( this.object.children[0].material )
-  //   .to( { opacity: 0 }, 1000 )
-  //   .start();
-
-};
-
 VRTransition.prototype.fadeOut = function () {
   var self = this;
 
-  // temporary set opacity to 1, resolve promise after some time.
-  // todo: replace with animation
   return new Promise( function(resolve, reject) {
-    console.log(self);
+    
     self.object.visible = true;
     self.visible = true;
     
+    var pieces = self.object.children[0];
+    
+    for ( var i = 0; i < pieces.children.length; i ++ ) {
+
+      var object = pieces.children[i];
+      var delay = i * 18;
+      
+      var destZ = object.position.z;
+      object.position.setZ( destZ - 5 );
+      new TWEEN.Tween( object.position )
+        .to( { z: destZ  }, 600 )
+        .delay( delay )
+        //.easing( TWEEN.Easing.Cubic.Out )
+        .start();
+
+      /*
+      object.rotation.set( 0, 0, 0.5 );
+      new TWEEN.Tween( object.rotation )
+        .to( { z:0  }, 800 )
+        .delay( delay )
+        //.easing( TWEEN.Easing.Cubic.Out )
+        .start();
+      */
+
+      object.scale.set( 0.001, 0.001, 0.001 )
+      new TWEEN.Tween( object.scale )
+        .to( { x:0.99, y:0.99, z:0.99  }, 600 )
+        .delay( delay )
+        //.easing( TWEEN.Easing.Cubic.Out )
+        .start();
+
+    }
+
+    //set this long enough to allow for the full number of pieces to play, with their delays
     setTimeout(function() {
       resolve();
-    },1000)
-    
-    // new TWEEN.Tween( this.object.children[0].material )
-    //   .to( { opacity: 1 }, 1000 )
-    //   .onComplete(function() {
-    //     resolve();
-    //   })
-    //   .start();
+    },2250)
+
   });
 };
+
+VRTransition.prototype.fadeIn = function () {
+  var self = this;
+
+  var pieces = self.object.children[0];
+
+  for ( var i = 0; i < pieces.children.length; i ++ ) {
+
+    var object = pieces.children[i];
+    //var delay = i * 0.15;
+    //var destY = object.position.y + 100;
+
+    new TWEEN.Tween( object.scale )
+      .to( { x:0, y:0, z:0  }, 500 )
+      .easing( TWEEN.Easing.Cubic.In )
+      //.delay(50)
+      .start();
+
+      setTimeout(function() {
+        self.object.visible = false;
+        self.visible = false;
+      },1200)
+
+  }
+  
+};
+
 
