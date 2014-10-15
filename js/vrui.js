@@ -6,7 +6,7 @@ function VRUi(container) {
 	this.active = false;
 	this.hud = new VRHud();
 	this.cursor = new VRCursor();
-	this.title = new VRTitle();
+	this.title = null;
 	this.transition = new VRTransition();
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
 
@@ -16,15 +16,18 @@ function VRUi(container) {
 	this.hud.ready.then(function() {
 		self.scene.add(self.hud.layout);
 
+		self.scene.add(self.transition.init());
+
+		// cursor & title needs some positional information from HUD before init.
+		var title = new VRTitle();
+		title.ready.then(function() {
+			self.scene.add(title.mesh);
+		});
+		self.title = title;
+
 		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 		self.scene.add(cursorLayout);
 	})
-
-	this.title.ready.then(function() {
-		self.scene.add(self.title.mesh);
-	});
-
-	this.scene.add(self.transition.init());
 
 	//self.scene.add(self.gridlines());
 
@@ -54,13 +57,18 @@ VRUi.prototype.load = function(url, item) {
 			self.transition.fadeOut()
 			.then(function() {
 
-				self.hud.d23.setText('.authors', item.userData.author);
-				self.hud.d23.setText('.title h1', item.userData.title);
+				self.title.d23.setText('.authors', item.userData.author);
+				self.title.d23.setText('.title h1', item.userData.title);
 
 				VRManager.load(url);
 
-				self.title.show(item);
+				//self.title.show(item);
 				self.transition.fadeIn();
+
+				// hide title after set amount of time
+				setTimeout(function() {
+					self.title.hide();
+				}, 3000);
 			})
 		});
 };
@@ -72,9 +80,11 @@ VRUi.prototype.toggleHud = function() {
 
 	if (!this.hud.visible) {
 		this.hud.show();
+		this.title.show();
 		this.cursor.enable();
 	} else {
 		this.hud.hide();
+		this.title.hide();
 		this.cursor.disable();
 	}
 };

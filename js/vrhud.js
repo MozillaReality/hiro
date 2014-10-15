@@ -40,6 +40,7 @@ VRHud.prototype.setBackground = function() {
 VRHud.prototype.setInitial = function() {
 	var items = this.hudItems;
 	if (!this.visible) {
+		// set scale of items to near 0 so that transitions playback properly from start.
 		for (var i = 0; i < items.length; i++) {
 			var mesh = items[i].mesh;
 			mesh.scale.set(0.00001, 0.00001, 1);

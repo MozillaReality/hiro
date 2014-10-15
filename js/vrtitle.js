@@ -10,10 +10,22 @@ function VRTitle() {
 
 		d23.onload = function() {
 			var mesh = d23.getMesh('#site-title');
-			mesh.position.set(0, -73.5, -601);
+
+			// get location in the HUD for where title should fit.
+			var hudd23 = VRManager.ui.hud.d23;
+			var hudRect = hudd23.getNode('#site-location').rectangle;
+			var y = hudRect.y + (mesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
+
+			// set mesh scale and position
+			mesh.position.set(0, -y, -601);
 			mesh.scale.set(0.00001, 0.00001, 1);
 			mesh.visible = self.visible;
+
+			if (self.visible) {
+				self.show();
+			}
 			self.mesh = mesh;
+
 			resolve();
 		};
 	});
@@ -21,24 +33,13 @@ function VRTitle() {
 	return this;
 }
 
-VRTitle.prototype.show = function(item) {
+VRTitle.prototype.show = function() {
 	var self = this;
 
-	self.d23.setText('.authors', item.userData.author);
-	self.d23.setText('.title h1', item.userData.title);
+	self.visible = true;
+	self.mesh.visible = true;
 
-	setTimeout(animate, 2000);
-
-	function animate() {
-		self.visible = true;
-		self.mesh.visible = true;
-
-		self.animateIn(self.mesh).then(function() {
-			setTimeout(function() {
-				self.hide();
-			}, 3000);
-		});
-	}
+	self.animateIn(self.mesh);
 }
 
 VRTitle.prototype.hide = function() {

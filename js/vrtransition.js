@@ -7,7 +7,7 @@ function VRTransition() {
   self.object = new THREE.Object3D();
   self.object.visible = this.visible;
 
-  var geometry = new THREE.IcosahedronGeometry( 25, 1 );
+  var geometry = new THREE.IcosahedronGeometry( 700, 1 );
   var material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 1, side: THREE.DoubleSide } );
 
   //fragment function: returns a group of meshes created from the faces of the geometry that is passed in

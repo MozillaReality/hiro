@@ -8,10 +8,18 @@ function DOM2three(uiJson, opts) {
 	self.texture = null;
 	self.mesh = null;
 	self.item = null;
+	self.centerOffsetX = null;
+	self.centerOffsetY = null;
 
 	// options
 	self.opts = opts || {};
 	self.centerLayoutTo = self.opts.centerLayoutTo || null;
+
+	function callonloadcallback() {
+		if (typeof self.onload == 'function') {
+			self.onload.call(self);
+		}
+	}
 
 	self.loadJson(uiJson)
 		.then( function(response) {
@@ -26,13 +34,19 @@ function DOM2three(uiJson, opts) {
 					.then(function() {
 						// data loaded
 						// texture loaded
-
-						if (typeof self.onload == 'function') {
-							self.onload.call(self);
-						}
+						self.calculateCenterOffset();
+						callonloadcallback();
 					})
+					.catch(function(err) {
+						console.warn(err);
+						callonloadcallback();
+					})
+					;
 			}
-	});
+		})
+		.catch(function(err) {
+			console.error('Error loading JSON ', err);
+		});
 
 	return this;
 }
@@ -44,10 +58,14 @@ bits for three.js layouts
 DOM2three.prototype.loadTexture = function(src) {
 	var self = this;
 	return new Promise(function(resolve, reject) {
-		var texture = THREE.ImageUtils.loadTexture(self.path + src, undefined, function() {
-			self.texture = texture;
-			resolve(texture);
-		});
+		var path = self.path + src;
+		var texture = THREE.ImageUtils.loadTexture(path, undefined,
+			function() {
+				self.texture = texture;
+				resolve(texture);
+			}, function() {
+				reject('texture not loaded: ' + path);
+			});
 	})
 }
 
@@ -89,6 +107,25 @@ DOM2three.prototype.getAllDisplayItems = function() {
 	return collection;
 }
 
+DOM2three.prototype.calculateCenterOffset = function() {
+	var	centerOffsetX, centerOffsetY;
+
+	var centerItem = this.opts.centerLayoutTo;
+	var texture = this.texture;
+
+	if (centerItem) {
+		var node = this.getNode(centerItem);
+		centerOffsetX = node.rectangle.x + (node.rectangle.width / 2);
+	} else {
+		centerOffsetX = texture.image.width / 2;
+	}
+
+	centerOffsetY = texture.image.height / 2;
+
+	this.centerOffsetY = centerOffsetY;
+	this.centerOffsetX = centerOffsetX;
+};
+
 DOM2three.prototype.makeMesh = function(item) {
 	if (!item) {
 		console.error('no item specified');
@@ -109,21 +146,9 @@ DOM2three.prototype.makeMesh = function(item) {
 	tex.needsUpdate = true;
 	item.texture = tex;
 
-	// positioning
-	var	centerOffsetX;
-
-	var centerItem = self.opts.centerLayoutTo;
-	if (centerItem) {
-		var node = self.getNode(centerItem);
-		centerOffsetX = node.rectangle.x + (node.rectangle.width / 2);
-	} else {
-		centerOffsetX = tex.image.height / 2;
-	}
-
-	var centerOffsetY = tex.image.height / 2;
-
-	var x = rect.x + (rect.width / 2) - centerOffsetX;
-	var y = rect.y + (rect.height / 2) - centerOffsetY;
+	// item positioning
+	var x = rect.x + (rect.width / 2) - self.centerOffsetX;
+	var y = rect.y + (rect.height / 2) - self.centerOffsetY;
 	item.position = {
 		x: x,
 		y: y

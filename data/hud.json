@@ -16,7 +16,6 @@
 	  },
 	  {
 	    "selector": "#site-location",
-	    "display": true,
 	    "content": [
 	      {
 	        "selector": ".authors",
