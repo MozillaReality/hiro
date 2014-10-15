@@ -17,7 +17,7 @@ function VRTitle() {
 			var y = hudRect.y + (mesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
 
 			// set mesh scale and position
-			mesh.position.set(0, -y, -601);
+			mesh.position.set(0, -y, -550);
 			mesh.scale.set(0.00001, 0.00001, 1);
 			mesh.visible = self.visible;
 

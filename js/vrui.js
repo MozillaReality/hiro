@@ -67,7 +67,9 @@ VRUi.prototype.load = function(url, item) {
 
 				// hide title after set amount of time
 				setTimeout(function() {
-					self.title.hide();
+					if (!self.hud.visible) {
+						self.title.hide();
+					}
 				}, 3000);
 			})
 		});
