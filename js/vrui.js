@@ -6,6 +6,7 @@ function VRUi(container) {
 	this.active = false;
 	this.hud = new VRHud();
 	this.cursor = new VRCursor();
+	this.loading = new VRLoading();
 	this.title = null;
 	this.transition = new VRTransition();
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
@@ -17,6 +18,9 @@ function VRUi(container) {
 		self.scene.add(self.hud.layout);
 
 		self.scene.add(self.transition.init());
+
+		// loading progress
+		self.scene.add(self.loading.mesh);
 
 		// cursor & title needs some positional information from HUD before init.
 		var title = new VRTitle();
@@ -36,10 +40,7 @@ function VRUi(container) {
 	return this;
 };
 
-// temporary wireframe lines for testing purposes.
-/*
-todo: bug: the gridlines from the UI renderer to not match content.
-*/
+// temporary wireframe lines for context alignment
 VRUi.prototype.gridlines = function() {
 	var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
 	var material = new THREE.MeshBasicMaterial( { color: 0x0000ff, wireframe: true } );
@@ -62,8 +63,11 @@ VRUi.prototype.load = function(url, item) {
 
 				VRManager.load(url);
 
+				self.loading.show();
+
 				VRManager.readyCallback = function() {
-					//self.title.show(item);
+					self.loading.hide();
+
 					self.transition.fadeIn();
 
 					// hide title after set amount of time
@@ -120,7 +124,7 @@ VRUi.prototype.stop = function() {
 
 VRUi.prototype.reset = function() {
 	var self = this;
-
+	self.title.hide();
 	self.cursor.disable();
 	self.hud.hide().then(function() {
 		self.stop();
@@ -134,6 +138,7 @@ VRUi.prototype.animate = function() {
 
 	self.controls.update();
 	self.transition.update();
+	self.loading.update();
 	self.cursor.update(headQuat);
 
 	// tween
