@@ -124,7 +124,7 @@ VRUi.prototype.stop = function() {
 
 VRUi.prototype.reset = function() {
 	var self = this;
-
+	self.title.hide();
 	self.cursor.disable();
 	self.hud.hide().then(function() {
 		self.stop();
