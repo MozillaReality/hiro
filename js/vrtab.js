@@ -37,11 +37,23 @@ VRTab.prototype.listenFor = function (type, handler) {
   var self = this;
 
   function handle(e) {
-    var href = self.iframe.contentWindow.location.href;
-    //console.log('saw message', href, e.source.location.href, e);
-    if (e.source.location.href === href &&
+    /*
+    ideall the iframe href and event source href match, but because
+    we only have a single content iframe, we should be able to make the
+    assumption that the current iframe loaded is the one that is dispatching
+    the events.
+
+    because of cross domain security, we cannot reliably access the iframe href.
+    */
+
+    //var href = self.iframe.contentWindow.location.href;
+    // if (e.source.location.href === href &&
+    //     e.data.type === type) {
+
+    if (self.iframe.contentWindow === e.source &&
         e.data.type === type) {
-      console.log(e.data.type, href);
+
+      console.log('message received: ' + e.data.type);
       handler(e.data);
     }
   }

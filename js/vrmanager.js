@@ -102,7 +102,7 @@ window.VRManager = (function() {
     }
   };
 
-  VRManager.prototype.load = function (url, opts) {
+  VRManager.prototype.load = function (url) {
     var self = this;
 
     console.log('loading url: ' + url);

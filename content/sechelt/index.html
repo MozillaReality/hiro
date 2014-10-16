@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl</title>
+		<title>Sechelt</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -15,8 +15,6 @@
 		</style>
 	</head>
 
-
-
 	<body>
 
 		<script src="js/three.min.js"></script>
@@ -27,13 +25,13 @@
 		<script src="js/DeviceOrientationControls.js"></script>
 		<script src="js/StereoEffect.js"></script>
 
-		<script src="js/C4DLineLoader.js"></script>
+		<script src="js/C4DCurveLoader.js"></script>
 
-		<script src="../../js/vrclient.js"></script>
+		<script src="js/vrclient.js"></script>
 
 		<script>
 
-			var parseURLSearch = function () {
+			var parameters = ( function () {
 				var parameters = {};
 				var parts = window.location.search.substr( 1 ).split( '&' );
 				for ( var i = 0; i < parts.length; i ++ ) {
@@ -41,9 +39,7 @@
 					parameters[ parameter[ 0 ] ] = parameter[ 1 ];
 				}
 				return parameters;
-			}
-
-			var parameters = parseURLSearch();
+			} )();
 
 			var camera, scene, renderer;
 			var controls, effect;
@@ -55,19 +51,18 @@
 			var cameraPath;
 			var dolly;
 
-			var loader = new THREE.C4DLineLoader();
-			loader.load( 'flightpath-ascii.txt', function ( line ) {
+			/*
+			var loader = new THREE.C4DCurveLoader();
+			loader.load( 'models/flightpath-1.txt', function ( line ) {
 
 				cameraPath = line;
 
 			} );
+			*/
 
 			init();
-			animate();
+			//animate();
 
-			VRClient.ready().then(function() {
-				console.log('kicked off ready');
-			});
 
 			function init() {
 
@@ -76,7 +71,7 @@
 				renderer.setClearColor( 0x404040 );
 				document.body.appendChild( renderer.domElement );
 
-				//
+				// scene
 
 				scene = new THREE.Scene();
 				scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
@@ -86,7 +81,7 @@
 				scene.add( dolly );
 
 				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 2000 );
-				dolly.add( camera )
+				dolly.add( camera );
 
 				if ( parameters.mode === 'cardboard' ) {
 
@@ -151,6 +146,8 @@
 				sky = new THREE.Mesh( geometry, material );
 				scene.add( sky );
 
+				// water waves
+
 				var geometry = new THREE.Geometry();
 
 				var vertices = geometry.vertices;
@@ -211,15 +208,14 @@
 				water.renderDepth = 2;
 				scene.add( water );
 
-				//
+				// load scene
 
 				var loader = new THREE.ObjectLoader();
-				loader.load( 'flightpath-test-5.json', function ( object ) {
+				loader.load( 'models/scene-1.json', function ( object ) {
 
 					var landscape = object.getObjectByName( 'lanscape' );
 
 					var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
-					// reflection.material.color.setHex( 0xdac5c9 );
 					reflection.material.side = THREE.BackSide;
 					reflection.position.y = 7.7;
 					reflection.scale.y = -1;
@@ -227,7 +223,48 @@
 
 					scene.add( object );
 
+					// load sounds
+
+					var listener = new THREE.AudioListener();
+					camera.add( listener );
+
+					var sound = new THREE.Audio( listener );
+					sound.load( 'sounds/78389__inchadney__seagulls.ogg' );
+					sound.position.set( 475, 50, 850 );
+					sound.setLoop( true );
+					sound.setRefDistance( 100 );
+					scene.add( sound );
+
+					var sound = new THREE.Audio( listener );
+					sound.load( 'sounds/23707__hazure__seagull.ogg' );
+					sound.position.set( 10, 50, -200 );
+					sound.setLoop( true );
+					sound.setRefDistance( 100 );
+					scene.add( sound );
+
+					var sound = new THREE.Audio( listener );
+					sound.load( 'sounds/235428__allanz10d__calm-ocean-breeze-simulation.ogg' );
+					sound.position.set( -30, 0, -750 );
+					sound.setLoop( true );
+					sound.setRefDistance( 100 );
+					scene.add( sound );
+
+					// load camera path
+
+					var loader = new THREE.C4DCurveLoader();
+					loader.load( 'models/flightpath-1.txt', function ( line ) {
+
+						cameraPath = line;
+						
+						// once scene and camera path are loaded, start animate() and tell VRClient ready.
+
+						animate();
+						VRClient.ready();
+
+					} );
+
 				} );
+
 
 				//
 

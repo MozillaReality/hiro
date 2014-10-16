@@ -62,15 +62,19 @@ VRUi.prototype.load = function(url, item) {
 
 				VRManager.load(url);
 
-				//self.title.show(item);
-				self.transition.fadeIn();
+				VRManager.readyCallback = function() {
+					//self.title.show(item);
+					self.transition.fadeIn();
 
-				// hide title after set amount of time
-				setTimeout(function() {
-					if (!self.hud.visible) {
-						self.title.hide();
-					}
-				}, 3000);
+					// hide title after set amount of time
+					setTimeout(function() {
+						if (!self.hud.visible) {
+							self.title.hide();
+						}
+					}, 3000);
+				}
+
+
 			})
 		});
 };
