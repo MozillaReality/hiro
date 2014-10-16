@@ -16,6 +16,10 @@ function VRTitle() {
 			var hudRect = hudd23.getNode('#site-location').rectangle;
 			var y = hudRect.y + (mesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
 
+			// loading indicator
+			var loading = VRManager.ui.loading.mesh;
+			loading.position.set(0, -y, -500);
+
 			// set mesh scale and position
 			mesh.position.set(0, -y, -550);
 			mesh.scale.set(0.00001, 0.00001, 1);
