@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
-  font-family: Fira Sans;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
 }
 
 body {
@@ -9,58 +10,18 @@ body {
   background: #333;
   overflow: hidden;
   margin: 0;
-  font-size: 10px;
-}
-
-.launch {
-  width: 100%;
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  text-align: center;
-}
-
-#launch-button {
-  background: #fff;
-  color: #000;
-  width: 200px;
-  height: 40px;
-  font-size: 1.25rem;
-  border: 0;
-  cursor: pointer;
-  text-transform: uppercase;
+  font-size: 12px;
 }
 
 
-#launch-button:hover, #launch-button:active {
-  background: #00CAF2;
-  color: #fff;
-}
+/*---------- CONTAINER ----------*/
 
-.instruction {
-  color: #fff;
-  font-size: 1rem;
-  display: inline-block;
-  margin-top: 1rem;
-  text-transform: uppercase;
-}
-.instruction-letter {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  line-height: 2rem;
-  border: 1px solid white;
-  margin-bottom: 2rem;
-}
-
-/* containing element that will be made fullscreen */
-#container {
+#container { /* containing element that will be made fullscreen */
 }
 
 #container:-moz-full-screen, #container:-webkit-full-screen {
   cursor: none; /* hides cursor in fullscreen VR mode */
 }
-
 
 .fit {
   position: absolute;
@@ -76,6 +37,83 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+
+/*---------- LAUNCH ----------*/
+
+#launch {
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  text-align: center;
+}
+
+#logo {
+  background: url('/content/landing/images/hiro-logo-1.svg') 50% 100% no-repeat;
+  width: 500px;
+  height: 200px;
+  display: inline-block;
+  margin: 0;
+}
+
+#tagline {
+  color: white;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  margin: 1.5rem;
+
+}
+
+#launch-button {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  background: rgba( 255, 255, 255, 0 );
+  color: #fff;
+  font-size: 2.5rem;
+  letter-spacing: 0.05rem;
+  padding: 0.5rem 1.5rem;
+  border: 0.4rem solid white;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: -0.5rem 0.5rem 0px rgba( 255, 255, 255, 0.25 );
+}
+
+#launch-button:hover, #launch-button:active {
+  color: rgba( 23, 150, 218, 1 );
+  background: #fff;
+}
+
+#launch-credits {
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.8rem;
+  line-height: 1.25rem;
+  padding: 4rem 0 10rem;
+}
+
+#launch-credits b {
+  font-weight: 700;
+}
+
+.instruction {
+  color: #fff;
+  font-size: 1rem;
+  display: inline-block;
+  margin-top: 1rem;
+  text-transform: uppercase;
+}
+
+.instruction-letter {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  border: 1px solid white;
+  margin-bottom: 2rem;
 }
 
 

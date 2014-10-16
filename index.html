@@ -5,7 +5,7 @@
     <title>JAVRIS</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/hiro.css">
-    <link rel="stylesheet" href="fonts/fira/fira.css">
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <!-- this is a containing element that will be made fullscreen -->
@@ -16,37 +16,55 @@
       <!-- This is the container in which all the UI elements load into -->
       <div id="ui" class="fit"></div>
 
-    </div>
-    <div class="launch">
-      <button id="launch-button">Launch VR</button>
-
-      <br/>
-
-      <div class="instruction">
-        <span class="instruction-letter">Z</span> &nbsp; to center view
       </div>
-    </div>
+      <div id="launch">
 
-    <script src="js/vendor/three.min.js"></script>
-    <script src="js/vendor/tween.min.js"></script>
-    <script src="js/vendor/VRControls.js"></script>
-    <script src="js/vendor/VREffect.js"></script>
-    <script src="js/vendor/DeviceOrientationControls.js"></script>
-    <script src="js/vendor/StereoEffect.js"></script>
+        <div id="logo"></div>
+        <br/>
+        <div id="tagline">Step into the web</div>
 
-    <script src="js/lib/dom2three.js"></script>
+        <br/>
 
-    <script src="js/vrutils.js"></script>
-    <script src="js/vrtab.js"></script>
-    <script src="js/vrtransition.js"></script>
-    <script src="js/vrsound.js"></script>
-    <script src="js/vrcursor.js"></script>
-    <script src="js/vrhud.js"></script>
-    <script src="js/vrtitle.js"></script>
-    <script src="js/vrsequence.js"></script>
-    <script src="js/vrui.js"></script>
-    <script src="js/vrmanager.js"></script>
+        <button id="launch-button">Enter VR</button>
 
-    <script src="js/vrclient.js"></script>
-  </body>
-</html>
+        <br/>
+
+        <div id="launch-credits">
+
+          Mozilla Research Presents a Virtual Reality Web Experiment<br/>
+          Josh Carpenter  |  Casey Yee  |  Matthew Claypotch<br/>
+          vlad Vukivevic  |  Diego Marcos  |  Ricardo Cabello<br/>
+          <b>Built with WebGL</b>
+
+        </div>
+
+        <!--
+        <div class="instruction">
+          <span class="instruction-letter">Z</span> &nbsp; to center view
+        </div>
+        -->
+      </div>
+
+      <script src="js/vendor/three.min.js"></script>
+      <script src="js/vendor/tween.min.js"></script>
+      <script src="js/vendor/VRControls.js"></script>
+      <script src="js/vendor/VREffect.js"></script>
+      <script src="js/vendor/DeviceOrientationControls.js"></script>
+      <script src="js/vendor/StereoEffect.js"></script>
+
+      <script src="js/lib/dom2three.js"></script>
+
+      <script src="js/vrutils.js"></script>
+      <script src="js/vrtab.js"></script>
+      <script src="js/vrtransition.js"></script>
+      <script src="js/vrsound.js"></script>
+      <script src="js/vrcursor.js"></script>
+      <script src="js/vrhud.js"></script>
+      <script src="js/vrtitle.js"></script>
+      <script src="js/vrsequence.js"></script>
+      <script src="js/vrui.js"></script>
+      <script src="js/vrmanager.js"></script>
+
+      <script src="js/vrclient.js"></script>
+    </body>
+  </html>
