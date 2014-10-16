@@ -5,7 +5,7 @@
     <title>JAVRIS</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/hiro.css">
-    <link rel="stylesheet" href="fonts/fira/fira.css">
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <!-- this is a containing element that will be made fullscreen -->
@@ -16,14 +16,28 @@
       <!-- This is the container in which all the UI elements load into -->
       <div id="ui" class="fit"></div>
 
-    </div>
-    <div class="launch">
-      <button id="launch-button">Launch VR</button>
+      </div>
+      <div id="launch">
 
-      <br/>
+        <div id="logo"></div>
+        <br/>
+        <div id="tagline">Step into the web</div>
 
-      <div class="instruction">
-        <span class="instruction-letter">Z</span> &nbsp; to center view
+        <br/>
+
+        <button id="launch-button">Enter VR</button>
+
+        <br/>
+
+        <div id="launch-credits">
+
+          Mozilla Research Presents a Virtual Reality Web Experiment<br/>
+          Josh Carpenter  |  Casey Yee  |  Matthew Claypotch<br/>
+          vlad Vukivevic  |  Diego Marcos  |  Ricardo Cabello<br/>
+          <b>Built with WebGL</b>
+
+        </div>
+
       </div>
     </div>
 
