@@ -48,7 +48,7 @@
 	    ],
 	    "userData": {
 	      "title": "SECHELT",
-	      "url": "./content/sechelt/index.html",
+	      "url": "http://mozvr.github.io/sechelt",
 	      "author": "JOSH CARPENTER, MR. DOOB",
 	      "tech": "three.js"
 	    }
@@ -60,14 +60,14 @@
 	    "content": [
 	      {
 	        "selector": ".fav-inner",
-	        "content": "Information Dive"
+	        "content": "Polar Sea trailer"
 	      }
 	    ],
 	    "userData": {
-	      "title": "INFORMATION DIVING",
-	      "url": "./content/cubes/index.html",
-	      "author": "MR. DOOB",
-	      "tech": "three.js"
+	      "title": "POLAR SEA TRAILER",
+	      "url": "./content/eleVR-Web-Player/elevr-player.html",
+	      "author": "DEEP INC",
+	      "tech": "WEBGL"
 	    }
 	  },
 	  {
@@ -77,12 +77,12 @@
 	    "content": [
 	      {
 	        "selector": ".fav-inner",
-	        "content": "EleVR Video"
+	        "content": "Flying Cubes"
 	      }
 	    ],
 	    "userData": {
-	      "title": "ELEVR VIDEO PLAYER",
-	      "url": "./content/sechelt/index.html",
+	      "title": "FLYING CUBES",
+	      "url": "./content/cubes/index.html",
 	      "author": "SOMEONE GREAT",
 	      "tech": "WebGL"
 	    }
