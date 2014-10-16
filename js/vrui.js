@@ -5,7 +5,7 @@ function VRUi(container) {
 	this.container = container;
 	this.active = false;
 	this.hud = new VRHud();
-	this.cursor = new VRCursor();
+	this.cursor = new VRCursor('mouseSync');
 	this.loading = new VRLoading();
 	this.title = null;
 	this.transition = new VRTransition();

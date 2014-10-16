@@ -1,8 +1,19 @@
-function VRCursor() {
+function VRCursor(mode) {
   this.enabled = false;
   this.context = null;
   this.layout = null;
+  this.rotation = {
+    x: 0,
+    y: 0
+  };
+  this.mode = this.modes[mode] || this.modes.centered;
 }
+
+VRCursor.modes = VRCursor.prototype.modes = {
+  centered: 1,
+  mouseSync: 2,
+  inFOV: 3
+};
 
 // enable cursor with context, otherwise pick last
 VRCursor.prototype.enable = function(context) {
@@ -77,6 +88,16 @@ VRCursor.prototype.bindEvents = function() {
   body.addEventListener("click", onMouseClicked, false);
 }
 
+VRCursor.prototype.clampAngleTo = function(angle, boundary) {
+  if (angle < -boundary) {
+    return -boundary;
+  }
+  if (angle > boundary) {
+    return boundary;
+  }
+  return angle;
+};
+
 // VR Cursor events
 VRCursor.prototype.onMouseMoved = function(e) {
   e.preventDefault();
@@ -98,15 +119,15 @@ VRCursor.prototype.onMouseMoved = function(e) {
   // var maxX = elHalfWidth;
   // var minY = -elHalfHeight;
   // var maxY = elHalfHeight;
-  var x = this.position.x;
-  var y = this.position.y;
-  x += movementX;
-  y += movementY;
-
-  this.position = {
-    x: x,
-    y: y
-  };
+  var pixelsToDegreesFactor = 0.00025;
+  // Rotation in degrees
+  var x = (movementX * pixelsToDegreesFactor) % 360;
+  var y = (movementY * pixelsToDegreesFactor) % 360;
+  // To Radians
+  this.rotation.x -= y * 2 * Math.PI;
+  this.rotation.y -= x * 2 * Math.PI;
+  this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 6);
+  this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 6);
 
   this.updateCursorIntersection();
 };
@@ -123,34 +144,48 @@ VRCursor.prototype.onMouseClicked = function(e) {
 
 VRCursor.prototype.update = function(headQuat) {
   var cursorPivot = this.cursorPivot;
-  var cursor = this.cursor;
-  var pixelsToDegreesFactor = 0.00025;
-  // Rotation in degrees
-  var x = (this.position.x * pixelsToDegreesFactor) % 360;
-  var y = (this.position.y * pixelsToDegreesFactor) % 360;
-  // To Radians
-  var xAngle = - y * 2 * Math.PI;
-  var yAngle = - x * 2 * Math.PI;
   // Quaternion expressing the mouse orientation
-  var rotation = new THREE.Euler(xAngle, yAngle, 0);
+  var rotation = new THREE.Euler(this.rotation.x, this.rotation.y, 0);
   var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
-  // If head quaternion is null we make the identity so
-  // it doesn't affect the rotation composition
-  if (headQuat[0] === 0 &&
-      headQuat[1] === 0 &&
-      headQuat[2] === 0) {
-    headQuat[3] = 1;
-  }
+  var headQuat = this.camera.quaternion;
+  // // If head quaternion is null we make the identity so
+  // // it doesn't affect the rotation composition
+  // if (headQuat[0] === 0 &&
+  //     headQuat[1] === 0 &&
+  //     headQuat[2] === 0) {
+  //   headQuat[3] = 1;
+  // }
   // Multiplies head and mouse rotation to calculate the final
   // position of the cursor
-  var pivotQuat = new THREE.Quaternion()
-  .fromArray(headQuat)
-  .multiply(mouseQuat)
-  .normalize();
+  var pivotQuat = new THREE.Quaternion();
+  var cameraCursorAngle = this.cameraCursorAngle();
+
+  if (this.mode !== this.modes.inFOV ||
+      (this.mode === this.modes.inFOV && cameraCursorAngle >= (Math.PI / 4))) {
+    pivotQuat.multiply(headQuat);
+    //pivotQuat.fromArray(headQuat);
+  }
+
+  if (this.mode !== this.modes.centered) {
+    pivotQuat.multiply(mouseQuat).normalize();
+  }
+
   cursorPivot.setRotationFromQuaternion(pivotQuat);
+
   // It updates hits
   this.updateCursorIntersection();
 };
+
+VRCursor.prototype.cameraCursorAngle = function() {
+  var cursor = this.cursorPivot;
+  var camera = this.camera;
+  var cameraVector = new THREE.Vector3( 0, 0, -1 );
+  var cursorVector = new THREE.Vector3( 0, 0, -1 );
+  cameraVector.applyQuaternion(camera.quaternion);
+  cursorVector.applyQuaternion(cursor.quaternion);
+  return Math.abs(cursorVector.angleTo(cameraVector));
+};
+
 
 // Detect intersections with three.js scene objects (context) and dispatch mouseover and mouseout events.
 VRCursor.prototype.updateCursorIntersection = function() {
