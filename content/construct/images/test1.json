@@ -1,0 +1,83 @@
+{
+	"metadata": {
+		"version": 4.3,
+		"type": "Object",
+		"generator": "ObjectExporter"
+	},
+	"geometries": [
+		{
+			"uuid": "46C15223-38D8-47CA-9CF8-05D807C50B55",
+			"type": "CylinderGeometry",
+			"radiusTop": 20,
+			"radiusBottom": 20,
+			"height": 100,
+			"radialSegments": 8,
+			"heightSegments": 1,
+			"openEnded": false
+		},
+		{
+			"uuid": "6611BF04-9567-4046-A7D7-D1CDE06DFBC1",
+			"type": "TorusGeometry",
+			"radius": 100,
+			"tube": 40,
+			"radialSegments": 8,
+			"tubularSegments": 6,
+			"arc": 6.283185307179586
+		}],
+	"materials": [
+		{
+			"uuid": "E87D9FF0-A77D-473F-9E9B-3EF0C8274859",
+			"type": "MeshPhongMaterial",
+			"color": 16777215,
+			"ambient": 16777215,
+			"emissive": 0,
+			"specular": 1118481,
+			"shininess": 30,
+			"opacity": 1,
+			"transparent": false,
+			"wireframe": false
+		},
+		{
+			"uuid": "3ABF82A3-844D-4406-AEDF-169006BE7EF3",
+			"type": "MeshPhongMaterial",
+			"color": 16777215,
+			"ambient": 16777215,
+			"emissive": 0,
+			"specular": 1118481,
+			"shininess": 30,
+			"opacity": 1,
+			"transparent": false,
+			"wireframe": false
+		}],
+	"object": {
+		"uuid": "CA301D28-D64F-40D7-BD16-1600D0BB90CF",
+		"type": "Scene",
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"children": [
+			{
+				"uuid": "3C84B230-D62F-451E-99A9-889D0961A189",
+				"name": "Cylinder 1",
+				"type": "Mesh",
+				"geometry": "46C15223-38D8-47CA-9CF8-05D807C50B55",
+				"material": "E87D9FF0-A77D-473F-9E9B-3EF0C8274859",
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+			},
+			{
+				"uuid": "5AB4DD91-F993-497B-BE60-1459D7BBF999",
+				"name": "Torus 2",
+				"type": "Mesh",
+				"geometry": "6611BF04-9567-4046-A7D7-D1CDE06DFBC1",
+				"material": "3ABF82A3-844D-4406-AEDF-169006BE7EF3",
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,-157.32618713378906,1]
+			},
+			{
+				"uuid": "5F0B83F0-A5A4-4377-B164-EF8F72243249",
+				"name": "PointLight 1",
+				"type": "PointLight",
+				"color": 16777215,
+				"intensity": 1,
+				"distance": 0,
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-80.64600372314453,74.54354095458984,105.75267028808594,1]
+			}]
+	}
+}

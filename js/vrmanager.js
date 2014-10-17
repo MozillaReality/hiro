@@ -1,6 +1,5 @@
 window.VRManager = (function() {
   // options
-  var START_WITH_INTRO = false;
 
   /**
   * @param {string} dom container to load JAVRIS experience into.
@@ -46,6 +45,8 @@ window.VRManager = (function() {
       }
     }).catch(function (err) {
       console.log('Error locating VR devices: ' + err);
+
+      self.noVR();
     });
 
     window.addEventListener("message", function (e) {
@@ -80,18 +81,22 @@ window.VRManager = (function() {
       if (self.vrIsReady) {
         console.log('VR Ready');
 
-        self.startup();
+        self.landing();
       }
     });
   }
 
-  VRManager.prototype.startup = function() {
-    this.load('../content/startup/index.html');
+  VRManager.prototype.noVR = function() {
+    this.load('../landing/index.html');
+
+    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
+    document.querySelector('#launch-browser').classList.remove('is-hidden');
+  }
+
+  VRManager.prototype.landing = function() {
+    this.load('../landing/index.html');
   };
 
-  VRManager.prototype.log = function (msg) {
-    this.console.innerHTML += '<div>' + msg + '</div>';
-  };
 
   VRManager.prototype.unloadCurrent = function() {
     var self = this;
@@ -154,19 +159,23 @@ window.VRManager = (function() {
 
       bodyEl.requestPointerLock();
 
-      if (START_WITH_INTRO) {
-        this.sequence.start();
-      }
+
+      this.start();
 
       this.ui.start();
     }
   };
 
+  VRManager.prototype.start = function() {
+    this.load('../content/construct/index.html');
+  };
+
+
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
     this.unloadCurrent();
     this.ui.reset();
-    this.startup();
+    this.landing();
   };
 
   VRManager.prototype.zeroSensor = function () {

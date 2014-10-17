@@ -18,23 +18,55 @@
 
       </div>
       <div id="launch">
+        <div id="launch-content">
 
-        <div id="logo"></div>
-        <br/>
-        <div id="tagline">Step into the web</div>
+          <div id="logo"></div>
 
-        <br/>
+          <br/>
 
-        <button id="launch-button">Enter VR</button>
+          <div id="tagline">Step into the web</div>
 
-        <br/>
+          <br/>
 
-        <div id="launch-credits">
+          <div id="launch-vrenabled">
+            <button id="launch-button" class="large-button">Enter VR</button>
 
-          Mozilla Research Presents a Virtual Reality Web Experiment<br/>
-          Josh Carpenter  |  Casey Yee  |  Matthew Claypotch<br/>
-          vlad Vukivevic  |  Diego Marcos  |  Ricardo Cabello<br/>
-          <b>Built with WebGL</b>
+            <br/>
+
+            <div id="launch-credits">
+              <p>
+              Mozilla Research Presents a Virtual Reality Web Experiment<br/>
+              Josh Carpenter  |  Casey Yee  |  Matthew Claypotch<br/>
+              vlad Vukivevic  |  Diego Marcos  |  Ricardo Cabello<br/>
+              <b>Built with WebGL</b>
+              </p>
+            </div>
+          </div>
+
+          <div id="launch-browser" class='is-hidden'>
+
+            <h1>Hiro requires a VR-enabled browser<br/>Get Firefox VR builds:</h1>
+
+            <button class="large-button download">
+              <div class="alpha">Windows</div>
+              <div class="download-size">39MB | exe</div>
+            </button>
+
+            <button class="large-button download">
+              <div class="alpha">Mac</div>
+              <div class="download-size">92MB | dmg</div>
+            </button>
+
+
+            <br/>
+
+            <div id="experimental">
+              <p>Note: Firefox VR builds are experimental,<br/>
+              and for testing purposes only.</p>
+
+              <p><a href='#'>Release Notes</a></p>
+            </div>
+          </div>
 
         </div>
 
@@ -57,11 +89,9 @@
     <script src="js/vrcursor.js"></script>
     <script src="js/vrhud.js"></script>
     <script src="js/vrtitle.js"></script>
-    <script src="js/vrloading.js"></script>v
+    <script src="js/vrloading.js"></script>
     <script src="js/vrsequence.js"></script>
     <script src="js/vrui.js"></script>
     <script src="js/vrmanager.js"></script>
-
-    <script src="js/vrclient.js"></script>
   </body>
 </html>

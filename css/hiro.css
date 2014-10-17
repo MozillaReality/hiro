@@ -11,6 +11,20 @@ body {
   overflow: hidden;
   margin: 0;
   font-size: 12px;
+  font-weight: 400;
+  color: #fff;
+}
+
+h1, .alpha {
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+p {
+  letter-spacing: 0.05rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 
@@ -44,14 +58,24 @@ body {
 
 #launch {
   width: 100%;
+  height: 100%;
   position: absolute;
   bottom: 0px;
-  left: 0px;
+  top: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+}
+
+#launch-content {
   text-align: center;
+  /*align-self: flex-end;*/
+  z-index: 1;
 }
 
 #logo {
-  background: url('/content/landing/images/hiro-logo-1.svg') 50% 100% no-repeat;
+  background: url('../landing/images/hiro-logo-1.svg') 50% 100% no-repeat;
   width: 500px;
   height: 200px;
   display: inline-block;
@@ -68,6 +92,10 @@ body {
 }
 
 #launch-button {
+  text-transform: uppercase;
+}
+
+.large-button {
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   background: rgba( 255, 255, 255, 0 );
@@ -76,47 +104,48 @@ body {
   letter-spacing: 0.05rem;
   padding: 0.5rem 1.5rem;
   border: 0.4rem solid white;
-  text-transform: uppercase;
   cursor: pointer;
   box-shadow: -0.5rem 0.5rem 0px rgba( 255, 255, 255, 0.25 );
 }
 
-#launch-button:hover, #launch-button:active {
+.large-button:hover, .large-button:active {
   color: rgba( 23, 150, 218, 1 );
   background: #fff;
+}
+
+.large-button.download {
+  font-size: 2.0rem;
+  margin: 1rem;
+  width: 15rem;
+}
+.download-size {
+  font-size: 1rem;
+  padding: 0.5rem 0 0 0;
 }
 
 #launch-credits {
   color: white;
   text-transform: uppercase;
-  letter-spacing: 0.1rem;
-  font-size: 0.8rem;
-  line-height: 1.25rem;
-  padding: 4rem 0 10rem;
+  padding: 4rem 0 0 0;
 }
 
 #launch-credits b {
   font-weight: 700;
 }
 
-.instruction {
-  color: #fff;
-  font-size: 1rem;
-  display: inline-block;
-  margin-top: 1rem;
+#experimental {
+  color: rgba(0,0,0,0.3);
   text-transform: uppercase;
+  padding: 2rem;
+}
+#experimental a {
+  text-decoration: none;
+  color: rgba(0,0,0,0.5);
 }
 
-.instruction-letter {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  line-height: 2rem;
-  border: 1px solid white;
-  margin-bottom: 2rem;
+.is-hidden {
+  display: none!important;
 }
-
-
 
 
 
