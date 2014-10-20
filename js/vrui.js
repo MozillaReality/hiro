@@ -69,6 +69,8 @@ VRUi.prototype.load = function(url, opts) {
 
 					self.currentUrl = url;
 
+					self.isHome = (url == self.homeUrl ? true : false );
+
 					VRManager.load(url);
 
 					if (!hideLoading) {
@@ -126,22 +128,31 @@ VRUi.prototype.initRenderer = function() {
 VRUi.prototype.start = function() {
 	this.active = true;
 
-	this.goHome();
+	this.goHome(true);
 
 	// kick off animation loop
 	this.animate();
 };
 
-VRUi.prototype.goHome = function() {
+VRUi.prototype.goHome = function(noTransition) {
 	var home = this.home;
-
-	this.isHome = true;
-
-	this.load(this.homeUrl, {
+	var opts = {
 		title: 'HOME',
 		author: '',
 		hideLoading: true
-	});
+	}
+
+	this.isHome = true;
+
+	if (noTransition) {
+		this.title.setTitle(opts.title);
+		this.title.setAuthor(opts.author);
+		VRManager.load(this.homeUrl);
+	} else {
+		this.load(this.homeUrl, opts);
+	}
+
+
 }
 
 VRUi.prototype.stop = function() {

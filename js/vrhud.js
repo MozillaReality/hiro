@@ -93,6 +93,12 @@ VRHud.prototype.show = function() {
 			self.layout.visible = true;
 			self.visible = true;
 
+			if (VRManager.ui.isHome) {
+				self.constructNavMesh.visible = false;
+			} else {
+				self.constructNavMesh.visible = true;
+			}
+
 			self.animateScaleIn(self.hudItems).then(function() {
 				resolve();
 			});
@@ -104,6 +110,9 @@ VRHud.prototype.hide = function() {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 		if (self.visible) {
+
+			self.constructNavMesh.visible = false;
+
 			self.animateScaleOut(self.hudItems).then(function() {
 				self.layout.visible = false;
 				self.visible = false;

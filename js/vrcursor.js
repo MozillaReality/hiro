@@ -295,7 +295,6 @@ VRCursor.prototype.updatePositionInFOV = function(headQuat) {
   cursorPivot.quaternion.copy(pivotQuat);
   this.validCameraCursorQuat = this.cameraCursorQuat(cursorPivot.quaternion || new THREE.Quaternion());
   this.cameraCursorAngle = this.quaternionsAngle(headQuat, cursorPivot.quaternion);
-  console.log("ANGLE " + this.cameraCursorAngle);
 };
 
 // VRCursor.prototype.updatePositionInFOV = function(headQuat) {
