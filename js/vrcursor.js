@@ -4,15 +4,33 @@ function VRCursor(mode) {
   this.layout = null;
   this.rotation = {
     x: 0,
-    y: 0
+    y: 0,
+    xInc: 0,
+    yInc: 0
   };
+  this.mouseQuat = new THREE.Quaternion();
   this.mode = this.modes[mode] || this.modes.centered;
+  switch (this.mode) {
+    case this.modes.centered:
+      this.updatePosition = this.updatePositionCentered;
+      break;
+    case this.modes.mouseSync:
+      this.updatePosition = this.updatePositionMouseSync;
+      break;
+    case this.modes.inFOV:
+      this.updatePosition = this.updatePositionInFOV;
+      break;
+    case this.modes.hides:
+      this.updatePosition = this.updatePositionHides;
+      break;
+  }
 }
 
 VRCursor.modes = VRCursor.prototype.modes = {
   centered: 1,
   mouseSync: 2,
-  inFOV: 3
+  inFOV: 3,
+  hides: 4
 };
 
 // enable cursor with context, otherwise pick last
@@ -98,11 +116,46 @@ VRCursor.prototype.clampAngleTo = function(angle, boundary) {
   return angle;
 };
 
+VRCursor.prototype.hide = function(delay) {
+  var self = this;
+  clearTimeout(this.hideCursorTimeout);
+  this.hideCursorTimeout = setTimeout(hideCursor, delay);
+  function hideCursor() {
+    self.cursor.visible = false;
+  }
+};
+
+VRCursor.prototype.show = function() {
+  this.cursor.visible = true;
+};
+
+VRCursor.prototype.headQuat = function() {
+  var headQuat = this.camera.quaternion;
+  // // If head quaternion is null we make the identity so
+  // it doesn't affect the rotation composition
+  if (headQuat.x === 0 &&
+      headQuat.y === 0 &&
+      headQuat.z === 0) {
+    headQuat.w = 1;
+  }
+  return headQuat;
+};
+
 // VR Cursor events
 VRCursor.prototype.onMouseMoved = function(e) {
   e.preventDefault();
   if (!this.enabled) {
     return false;
+  }
+
+  if (this.mode === this.modes.hides) {
+    if (!this.cursor.visible) {
+      this.showQuat = new THREE.Quaternion().copy(this.headQuat());
+      this.rotation.x = 0;
+      this.rotation.y = 0;
+      this.show();
+    }
+    this.hide(3000);
   }
 
   var movementX = e.movementX ||
@@ -120,16 +173,17 @@ VRCursor.prototype.onMouseMoved = function(e) {
   // var minY = -elHalfHeight;
   // var maxY = elHalfHeight;
   var pixelsToDegreesFactor = 0.00025;
+
   // Rotation in degrees
   var x = (movementX * pixelsToDegreesFactor) % 360;
   var y = (movementY * pixelsToDegreesFactor) % 360;
-  // To Radians
-  this.rotation.x -= y * 2 * Math.PI;
-  this.rotation.y -= x * 2 * Math.PI;
-  this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 6);
-  this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 6);
 
-  this.updateCursorIntersection();
+  // To Radians
+  this.rotation.x -= y * 2 * Math.PI;;
+  this.rotation.y -= x * 2 * Math.PI;
+  this.rotation.xInc -= y * 2 * Math.PI;;
+  this.rotation.yInc -= x * 2 * Math.PI;
+
 };
 
 VRCursor.prototype.onMouseClicked = function(e) {
@@ -142,48 +196,191 @@ VRCursor.prototype.onMouseClicked = function(e) {
   }
 }
 
-VRCursor.prototype.update = function(headQuat) {
-  var cursorPivot = this.cursorPivot;
-  // Quaternion expressing the mouse orientation
+VRCursor.prototype.updatePositionMouseSync = function(headQuat) {
+  var headQuat = this.headQuat();
+  this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 6);
+  this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 6);
   var rotation = new THREE.Euler(this.rotation.x, this.rotation.y, 0);
   var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
-  var headQuat = this.camera.quaternion;
-  // // If head quaternion is null we make the identity so
-  // // it doesn't affect the rotation composition
-  // if (headQuat[0] === 0 &&
-  //     headQuat[1] === 0 &&
-  //     headQuat[2] === 0) {
-  //   headQuat[3] = 1;
-  // }
-  // Multiplies head and mouse rotation to calculate the final
-  // position of the cursor
+  var cursorPivot = this.cursorPivot;
   var pivotQuat = new THREE.Quaternion();
-  var cameraCursorAngle = this.cameraCursorAngle();
-
-  if (this.mode !== this.modes.inFOV ||
-      (this.mode === this.modes.inFOV && cameraCursorAngle >= (Math.PI / 4))) {
-    pivotQuat.multiply(headQuat);
-    //pivotQuat.fromArray(headQuat);
-  }
-
-  if (this.mode !== this.modes.centered) {
-    pivotQuat.multiply(mouseQuat).normalize();
-  }
-
+  pivotQuat
+    .multiply(headQuat)
+    .multiply(mouseQuat)
+    .normalize();
   cursorPivot.setRotationFromQuaternion(pivotQuat);
+};
 
+VRCursor.prototype.updatePositionCentered = function(headQuat) {
+  var headQuat = this.headQuat();
+  var cursorPivot = this.cursorPivot;
+  var pivotQuat = new THREE.Quaternion();
+  pivotQuat.multiply(headQuat);
+  cursorPivot.setRotationFromQuaternion(pivotQuat);
+};
+
+// VRCursor.prototype.updatePositionInFOV = function(headQuat) {
+//   var headQuat = this.headQuat();
+//   var mouseQuat = this.mouseQuat();
+//   var cursorPivot = this.cursorPivot;
+//   var pivotQuat = new THREE.Quaternion();
+//   var cameraCursorEuler;
+//   var cursorQuat;
+//   //var newPivotQuat = new THREE.Quaternion();
+//   //THREE.Quaternion.slerp(cursorPivot.quaternion, cursorQuat, newPivotQuat);
+//   var cameraCursorAngle;
+//   if (this.cameraCursorAngle >= (Math.PI / 5)) {
+//     cursorQuat = new THREE.Quaternion().multiply(headQuat).multiply(mouseQuat);
+//     cameraCursorAngle = this.quaternionsAngle(headQuat, cursorQuat);
+//     console.log("CURSOR ANGLE NEW " + cameraCursorAngle);
+//     console.log("CURSOR ANGLE " + this.cameraCursorAngle);
+//     pivotQuat.multiply(headQuat).normalize();
+//     this.lockQuat = this.lockQuat || this.cameraCursorQuat(cursorPivot.quaternion);
+//     //if ( cameraCursorAngle >= (Math.PI / 5)) {
+//       cameraCursorEuler = new THREE.Euler().setFromQuaternion(this.lockQuat);
+//       this.rotation.x = cameraCursorEuler.x;
+//       this.rotation.y = cameraCursorEuler.y;
+//     // if (cameraCursorAngle < (Math.PI / 5) && this.lockQuat) {
+//     //   cameraCursorEuler = new THREE.Euler().setFromQuaternion(cursorQuat);
+//     //   console.log("OLD X " + this.rotation.x);
+//     //   this.rotation.x = cameraCursorEuler.x;
+//     //   this.rotation.y = cameraCursorEuler.y;
+//     //   console.log("NEW X " + this.rotation.x);
+//     //   console.log("CACA");
+//     //   this.lockQuat = undefined;
+//     // }
+//     mouseQuat = this.mouseQuat();
+//     // } else {
+//     //   cameraCursorEuler = new THREE.Euler().setFromQuaternion(cursorQuat);
+//     //   this.rotation.x = cameraCursorEuler.x;
+//     //   this.rotation.y = cameraCursorEuler.y;
+//     //   mouseQuat = this.mouseQuat();
+//     //   this.lockQuat = undefined;
+//     // }
+//     //} else {
+//     // this.lockQuat = undefined;
+//     //}
+//   }
+//   pivotQuat.multiply(mouseQuat);
+//   cursorPivot.setRotationFromQuaternion(pivotQuat);
+//   this.cameraCursorAngle = this.quaternionsAngle(headQuat, cursorPivot.quaternion);
+// };
+
+VRCursor.prototype.updatePositionInFOV = function(headQuat) {
+  var headQuat = this.headQuat();
+  var cursorPivot = this.cursorPivot;
+  var pivotQuat = new THREE.Quaternion();
+  var rotation = new THREE.Euler(this.rotation.xInc, this.rotation.yInc, 0);
+  var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
+  this.mouseQuat.multiply(mouseQuat);
+  this.rotation.xInc = 0;
+  this.rotation.yInc = 0;
+  if (this.cameraCursorAngle >= (Math.PI / 5)) {
+    this.lockQuat = this.lockQuat || this.validCameraCursorQuat;
+    // cameraCursorEuler =  new THREE.Euler().setFromQuaternion(this.lockQuat);
+    // console.log("CAMERA CURSOR " + this.cameraCursorAngle);
+    // console.log("ANGLE " + JSON.stringify(cameraCursorEuler.x));
+    // console.log("MOUSE " + JSON.stringify(this.rotation.x));
+    // this.rotation.x = cameraCursorEuler.x;
+    // this.rotation.y = cameraCursorEuler.y;
+    pivotQuat.multiply(headQuat).normalize().multiply(this.lockQuat);
+  } else {
+    this.lockQuat = undefined;
+  }
+  pivotQuat.multiply(this.mouseQuat);
+  if (this.quaternionsAngle(headQuat, pivotQuat) >= (Math.PI / 5)) {
+    pivotQuat.multiply(this.mouseQuat.inverse());
+  } else {
+    this.lockQuat = undefined;
+  }
+  cursorPivot.quaternion.copy(pivotQuat);
+  this.validCameraCursorQuat = this.cameraCursorQuat(cursorPivot.quaternion || new THREE.Quaternion());
+  this.cameraCursorAngle = this.quaternionsAngle(headQuat, cursorPivot.quaternion);
+  console.log("ANGLE " + this.cameraCursorAngle);
+};
+
+// VRCursor.prototype.updatePositionInFOV = function(headQuat) {
+//   var headQuat = this.headQuat();
+//   var mouseQuat = this.mouseQuat();
+//   var cursorPivot = this.cursorPivot;
+//   var pivotQuat = new THREE.Quaternion();
+//   var cameraCursorEuler;
+//   if (this.cameraCursorAngle >= (Math.PI / 5)) {
+//     pivotQuat.multiply(headQuat).normalize();
+//     this.lockQuat = this.lockQuat || this.cameraCursorQuat(cursorPivot.quaternion);
+//     cameraCursorEuler =  new THREE.Euler().setFromQuaternion(this.lockQuat);
+//     //console.log("CAMERA CURSOR " + this.cameraCursorAngle);
+//     console.log("ANGLE " + JSON.stringify(cameraCursorEuler.x));
+//     console.log("MOUSE " + JSON.stringify(this.rotation.x));
+//     this.rotation.x = cameraCursorEuler.x;
+//     this.rotation.y = cameraCursorEuler.y;
+//     mouseQuat = this.mouseQuat();
+//   } else {
+//     this.lockQuat = undefined;
+//   }
+//   pivotQuat.multiply(mouseQuat);
+//   cursorPivot.setRotationFromQuaternion(pivotQuat);
+//   this.cameraCursorAngle = this.quaternionsAngle(headQuat, cursorPivot.quaternion);
+// };
+
+
+VRCursor.prototype.mouseQuat = function() {
+  // this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 5);
+  // this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 5);
+  var rotation = new THREE.Euler(this.rotation.x, this.rotation.y, 0);
+  return new THREE.Quaternion().setFromEuler(rotation, true);
+};
+
+VRCursor.prototype.updatePositionHides = function(headQuat) {
+  var rotation = new THREE.Euler(this.rotation.x, this.rotation.y, 0);
+  var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
+  var cursorPivot = this.cursorPivot;
+  var pivotQuat = new THREE.Quaternion();
+  var showQuat = this.showQuat || new THREE.Quaternion();
+  pivotQuat.multiply(showQuat);
+  pivotQuat.multiply(mouseQuat).normalize();
+  cursorPivot.setRotationFromQuaternion(pivotQuat);
+};
+
+VRCursor.prototype.update = function(headQuat) {
+  this.updatePosition();
   // It updates hits
   this.updateCursorIntersection();
 };
 
-VRCursor.prototype.cameraCursorAngle = function() {
-  var cursor = this.cursorPivot;
-  var camera = this.camera;
+VRCursor.prototype.quaternionsAngle = function(q1, q2) {
+  var v1 = new THREE.Vector3( 0, 0, -1 );
+  var v2 = new THREE.Vector3( 0, 0, -1 );
+  v1.applyQuaternion(q1);
+  v2.applyQuaternion(q2);
+  return Math.abs(v1.angleTo(v2));
+};
+
+VRCursor.prototype.quaternionsQuat = function(q1, q2) {
+  var v1 = new THREE.Vector3( 0, 0, -1 );
+  var v2 = new THREE.Vector3( 0, 0, -1 );
+  v1.applyQuaternion(q1);
+  v2.applyQuaternion(q2);
+  return new THREE.Quaternion().setFromUnitVectors( v1, v2 );
+};
+
+VRCursor.prototype.cameraCursorQuat = function(mouseQuat) {
+  var cameraQuat = this.headQuat();
   var cameraVector = new THREE.Vector3( 0, 0, -1 );
-  var cursorVector = new THREE.Vector3( 0, 0, -1 );
-  cameraVector.applyQuaternion(camera.quaternion);
-  cursorVector.applyQuaternion(cursor.quaternion);
-  return Math.abs(cursorVector.angleTo(cameraVector));
+  var cursorPivotVector = new THREE.Vector3( 0, 0, -1 );
+  cameraVector.applyQuaternion(cameraQuat);
+  cursorPivotVector.applyQuaternion(mouseQuat);
+  return new THREE.Quaternion().setFromUnitVectors( cameraVector, cursorPivotVector );
+};
+
+VRCursor.prototype.cameraCursorAngle = function() {
+  var cameraQuat = this.headQuat();
+  var cameraVector = new THREE.Vector3( 0, 0, -1 );
+  var cursorPivot = this.cursorPivot;
+  var cursorPivotVector = new THREE.Vector3( 0, 0, -1 );
+  cameraVector.applyQuaternion(cameraQuat);
+  cursorPivotVector.applyQuaternion(cursorPivot.quaternion);
+  return Math.abs(cursorPivotVector.angleTo(cameraVector));
 };
 
 
