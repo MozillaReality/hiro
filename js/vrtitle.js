@@ -1,6 +1,7 @@
 function VRTitle() {
 	var self = this;
 	this.mesh = null;
+	this.siteMesh = null;
 	this.visible = false;
 	this.d23 = null;
 
@@ -9,25 +10,37 @@ function VRTitle() {
 		var d23 = self.d23;
 
 		d23.onload = function() {
-			var mesh = d23.getMesh('#site-title');
+			var mesh = new THREE.Group();
+
+			// title
+			var titleMesh = d23.getMesh('#site-title');
+			mesh.add( titleMesh );
+
+			// site mesh
+			var siteMesh = self.makeSiteMesh();
+			self.siteMesh = siteMesh;
+			mesh.add( siteMesh );
+
 
 			// get location in the HUD for where title should fit.
 			var hudd23 = VRManager.ui.hud.d23;
 			var hudRect = hudd23.getNode('#site-location').rectangle;
-			var y = hudRect.y + (mesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
+			var y = hudRect.y + (titleMesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
 
 			// loading indicator
 			var loading = VRManager.ui.loading.mesh;
 			loading.position.set(0, -y, -500);
 
-			// set mesh scale and position
+			// position
 			mesh.position.set(0, -y, -550);
 			mesh.scale.set(0.00001, 0.00001, 1);
+			mesh.userData.scale = new THREE.Vector2(1,1);
 			mesh.visible = self.visible;
 
 			if (self.visible) {
 				self.show();
 			}
+
 			self.mesh = mesh;
 
 			resolve();
@@ -36,6 +49,21 @@ function VRTitle() {
 
 	return this;
 }
+
+
+VRTitle.prototype.update = function() {
+	if (this.visible) {
+		this.siteMesh.rotation.y+=0.01;
+	}
+}
+
+VRTitle.prototype.makeSiteMesh = function() {
+	var geometry = new THREE.IcosahedronGeometry( 70, 1 );
+  var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true, transparent: true, opacity: 1, side: THREE.DoubleSide } );
+  var mesh = new THREE.Mesh( geometry, material );
+  return mesh;
+}
+
 
 VRTitle.prototype.show = function() {
 	var self = this;
@@ -51,7 +79,16 @@ VRTitle.prototype.hide = function() {
 	self.animateOut(self.mesh).then(function() {
 		self.visible = false;
 		self.mesh.visible = false;
+		self.setAuthor('');
 	});
+};
+
+VRTitle.prototype.setAuthor = function(value) {
+	this.d23.setText('.authors', value);
+};
+
+VRTitle.prototype.setTitle = function(value) {
+	this.d23.setText('.title h1', value);
 }
 
 VRTitle.prototype.animateOut = function(mesh) {
@@ -77,4 +114,3 @@ VRTitle.prototype.animateIn = function(mesh) {
 			.start();
 	});
 };
-

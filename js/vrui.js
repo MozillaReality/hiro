@@ -2,6 +2,8 @@
 
 function VRUi(container) {
 	var self = this;
+
+	this.homeUrl = '../content/construct/index.html';
 	this.container = container;
 	this.active = false;
 	this.hud = new VRHud();
@@ -49,39 +51,47 @@ VRUi.prototype.gridlines = function() {
 	return cube;
 }
 
-VRUi.prototype.load = function(url, item) {
+VRUi.prototype.load = function(url, opts) {
 	var self = this;
-
+	var hideLoading = opts.hideLoading || false;
 	this.hud.hide()
 		.then(function() {
+
 			self.cursor.disable();
+
 			self.transition.fadeOut()
-			.then(function() {
+				.then(function() {
 
-				self.title.d23.setText('.authors', item.userData.author);
-				self.title.d23.setText('.title h1', item.userData.title);
+					if (opts.title || opts.authors) {
+						self.title.setTitle(opts.title);
+						self.title.setAuthor(opts.author);
+					}
 
-				VRManager.load(url);
+					self.currentUrl = url;
 
-				self.loading.show();
+					VRManager.load(url);
 
-				VRManager.readyCallback = function() {
-					self.loading.hide();
+					if (!hideLoading) {
+						self.loading.show();
+					}
 
-					self.transition.fadeIn();
+					VRManager.readyCallback = function() {
+						self.loading.hide();
 
-					// hide title after set amount of time
-					setTimeout(function() {
-						if (!self.hud.visible) {
-							self.title.hide();
-						}
-					}, 3000);
-				}
+						self.transition.fadeIn();
 
+						// hide title after set amount of time
+						setTimeout(function() {
+							if (!self.hud.visible) {
+								self.title.hide();
+							}
+						}, 3000);
+					}
 
-			})
+				});
 		});
 };
+
 
 VRUi.prototype.toggleHud = function() {
 	if (!this.active) {
@@ -115,8 +125,24 @@ VRUi.prototype.initRenderer = function() {
 
 VRUi.prototype.start = function() {
 	this.active = true;
+
+	this.goHome();
+
+	// kick off animation loop
 	this.animate();
 };
+
+VRUi.prototype.goHome = function() {
+	var home = this.home;
+
+	this.isHome = true;
+
+	this.load(this.homeUrl, {
+		title: 'HOME',
+		author: '',
+		hideLoading: true
+	});
+}
 
 VRUi.prototype.stop = function() {
 	this.active = false;
@@ -124,6 +150,7 @@ VRUi.prototype.stop = function() {
 
 VRUi.prototype.reset = function() {
 	var self = this;
+	self.currentUrl = null;
 	self.title.hide();
 	self.cursor.disable();
 	self.hud.hide().then(function() {
@@ -139,6 +166,7 @@ VRUi.prototype.animate = function() {
 	self.controls.update();
 	self.transition.update();
 	self.loading.update();
+	self.title.update();
 	self.cursor.update(headQuat);
 
 	// tween
@@ -171,6 +199,9 @@ VRUi.prototype.initKeyboardControls = function() {
       case 90: // z
         VRManager.zeroSensor();
         break;
+      case 83: // s
+      	VRManager.enableStereo();
+      	break;
       case 32: // space
         self.toggleHud();
         break;

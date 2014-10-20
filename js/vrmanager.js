@@ -8,7 +8,6 @@ window.VRManager = (function() {
     var self = this;
     self.container = document.querySelector(container);
 
-
     self.loader = self.container.querySelector('#loader');
     self.ui = new VRUi(self.container.querySelector('#ui'));
     self.sequence = new VRSequence();
@@ -142,6 +141,7 @@ window.VRManager = (function() {
     if (self.vrIsReady) {
       // full screen
       var fs = self.container;
+
       if (fs.requestFullscreen) {
         fs.requestFullscreen({ vrDisplay: self.hmdDevice });
       } else if (fs.mozRequestFullScreen) {
@@ -159,15 +159,13 @@ window.VRManager = (function() {
 
       bodyEl.requestPointerLock();
 
-
-      this.start();
-
       this.ui.start();
     }
   };
 
-  VRManager.prototype.start = function() {
-    this.load('../content/construct/index.html');
+  VRManager.prototype.enableStereo = function() {
+    document.getElementById('launch').style.display = 'none'
+    this.ui.start();
   };
 
 

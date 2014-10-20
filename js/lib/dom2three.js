@@ -79,15 +79,17 @@ DOM2three.prototype.setText = function(selector, text) {
 
 	var context = select.canvasMaterial.context;
 
-	context.clearRect(0,
-		0,
+	context.clearRect(0,0,
 		select.canvasMaterial.canvas.width,
 		select.canvasMaterial.canvas.height);
 
-	context.fillText(text,
-		select.canvasMaterial.x,
-		select.canvasMaterial.y
-	);
+	var x, y;
+	if (select.textAlign == 'center') {
+		x = select.rectangle.width / 2;
+	}
+	y = select.canvasMaterial.y;
+
+	context.fillText(text, x, y);
 
 	select.canvasMaterial.texture.needsUpdate = true;
 
@@ -116,11 +118,11 @@ DOM2three.prototype.calculateCenterOffset = function() {
 	if (centerItem) {
 		var node = this.getNode(centerItem);
 		centerOffsetX = node.rectangle.x + (node.rectangle.width / 2);
+		centerOffsetY = node.rectangle.y + (node.rectangle.height / 2);
 	} else {
 		centerOffsetX = texture.image.width / 2;
+		centerOffsetY = texture.image.height / 2;
 	}
-
-	centerOffsetY = texture.image.height / 2;
 
 	this.centerOffsetY = centerOffsetY;
 	this.centerOffsetX = centerOffsetX;
@@ -154,10 +156,14 @@ DOM2three.prototype.makeMesh = function(item) {
 		y: y
 	};
 
-	// materials
-	// map the base texture to object.
-	//var materials = [new THREE.MeshBasicMaterial({ map : tex, depthWrite: false, depthTest: false })];
-	var materials = [new THREE.MeshBasicMaterial({ map : tex })];
+	var material = new THREE.MeshBasicMaterial({ map : tex });
+
+	var materials = [];
+
+	if(item.display) {
+		materials.push(material);
+	}
+
 
 	// create additional materials for each replaceable piece of content.
 	if (item.content) {
@@ -208,7 +214,7 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 			var context = canvas.getContext('2d');
 			context.font = content.font;
 			context.fillStyle = content.fillStyle;
-
+			context.textAlign = content.textAlign;
 			content.canvasMaterial = {};
 			content.canvasMaterial.canvas = canvas;
 			content.canvasMaterial.context = context;
@@ -268,7 +274,6 @@ get placement on page
 */
 DOM2three.prototype.getRectangle = function(el) {
 	var rect = el.getBoundingClientRect();
-	//console.log(el, rect);
 	return {
 		x: rect.x,
 		y: rect.y,
@@ -310,19 +315,32 @@ DOM2three.prototype.applyContent = function(dom) {
 						} else {
 							cel.innerHTML = content.content;
 						}
+
+						content.el = cel;
 					} else {
 						console.error(content.selector + " not found");
 					}
-					content.rectangle = self.getRectangle(cel);
 				}
 			});
 		};
-
-		// get bounding rect for element.
-		item.rectangle = self.getRectangle(el);
+		item.el = el;
 	});
 
 	return items;
+}
+
+DOM2three.prototype.getItemsRectangles = function() {
+	var self = this;
+	var items = self.data.items;
+
+	items.forEach(function(item) {
+		item.rectangle = self.getRectangle(item.el);
+		if (item.content) {
+			item.content.forEach(function(content) {
+				content.rectangle = self.getRectangle(content.el);
+			});
+		}
+	});
 }
 
 

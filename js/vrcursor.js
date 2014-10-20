@@ -126,8 +126,8 @@ VRCursor.prototype.onMouseMoved = function(e) {
   // To Radians
   this.rotation.x -= y * 2 * Math.PI;
   this.rotation.y -= x * 2 * Math.PI;
-  this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 6);
-  this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 6);
+  // this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 6);
+  // this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 6);
 
   this.updateCursorIntersection();
 };

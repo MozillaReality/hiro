@@ -6,6 +6,7 @@ function VRHud() {
 	this.hudItems = [];
 	this.layout = new THREE.Group();
 	this.layout.visible = this.visible;
+	this.constructNavMesh = null;
 	this.d23 = null;
 
 	this.ready = new Promise(function(resolve, reject) {
@@ -15,23 +16,60 @@ function VRHud() {
 
 		d23.onload = function() {
 			self.d23 = this;
-			//self.setBackground();
+
+			self.setBackground();
+
+			self.makeConstructNav();
+
 			self.makeLayout().then(function() {
-				var date = new Date;
-				self.d23.setText('.clock-time', date.getHours() + ':' + date.getMinutes());
+				// var date = new Date;
+				// self.d23.setText('.clock-time', date.getHours() + ':' + date.getMinutes());
 				self.setInitial();
 				resolve();
 			});
+
+
 		};
 	});
 
 	return this;
 };
 
+VRHud.prototype.makeConstructNav = function() {
+	var geometry = new THREE.IcosahedronGeometry( 30, 1 );
+  var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, opacity: 1, side: THREE.DoubleSide } );
+  var mesh = new THREE.Mesh( geometry, material );
+  mesh.position.y = -150;
+  mesh.position.z = -600;
+
+  mesh.addEventListener('mouseover', function(e) {
+		var material = e.target.material;
+		if (material) {
+			material.color.set( 0xffff00 );
+			material.needsUpdate = true;
+		}
+	});
+
+	mesh.addEventListener('mouseout', function(e) {
+		var material = e.target.material;
+		if (material) {
+			material.color.set( 0x00ffff );
+			material.needsUpdate = true;
+		}
+	});
+
+	mesh.addEventListener('click', function(e) {
+		VRManager.ui.goHome();
+	});
+
+	this.constructNavMesh = mesh;
+
+  this.layout.add(mesh);
+}
+
 VRHud.prototype.setBackground = function() {
-	console.log('setting background');
-	var geometry = new THREE.CylinderGeometry( 800, 650, 500, 64, 1, true );
-	var material = new THREE.MeshBasicMaterial( {color: 0x00000, side:THREE.DoubleSide, transparent: true, opacity: 0.5 } );
+	var geometry = new THREE.SphereGeometry( 700 );
+	var material = new THREE.MeshBasicMaterial( {color: 0x00000, side: THREE.BackSide, transparent: true, opacity: 0.5 } );
 	var cylinder = new THREE.Mesh( geometry, material );
 	cylinder.renderDepth = 1;
 	this.layout.add( cylinder );
@@ -54,6 +92,7 @@ VRHud.prototype.show = function() {
 		if (!self.visible) {
 			self.layout.visible = true;
 			self.visible = true;
+
 			self.animateScaleIn(self.hudItems).then(function() {
 				resolve();
 			});
@@ -70,6 +109,8 @@ VRHud.prototype.hide = function() {
 				self.visible = false;
 				resolve();
 			});
+		} else {
+			resolve();
 		}
 	});
 };
@@ -140,7 +181,10 @@ VRHud.prototype.makeLayout = function() {
 				mesh.addEventListener('click', function(e) {
 					var item = e.target.userData.item;
 					item.sound.play();
-					VRManager.ui.load(item.userData.url, item);
+					VRManager.ui.load(item.userData.url, {
+						author: item.userData.author,
+						title: item.userData.title
+					});
 				});
 			};
 

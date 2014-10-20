@@ -13,150 +13,109 @@
   			overflow: hidden;
 			}
 
-			body {
-				background-color: #000;
-				color: #fff;
-			}
-
 			canvas {
-				position: absolute;
-			  top: 0;
-			  left: 0;
-			  width: 100%;
+				width: 100%;
 			  height: 100%;
 			}
 		</style>
 	</head>
 	<body>
-		<script src="js/three.min.js"></script>
-		<script src="js/tween.min.js"></script>
-		<script src="js/VRControls.js"></script>
-		<script src="js/VREffect.js"></script>
-		<script src="js/DeviceOrientationControls.js"></script>
-		<script src="js/StereoEffect.js"></script>
-		<script src="js/startup.js"></script>
-
-		<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
-		<script src="js/vrclient.js"></script>
-		<script>
-
-			var parseURLSearch = function () {
-				var parameters = {};
-				var parts = window.location.search.substr( 1 ).split( '&' );
-				for ( var i = 0; i < parts.length; i ++ ) {
-					var parameter = parts[ i ].split( '=' );
-					parameters[ parameter[ 0 ] ] = parameter[ 1 ];
-				}
-				return parameters;
-			}
-
-			var parameters = parseURLSearch();
-			var camera, scene, renderer;
-			var controls, effect, vrEffect;
-			var geometry, material, cube;
-
-			function init() {
-				console.log('construct!');
-				/*
-				var loader = new THREE.ObjectLoader();
-				loader.load( 'images/hiro-logo.json', function ( object ) {
-
-					var landscape = object.getObjectByName( 'lanscape' );
-
-					var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
-					reflection.material.side = THREE.BackSide;
-					reflection.position.y = 7.7;
-					reflection.scale.y = -1;
-					landscape.parent.add( reflection );
-
-					scene.add( object );
-
-				} );
-				*/
-
-
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.autoClear = false;
-				renderer.setClearColor( 0x000000 );
-				document.body.appendChild( renderer.domElement );
-				scene = new THREE.Scene();
-				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-
-				// parse url parameter and set appropriate rendering effect.
-				// if ( parameters.mode === 'cardboard' ) {
-				// 	controls = new THREE.DeviceOrientationControls( camera );
-				// 	effect = new THREE.StereoEffect( renderer );
-				// } else {
-				controls = new THREE.VRControls( camera );
-				vrEffect = new THREE.VREffect( renderer );
-
-				vrEffect.setSize( window.innerWidth, window.innerHeight );
-
-				// bypass stereo/vr effect when in full-screen mode.
-				if (!parent.document.mozFullScreen) {
-					effect = renderer;
-				} else {
-					effect = vrEffect;
-				}
-
-				// announce to JAVRIS host that we are ready to go.
-				VRClient.ready();
-
-				startup();
-
-				// accounce to JAVRIS host when you are done with this scene.
-				// If this is part of a VRSequence, this will tell JAVRIS to move onto the next scene.
-
-				// setTimeout( function() {
-				// 	VRClient.ended();
-				// }, 5000)
-
-				window.addEventListener( 'resize', onWindowResize, false );
-				window.addEventListener( 'keypress', onKey, true);
-
-			}
-
-			function onWindowResize() {
-				// switch renderer to stereo if fs
-				if (parent.document.mozFullScreen) {
-					effect = vrEffect;
-				}
-				var innerWidth = window.innerWidth;
-				var innweHeight =  window.innerHeight;
-				camera.aspect = innerWidth / innweHeight;
-				camera.updateProjectionMatrix();
-
-				effect.setSize( innerWidth, innweHeight );
-			}
-
-			function onKey(event) {
-
-				if (!(event.metaKey || event.altKey || event.ctrlKey)) {
-					event.preventDefault();
-				}
-
-				switch (event.key) {
-					case 'z': // z
-					VRClient.zeroSensor();
-					break;
-				}
-			}
-
-			function animate() {
-				requestAnimationFrame( animate );
-				render();
-				TWEEN.update();
-			}
-
-			function render() {
-				controls.update();
-				effect.render( scene, camera );
-			}
-
-			init();
-			animate();
-
-		</script>
-
 	</body>
+	<script src="js/three.min.js"></script>
+	<script src="js/tween.min.js"></script>
+	<script src="js/VRControls.js"></script>
+	<script src="js/VREffect.js"></script>
+	<script src="js/DeviceOrientationControls.js"></script>
+	<script src="js/StereoEffect.js"></script>
+
+	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
+	<script src="js/vrclient.js"></script>
+	<script>
+		var parameters = ( function () {
+			var parameters = {};
+			var parts = window.location.search.substr( 1 ).split( '&' );
+			for ( var i = 0; i < parts.length; i ++ ) {
+				var parameter = parts[ i ].split( '=' );
+				parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+			}
+			return parameters;
+		} )();
+
+		var camera, scene, renderer;
+		var controls, effect, vrEffect;
+		var geometry, material, cube;
+
+		function init() {
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.autoClear = false;
+			renderer.setClearColor( 0x000000 );
+			document.body.appendChild( renderer.domElement );
+
+			scene = new THREE.Scene();
+
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+
+			if ( parameters.mode === 'cardboard' ) {
+				controls = new THREE.DeviceOrientationControls( camera );
+				effect = new THREE.StereoEffect( renderer );
+
+			} else {
+				controls = new THREE.VRControls( camera );
+				effect = new THREE.VREffect( renderer );
+			}
+
+			effect.setSize( window.innerWidth, window.innerHeight );
+
+			window.addEventListener( 'resize', onWindowResize, false );
+
+			VRClient.ready();
+		}
+
+		function setScene() {
+			var worldGeo = new THREE.SphereGeometry( 490, 60, 40 );
+			worldGeo.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+			var worldMat = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
+			var world = new THREE.Mesh( worldGeo, worldMat );
+
+			scene.add( world );
+		}
+
+		function initVideo() {
+			var geometry = new THREE.PlaneGeometry( 1, 1 );
+			var material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
+
+			var mesh = new THREE.Mesh( geometry, material );
+
+			mesh.position.set(0,0,-30);
+			mesh.scale.set(10, 10, 1);
+
+			//scene.add(mesh);
+		}
+
+		function onWindowResize() {
+			var innerWidth = window.innerWidth;
+			var innweHeight =  window.innerHeight;
+			camera.aspect = innerWidth / innweHeight;
+			camera.updateProjectionMatrix();
+
+			effect.setSize( innerWidth, innweHeight );
+		}
+
+		function animate() {
+			requestAnimationFrame( animate );
+			render();
+			TWEEN.update();
+		}
+
+		function render() {
+			controls.update();
+			effect.render( scene, camera );
+		}
+
+		init();
+		setScene();
+		initVideo();
+		animate();
+
+	</script>
 </html>
