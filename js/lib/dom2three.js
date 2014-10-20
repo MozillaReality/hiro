@@ -86,7 +86,10 @@ DOM2three.prototype.setText = function(selector, text) {
 	var x, y;
 	if (select.textAlign == 'center') {
 		x = select.rectangle.width / 2;
+	} else {
+		x =  select.canvasMaterial.x;
 	}
+
 	y = select.canvasMaterial.y;
 
 	context.fillText(text, x, y);
@@ -156,7 +159,7 @@ DOM2three.prototype.makeMesh = function(item) {
 		y: y
 	};
 
-	var material = new THREE.MeshBasicMaterial( { map: tex, transparent: true } );
+	var material = new THREE.MeshBasicMaterial({ map : tex });
 
 	var materials = [];
 
@@ -213,6 +216,7 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 
 			var context = canvas.getContext('2d');
 			context.font = content.font;
+			content.textBaseline = 'bottom';
 			context.fillStyle = content.fillStyle;
 			context.textAlign = content.textAlign;
 			content.canvasMaterial = {};
@@ -224,7 +228,8 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 			var texture = new THREE.Texture(canvas);
 			texture.needsUpdate = true;
 
-			var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
+			var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.FrontSide } );
+			material.transparent = true;
 
 			content.canvasMaterial.texture = texture;
 
@@ -290,6 +295,7 @@ DOM2three.prototype.applyContent = function(dom) {
 
 	items.forEach(function(item) {
 		var select = dom.querySelector(item.selector);
+		console.log(select);
 
 		var el;
 
@@ -307,6 +313,8 @@ DOM2three.prototype.applyContent = function(dom) {
 			item.content.forEach(function(content) {
 				if (content.selector) {
 					var cel = el.querySelector(content.selector)
+					console.log(cel);
+
 					if (cel) {
 						// content with canvas property will be overwritten using canvas text.
 						if (content.canvas) {
