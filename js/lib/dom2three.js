@@ -156,7 +156,7 @@ DOM2three.prototype.makeMesh = function(item) {
 		y: y
 	};
 
-	var material = new THREE.MeshBasicMaterial({ map : tex });
+	var material = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
 
 	var materials = [];
 
