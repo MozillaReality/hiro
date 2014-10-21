@@ -8,7 +8,6 @@ function VRCursor(mode) {
     xInc: 0,
     yInc: 0
   };
-  this.mouseQuat = new THREE.Quaternion();
   this.mode = this.modes[mode] || this.modes.centered;
   switch (this.mode) {
     case this.modes.centered:
@@ -116,12 +115,13 @@ VRCursor.prototype.clampAngleTo = function(angle, boundary) {
   return angle;
 };
 
-VRCursor.prototype.hide = function(delay) {
+VRCursor.prototype.hide = function(delay, hidden) {
   var self = this;
   clearTimeout(this.hideCursorTimeout);
   this.hideCursorTimeout = setTimeout(hideCursor, delay);
   function hideCursor() {
     self.cursor.visible = false;
+    if (hidden) { hidden(); }
   }
 };
 
@@ -179,10 +179,9 @@ VRCursor.prototype.onMouseMoved = function(e) {
   var y = (movementY * pixelsToDegreesFactor) % 360;
 
   // To Radians
-  this.rotation.x -= y * 2 * Math.PI;;
+  this.rotation.x -= y * 2 * Math.PI;
   this.rotation.y -= x * 2 * Math.PI;
-  this.rotation.xInc -= y * 2 * Math.PI;;
-  this.rotation.yInc -= x * 2 * Math.PI;
+
 };
 
 VRCursor.prototype.onMouseClicked = function(e) {
@@ -267,13 +266,10 @@ VRCursor.prototype.updatePositionCentered = function(headQuat) {
 
 VRCursor.prototype.updatePositionInFOV = function(headQuat) {
   var headQuat = this.headQuat();
+  var headQuatInv = new THREE.Quaternion().copy(headQuat).inverse();
   var cursorPivot = this.cursorPivot;
   var pivotQuat = new THREE.Quaternion();
-  var rotation = new THREE.Euler(this.rotation.xInc, this.rotation.yInc, 0);
-  var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
-  this.mouseQuat.multiply(mouseQuat);
-  this.rotation.xInc = 0;
-  this.rotation.yInc = 0;
+  var mouseQuat = this.mouseQuat();
   if (this.cameraCursorAngle >= (Math.PI / 5)) {
     this.lockQuat = this.lockQuat || this.validCameraCursorQuat;
     // cameraCursorEuler =  new THREE.Euler().setFromQuaternion(this.lockQuat);
@@ -285,13 +281,11 @@ VRCursor.prototype.updatePositionInFOV = function(headQuat) {
     pivotQuat.multiply(headQuat).normalize().multiply(this.lockQuat);
   } else {
     this.lockQuat = undefined;
+    pivotQuat.multiply(headQuat).multiply(mouseQuat).multiply(headQuatInv);
   }
-  pivotQuat.multiply(this.mouseQuat);
-  if (this.quaternionsAngle(headQuat, pivotQuat) >= (Math.PI / 5)) {
-    pivotQuat.multiply(this.mouseQuat.inverse());
-  } else {
-    this.lockQuat = undefined;
-  }
+  // if (this.quaternionsAngle(headQuat, pivotQuat) >= (Math.PI / 5)) {
+  //   pivotQuat.multiply(this.mouseQuat.inverse());
+  // }
   cursorPivot.quaternion.copy(pivotQuat);
   this.validCameraCursorQuat = this.cameraCursorQuat(cursorPivot.quaternion || new THREE.Quaternion());
   this.cameraCursorAngle = this.quaternionsAngle(headQuat, cursorPivot.quaternion);
@@ -323,21 +317,29 @@ VRCursor.prototype.updatePositionInFOV = function(headQuat) {
 
 
 VRCursor.prototype.mouseQuat = function() {
-  // this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 5);
-  // this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 5);
+  //this.rotation.x = this.clampAngleTo(this.rotation.x, Math.PI / 5);
+  //this.rotation.y = this.clampAngleTo(this.rotation.y, Math.PI / 5);
   var rotation = new THREE.Euler(this.rotation.x, this.rotation.y, 0);
   return new THREE.Quaternion().setFromEuler(rotation, true);
 };
 
 VRCursor.prototype.updatePositionHides = function(headQuat) {
+  var self = this;
   var rotation = new THREE.Euler(this.rotation.x, this.rotation.y, 0);
   var mouseQuat = new THREE.Quaternion().setFromEuler(rotation, true);
   var cursorPivot = this.cursorPivot;
+  var headQuat = this.headQuat();
   var pivotQuat = new THREE.Quaternion();
   var showQuat = this.showQuat || new THREE.Quaternion();
+  var cameraCursorAngle;
   pivotQuat.multiply(showQuat);
   pivotQuat.multiply(mouseQuat).normalize();
-  cursorPivot.setRotationFromQuaternion(pivotQuat);
+  cursorPivot.quaternion.copy(pivotQuat);
+  cameraCursorAngle = this.quaternionsAngle(headQuat, cursorPivot.quaternion);
+  // if the cursor lives the FOV it hides
+  if (cameraCursorAngle >= Math.PI / 3) {
+    this.hide(0);
+  }
 };
 
 VRCursor.prototype.update = function(headQuat) {
@@ -366,8 +368,11 @@ VRCursor.prototype.cameraCursorQuat = function(mouseQuat) {
   var cameraQuat = this.headQuat();
   var cameraVector = new THREE.Vector3( 0, 0, -1 );
   var cursorPivotVector = new THREE.Vector3( 0, 0, -1 );
-  cameraVector.applyQuaternion(cameraQuat);
-  cursorPivotVector.applyQuaternion(mouseQuat);
+  cameraVector.applyQuaternion(cameraQuat).normalize();
+  cursorPivotVector.applyQuaternion(mouseQuat).normalize();
+  //var resultQuat = new THREE.Quaternion();
+  //THREE.Quaternion.slerp(cameraQuat, mouseQuat, resultQuat);
+  //return resultQuat;
   return new THREE.Quaternion().setFromUnitVectors( cameraVector, cursorPivotVector );
 };
 
