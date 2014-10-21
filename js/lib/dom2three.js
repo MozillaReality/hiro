@@ -159,7 +159,7 @@ DOM2three.prototype.makeMesh = function(item) {
 		y: y
 	};
 
-	var material = new THREE.MeshBasicMaterial({ map : tex });
+	var material = new THREE.MeshBasicMaterial({ map : tex, transparent: true });
 
 	var materials = [];
 
@@ -228,7 +228,7 @@ DOM2three.prototype.createCanvasMaterials = function(item) {
 			var texture = new THREE.Texture(canvas);
 			texture.needsUpdate = true;
 
-			var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.FrontSide } );
+			var material = new THREE.MeshBasicMaterial( { map: texture, transparent: true } );
 			material.transparent = true;
 
 			content.canvasMaterial.texture = texture;

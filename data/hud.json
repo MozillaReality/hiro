@@ -2,19 +2,6 @@
 	"texture": "index.png",
 	"items": [
 	  {
-	    "selector": "#widgets",
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".clock-time",
-	        "content": "12:00",
-	        "font": "normal 400 70px Montserrat",
-	        "fillStyle": "rgb(0, 0, 0)",
-	        "canvas": true
-	      }
-	    ]
-	  },
-	  {
 	    "selector": "#site-location",
 	    "content": [
 	      {
@@ -60,13 +47,13 @@
 	    "content": [
 	      {
 	        "selector": ".fav-inner",
-	        "content": "Polar Sea trailer"
+	        "content": "Polar Sea"
 	      }
 	    ],
 	    "userData": {
-	      "title": "POLAR SEA TRAILER",
-	      "url": "./content/eleVR-Web-Player/elevr-player.html",
-	      "author": "DEEP INC",
+	      "title": "POLAR SEA",
+	      "url": "http://mozvr.github.io/polarsea/index.html",
+	      "author": "DEEP INC, ELEVR",
 	      "tech": "WEBGL"
 	    }
 	  },
@@ -83,8 +70,8 @@
 	    "userData": {
 	      "title": "FLYING CUBES",
 	      "url": "./content/cubes/index.html",
-	      "author": "SOMEONE GREAT",
-	      "tech": "WebGL"
+	      "author": "",
+	      "tech": "WEBGL"
 	    }
 	  },
 	  {
@@ -94,14 +81,14 @@
 	    "content": [
 	      {
 	        "selector": ".fav-inner",
-	        "content": "Leap motion"
+	        "content": "INFO DIVE"
 	      }
 	    ],
 	    "userData": {
-	      "title": "LEAP MOTION",
-	      "url": "./content/sechelt/index.html",
-	      "author": "SOMEONE GREAT",
-	      "tech": "WebGL"
+	      "title": "INFO DIVE",
+	      "url": "http://mozvr.github.io/infodive/index2.html",
+	      "author": "TONY PARISI, ERIC LEVIN, JOSH CARPENTER",
+	      "tech": "WEBGL"
 	    }
 	  },
 	  {
@@ -111,12 +98,12 @@
 	    "content": [
 	      {
 	        "selector": ".fav-inner",
-	        "content": "Reddit"
+	        "content": "Panorama Viewer"
 	      }
 	    ],
 	    "userData": {
-	      "title": "REDDIT",
-	      "url": "./content/sechelt/index.html",
+	      "title": "PANORAMA VIEWER",
+	      "url": "http://mozvr.github.io/panorama-viewer/",
 	      "author": "SOMEONE GREAT",
 	      "tech": "WebGL"
 	    }
