@@ -7,8 +7,6 @@ window.VRManager = (function() {
   function VRManager(container) {
     var self = this;
 
-    self.mode = self.modes.normal;
-
     self.container = document.querySelector(container);
     self.loader = self.container.querySelector('#loader');
     self.ui = new VRUi(self.container.querySelector('#ui'));
@@ -16,7 +14,6 @@ window.VRManager = (function() {
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
       if (navigator.getVRDevices) {
-        console.log('looking for virtual reality hardware...');
         navigator.getVRDevices().then(function (devices) {
           console.log('found ' + devices.length + ' devices');
           for (var i = 0; i < devices.length; ++i) {
@@ -24,6 +21,7 @@ window.VRManager = (function() {
               self.hmdDevice = devices[i];
               console.log('found head mounted display device');
             }
+
             if (devices[i] instanceof PositionSensorVRDevice &&
                 devices[i].hardwareUnitId == self.hmdDevice.hardwareUnitId &&
                 !self.positionDevice) {
@@ -32,20 +30,20 @@ window.VRManager = (function() {
               break;
             }
           }
+
           if (self.hmdDevice && self.positionDevice) {
-            console.log('VR devices found.');
             self.vrIsReady = true;
             resolve();
             return;
           }
+
           reject('no VR devices found!');
-        }).catch(reject);
+
+        })
       } else {
         reject('no VR implementation found!');
       }
-    }).catch(function (err) {
-      console.log('Error locating VR devices: ' + err);
-    });
+    })
 
     window.addEventListener("message", function (e) {
       var msg = e.data;
@@ -84,17 +82,24 @@ window.VRManager = (function() {
       }
     };
 
-    self.vrReady.then(function () {
-      self.ui.start(self.mode);
-    });
+    self.vrReady
+      .then(function() {
+          self.VRstart();
+        }, function(){
+          self.NoVRstart();
+        });
   }
 
-  VRManager.modes = VRManager.prototype.modes = {
-    normal: 1,
-    stereo: 2,
-    vr: 3
-  };
-
+  VRManager.prototype.VRstart = function() {
+    console.log('----- VR detected');
+    this.ui.start();
+  }
+  VRManager.prototype.NoVRstart = function() {
+    console.log('----- NoVR detected');
+    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
+    document.querySelector('#launch-browser').classList.remove('is-hidden');
+    this.ui.start();
+  }
 
   VRManager.prototype.unloadCurrent = function() {
     var self = this;
@@ -131,6 +136,10 @@ window.VRManager = (function() {
     newTab.load();
   };
 
+  VRManager.prototype.noVR = function() {
+    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
+    document.querySelector('#launch-browser').classList.remove('is-hidden');
+  };
 
   /*
   This runs when user enters VR mode.
@@ -159,9 +168,7 @@ window.VRManager = (function() {
 
       bodyEl.requestPointerLock();
 
-      self.mode = self.modes.vr;
-
-      self.ui.setRenderMode(self.mode);
+      self.ui.setRenderMode(self.ui.modes.vr);
     } else {
       console.log('no vr mode available');
     }
@@ -171,7 +178,7 @@ window.VRManager = (function() {
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
     this.unloadCurrent();
-    this.ui.setRenderMode(this.modes.normal);
+    this.ui.setRenderMode(this.ui.modes.normal);
     this.ui.reset();
   };
 

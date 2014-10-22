@@ -118,27 +118,34 @@ VRUi.prototype.initRenderer = function() {
   this.renderer.setClearColor( 0x000000, 0 );
 
   this.scene = new THREE.Scene();
+
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+
 	//this.camera.position.z = 1;
   //this.controls = new THREE.OrbitControls( this.camera );
 
-
-  this.controls = new THREE.VRControls( this.camera );
-  this.effect = new THREE.VREffect( this.renderer );
+  // this.controls = new THREE.VRControls( this.camera );
+  // this.effect = new THREE.VREffect( this.renderer );
+  this.setRenderMode(this.modes.normal);
 
   this.effect.setSize( window.innerWidth, window.innerHeight );
   this.container.appendChild(this.renderer.domElement);
   this.initResizeHandler();
 };
 
-VRUi.prototype.start = function(mode) {
+VRUi.modes = VRUi.prototype.modes = {
+  normal: 1,
+  stereo: 2,
+  vr: 3
+};
 
+VRUi.prototype.start = function(mode) {
 	var self = this;
 
 	this.ready.then(function() {
-		if (mode) {
-			self.setRenderMode(mode);
-		}
+		// if (mode) {
+		// 	self.setRenderMode(mode);
+		// }
 
 		// start hud
 		self.toggleHud();
@@ -152,16 +159,23 @@ VRUi.prototype.start = function(mode) {
 };
 
 VRUi.prototype.setRenderMode = function(mode) {
-	if (mode == VRManager.modes.normal) {
-		console.log('normal 2d');
+	if (mode == VRUi.modes.normal) {
+		console.log('Normal 2d');
 		this.effect = this.renderer;
-	} else if (mode == VRManager.modes.vr) {
-		console.log('vr');
+		this.controls = null;
+	} else if (mode == VRUi.modes.vr) {
+		console.log('VF');
+
 		this.effect = new THREE.VREffect( this.renderer );
-	} else if (mode == VRManager.modes.stereo) {
-		console.log('stereo');
-		//this.effect = new THREE.StereoEffect( this.renderer );
+		this.controls = new THREE.VRControls( this.camera );
+
+	} else if (mode == VRUi.modes.stereo) {
+		console.log('Stereo');
+
+		this.effect = new THREE.StereoEffect( this.renderer );
+		this.controls = new THREE.DeviceOrientationControls( this.camera );
 	}
+
 	this.effect.setSize( window.innerWidth, window.innerHeight );
 }
 
@@ -204,11 +218,13 @@ VRUi.prototype.animate = function() {
 	var self = this;
 	var controls = self.controls;
 
-	if (VRManager.mode == VRManager.modes.vr) {
+	if (VRManager.mode == VRUi.modes.vr) {
 		var headQuat = controls.getVRState().hmd.rotation;
 	}
 
-	self.controls.update();
+	if (self.controls) {
+		self.controls.update();
+	}
 
 	self.transition.update();
 	self.loading.update();
