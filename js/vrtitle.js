@@ -23,25 +23,25 @@ function VRTitle() {
 
 
 			// get location in the HUD for where title should fit.
-			var hudd23 = VRManager.ui.hud.d23;
-			var hudRect = hudd23.getNode('#site-location').rectangle;
-			var y = hudRect.y + (titleMesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
+			//var hudd23 = VRManager.ui.hud.d23;
+			//var hudRect = hudd23.getNode('#site-location').rectangle;
+			//var y = hudRect.y + (titleMesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
 
 			// loading indicator
-			var loading = VRManager.ui.loading.mesh;
-			loading.position.set(0, -y, -500);
+			//var loading = VRManager.ui.loading.mesh;
+			//loading.position.set(0, 0, -500);
 
 			// position
-			mesh.position.set(0, -y, -550);
+			mesh.position.set(0, 0, -550);
 			mesh.scale.set(0.00001, 0.00001, 1);
 			mesh.userData.scale = new THREE.Vector2(1,1);
 			mesh.visible = self.visible;
 
+			self.mesh = mesh;
+
 			if (self.visible) {
 				self.show();
 			}
-
-			self.mesh = mesh;
 
 			resolve();
 		};

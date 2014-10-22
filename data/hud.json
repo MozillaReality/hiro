@@ -1,146 +1,121 @@
 {
-	"texture": "index.png",
-	"items": [
-	  {
-	    "selector": "#site-location",
-	    "content": [
-	      {
-	        "selector": ".authors",
+  "texture": "index.png",
+  "items": [
+    {
+      "selector": "#site-location",
+      "content": [
+        {
+          "selector": ".authors",
 	        "content": "Your Name",
 	        "font": "normal 400 17.5px Montserrat",
 	        "fillStyle": "rgb(255, 255, 255)",
 	        "canvas": true
-	      },
-	      {
-	        "selector": ".title h1",
+        },
+        {
+          "selector": ".title h1",
 	        "content": "Site title",
 	        "font": "normal 700 24.5px Montserrat",
 	        "fillStyle": "rgb(255, 255, 255)",
 	        "canvas": true
-	      }
-	    ]
-	  },
-	  {
-	    "selector": "#favorites"
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "Sechelt"
-	      }
-	    ],
-	    "userData": {
-	      "title": "SECHELT",
-	      "url": "http://mozvr.github.io/sechelt",
-	      "author": "JOSH CARPENTER, MR. DOOB",
-	      "tech": "three.js"
-	    }
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "Polar Sea"
-	      }
-	    ],
-	    "userData": {
-	      "title": "POLAR SEA",
-	      "url": "http://mozvr.github.io/polarsea/index.html",
-	      "author": "DEEP INC, ELEVR",
-	      "tech": "WEBGL"
-	    }
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "Flying Cubes"
-	      }
-	    ],
-	    "userData": {
-	      "title": "FLYING CUBES",
-	      "url": "./content/cubes/index.html",
-	      "author": "",
-	      "tech": "WEBGL"
-	    }
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "INFO DIVE"
-	      }
-	    ],
-	    "userData": {
-	      "title": "INFO DIVE",
-	      "url": "http://mozvr.github.io/infodive/index2.html",
-	      "author": "TONY PARISI, ERIC LEVIN, JOSH CARPENTER",
-	      "tech": "WEBGL"
-	    }
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "Panorama Viewer"
-	      }
-	    ],
-	    "userData": {
-	      "title": "PANORAMA VIEWER",
-	      "url": "http://mozvr.github.io/panorama-viewer/",
-	      "author": "SOMEONE GREAT",
-	      "tech": "WebGL"
-	    }
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "Vizicities"
-	      }
-	    ],
-	    "userData": {
-	      "title": "VIZICITIES",
-	      "url": "./content/sechelt/index.html",
-	      "author": "SOMEONE GREAT",
-	      "tech": "WebGL"
-	    }
-	  },
-	  {
-	    "selector": "#favorites-template",
-	    "clone": true,
-	    "display": true,
-	    "content": [
-	      {
-	        "selector": ".fav-inner",
-	        "content": "Panorama viewer"
-	      }
-	    ],
-	    "userData": {
-	      "title": "PANORAMA VIEWER",
-	      "url": "./content/sechelt/index.html",
-	      "author": "SOMEONE GREAT",
-	      "tech": "WebGL"
-	    }
-	  }
-	]
+        }
+      ]
+    },
+    {
+      "selector": "#favorites-left-template",
+      "clone": true,
+      "display": true,
+      "content": [
+        {
+          "selector": ".fav-inner",
+          "content": "Sechelt"
+        }
+      ],
+      "userData": {
+        "title": "SECHELT",
+        "url": "http://mozvr.github.io/sechelt",
+        "author": "JOSH CARPENTER, MR. DOOB"
+      }
+    },
+    {
+      "selector": "#favorites-left-template",
+      "clone": true,
+      "display": true,
+      "content": [
+        {
+          "selector": ".fav-inner",
+          "content": "Polar Sea"
+        }
+      ],
+      "userData": {
+        "title": "POLAR SEA",
+        "url": "http://mozvr.github.io/polarsea/index.html",
+        "author": "DEEP INC, ELEVR"
+      }
+    },
+    {
+      "selector": "#favorites-left-template",
+      "clone": true,
+      "display": true,
+      "content": [
+        {
+          "selector": ".fav-inner",
+          "content": "Flying Cubes"
+        }
+      ],
+      "userData": {
+        "title": "FLYING CUBES",
+        "url": "./content/cubes/index.html",
+        "author": ""
+      }
+    },
+    {
+      "selector": "#favorites-right-template",
+      "clone": true,
+      "display": true,
+      "content": [
+        {
+          "selector": ".fav-inner",
+          "content": "Panorama Viewier"
+        }
+      ],
+      "userData": {
+        "title": "PANORAMA VIEWER",
+        "url": "http://mozvr.github.io/panorama-viewer/",
+        "author": "JOSH CARPENTER"
+      }
+    },
+    {
+      "selector": "#favorites-right-template",
+      "clone": true,
+      "display": true,
+      "content": [
+        {
+          "selector": ".fav-inner",
+          "content": "Info Dive"
+        }
+      ],
+      "userData": {
+        "title": "INFO DIVE",
+        "url": "http://mozvr.github.io/infodive/index2.html",
+        "author": "TONY PARISI, ERIC LEVIN, JOSH CARPENTER"
+      }
+    },
+    {
+      "selector": "#favorites-right-template",
+      "clone": true,
+      "display": true,
+      "content": [
+        {
+          "selector": ".fav-inner",
+          "content": "Dom VR"
+        }
+      ],
+      "userData": {
+        "title": "DOM VR Example",
+        "url": "./content/web/index.html",
+        "author": "CASEY YEE",
+        "tech": "Dom VR"
+      }
+    }
+  ]
 }

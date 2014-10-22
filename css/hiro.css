@@ -70,7 +70,8 @@ p {
 
 #launch-content {
   text-align: center;
-  /*align-self: flex-end;*/
+  align-self: flex-end;
+  margin-bottom: 3rem;
   z-index: 1;
 }
 

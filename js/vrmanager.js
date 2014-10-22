@@ -6,11 +6,12 @@ window.VRManager = (function() {
   **/
   function VRManager(container) {
     var self = this;
-    self.container = document.querySelector(container);
 
+    self.mode = self.modes.normal;
+
+    self.container = document.querySelector(container);
     self.loader = self.container.querySelector('#loader');
     self.ui = new VRUi(self.container.querySelector('#ui'));
-    self.sequence = new VRSequence();
 
     // this promise resolves when VR devices are detected.
     self.vrReady = new Promise(function (resolve, reject) {
@@ -44,8 +45,6 @@ window.VRManager = (function() {
       }
     }).catch(function (err) {
       console.log('Error locating VR devices: ' + err);
-
-      self.noVR();
     });
 
     window.addEventListener("message", function (e) {
@@ -63,37 +62,37 @@ window.VRManager = (function() {
           }
           break;
         case 'ended':
-          self.sequence.next();
+          // self.sequence.next();
           break;
         case 'progress':
           break;
       }
     }, false);
 
-    document.addEventListener('mozfullscreenchange', function(e) {
-      if (document.mozFullScreenElement == null) {
+    document.addEventListener('mozfullscreenchange',handleFsChange);
+
+    document.addEventListener('webkitfullscreenchange',handleFsChange)
+
+    function handleFsChange(e) {
+      var fullscreenElement = document.fullscreenElement ||
+        document.mozFullScreenElement ||
+        document.webkitFullscreenElement;
+
+      if (fullscreenElement == null) {
+        console.log('exiting');
         self.exitVR();
       }
-    });
+    };
 
     self.vrReady.then(function () {
-      if (self.vrIsReady) {
-        console.log('VR Ready');
-
-        self.landing();
-      }
+      self.ui.start(self.mode);
     });
   }
 
-  VRManager.prototype.noVR = function() {
-    this.load('../landing/index.html');
-
-    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
-    document.querySelector('#launch-browser').classList.remove('is-hidden');
-  }
-
-  VRManager.prototype.landing = function() {
-    this.load('../landing/index.html');
+  VRManager.modes = VRManager.prototype.modes = {
+    normal: 1,
+    stereo: 2,
+    vr: 3
   };
 
 
@@ -138,6 +137,7 @@ window.VRManager = (function() {
   */
   VRManager.prototype.enableVR = function () {
     var self = this;
+
     if (self.vrIsReady) {
       // full screen
       var fs = self.container;
@@ -159,21 +159,20 @@ window.VRManager = (function() {
 
       bodyEl.requestPointerLock();
 
-      this.ui.start();
-    }
-  };
+      self.mode = self.modes.vr;
 
-  VRManager.prototype.enableStereo = function() {
-    document.getElementById('launch').style.display = 'none'
-    this.ui.start();
+      self.ui.setRenderMode(self.mode);
+    } else {
+      console.log('no vr mode available');
+    }
   };
 
 
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
     this.unloadCurrent();
+    this.ui.setRenderMode(this.modes.normal);
     this.ui.reset();
-    this.landing();
   };
 
   VRManager.prototype.zeroSensor = function () {

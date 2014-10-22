@@ -5,39 +5,45 @@ function VRUi(container) {
 
 	this.homeUrl = '../content/construct/index.html';
 	this.container = container;
-	this.active = false;
 	this.hud = new VRHud();
 	this.cursor = new VRCursor('hides');
 	this.loading = new VRLoading();
-	this.title = null;
+	this.title = new VRTitle();
 	this.transition = new VRTransition();
+
+	// three.js
 	this.scene = this.camera = this.controls = this.renderer = this.effect = null;
 
-	// main
 	this.initRenderer();
 
-	this.hud.ready.then(function() {
-		self.scene.add(self.hud.layout);
+	this.initKeyboardControls();
 
-		self.scene.add(self.transition.init());
-
-		// loading progress
-		self.scene.add(self.loading.mesh);
-
-		// cursor & title needs some positional information from HUD before init.
-		var title = new VRTitle();
-		title.ready.then(function() {
-			self.scene.add(title.mesh);
-		});
-		self.title = title;
-
-		var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
-		self.scene.add(cursorLayout);
-	})
+	this.initLaunchButton();
 
 	//self.scene.add(self.gridlines());
 
-	this.initKeyboardControls();
+	this.ready = Promise.all([this.hud.ready, this.title.ready])
+		.then(function() {
+			// add hud layout to scene
+			self.scene.add(self.hud.layout);
+
+			// add transition mesh to scene
+			self.scene.add(self.transition.object);
+
+			// loading progress
+			self.scene.add(self.loading.mesh);
+
+			// cursor
+			var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
+
+			self.scene.add(cursorLayout);
+
+			// title
+			self.scene.add(self.title.mesh);
+
+			// Once all this is loaded, kick off start from VR
+			// self.start();
+		});
 
 	return this;
 };
@@ -96,10 +102,6 @@ VRUi.prototype.load = function(url, opts) {
 
 
 VRUi.prototype.toggleHud = function() {
-	if (!this.active) {
-		return false;
-	}
-
 	if (!this.hud.visible) {
 		this.hud.show();
 		this.title.show();
@@ -117,25 +119,55 @@ VRUi.prototype.initRenderer = function() {
 
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+	//this.camera.position.z = 1;
+  //this.controls = new THREE.OrbitControls( this.camera );
+
 
   this.controls = new THREE.VRControls( this.camera );
   this.effect = new THREE.VREffect( this.renderer );
+
   this.effect.setSize( window.innerWidth, window.innerHeight );
   this.container.appendChild(this.renderer.domElement);
   this.initResizeHandler();
 };
 
-VRUi.prototype.start = function() {
-	this.active = true;
+VRUi.prototype.start = function(mode) {
 
-	this.goHome(true);
+	var self = this;
 
-	// kick off animation loop
-	this.animate();
+	this.ready.then(function() {
+		if (mode) {
+			self.setRenderMode(mode);
+		}
+
+		// start hud
+		self.toggleHud();
+
+		// start to home
+		self.goHome(true);
+
+		// kick off animation loop
+		self.animate();
+	});
 };
+
+VRUi.prototype.setRenderMode = function(mode) {
+	if (mode == VRManager.modes.normal) {
+		console.log('normal 2d');
+		this.effect = this.renderer;
+	} else if (mode == VRManager.modes.vr) {
+		console.log('vr');
+		this.effect = new THREE.VREffect( this.renderer );
+	} else if (mode == VRManager.modes.stereo) {
+		console.log('stereo');
+		//this.effect = new THREE.StereoEffect( this.renderer );
+	}
+	this.effect.setSize( window.innerWidth, window.innerHeight );
+}
 
 VRUi.prototype.goHome = function(noTransition) {
 	var home = this.home;
+
 	var opts = {
 		title: 'HOME',
 		author: '',
@@ -144,37 +176,40 @@ VRUi.prototype.goHome = function(noTransition) {
 
 	this.isHome = true;
 
+
 	if (noTransition) {
+		// skip transitions and titles, load content directly.
 		this.title.setTitle(opts.title);
 		this.title.setAuthor(opts.author);
+
 		VRManager.load(this.homeUrl);
 	} else {
+
 		this.load(this.homeUrl, opts);
 	}
-
-
 }
-
-VRUi.prototype.stop = function() {
-	this.active = false;
-};
 
 VRUi.prototype.reset = function() {
 	var self = this;
 	self.currentUrl = null;
 	self.title.hide();
 	self.cursor.disable();
-	self.hud.hide().then(function() {
-		self.stop();
-	})
+	self.hud.hide()
+		.then(function() {
+			self.start();
+		});
 };
 
 VRUi.prototype.animate = function() {
 	var self = this;
 	var controls = self.controls;
-	var headQuat = controls.getVRState().hmd.rotation;
+
+	if (VRManager.mode == VRManager.modes.vr) {
+		var headQuat = controls.getVRState().hmd.rotation;
+	}
 
 	self.controls.update();
+
 	self.transition.update();
 	self.loading.update();
 	self.title.update();
@@ -186,10 +221,17 @@ VRUi.prototype.animate = function() {
 	// three.js render
 	this.effect.render(this.scene, this.camera);
 
-	if (this.active) {
-		requestAnimationFrame(this.animate.bind(this));
-	}
+	requestAnimationFrame(this.animate.bind(this));
 }
+
+VRUi.prototype.initLaunchButton = function() {
+	var button = document.querySelector('.launch-button');
+
+	button.addEventListener('click', function() {
+		VRManager.enableVR();
+	});
+
+};
 
 VRUi.prototype.initKeyboardControls = function() {
  	/*
@@ -209,9 +251,6 @@ VRUi.prototype.initKeyboardControls = function() {
         break;
       case 90: // z
         VRManager.zeroSensor();
-        break;
-      case 83: // s
-      	VRManager.enableStereo();
       	break;
       case 32: // space
         self.toggleHud();
@@ -220,15 +259,12 @@ VRUi.prototype.initKeyboardControls = function() {
   }
 
   window.addEventListener("keydown", onkey, true);
-
-  document.getElementById('launch-button').addEventListener('click', function() {
-		VRManager.enableVR();
-  });
 };
 
 VRUi.prototype.initResizeHandler = function() {
 	var effect = this.effect;
 	var camera = this.camera;
+
 	function onWindowResize() {
 		var innerWidth = window.innerWidth;
 		var innweHeight =  window.innerHeight;

@@ -3,6 +3,7 @@ function VRLoading() {
 	self.visible = false;
 
 	var mesh = new THREE.Group();
+	mesh.position.z = -500;
 
 	var particles = [];
 	var particleCount = 10;

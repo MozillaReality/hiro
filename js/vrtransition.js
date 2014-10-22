@@ -62,10 +62,6 @@ function VRTransition() {
 
 }
 
-VRTransition.prototype.init = function() {
-  return this.object;
-}
-
 VRTransition.prototype.update = function() {
   // update loop
 }
