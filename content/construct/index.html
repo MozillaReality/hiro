@@ -72,13 +72,93 @@
 		}
 
 		function setScene() {
-			var worldGeo = new THREE.SphereGeometry( 490, 60, 40 );
+			var worldGeo = new THREE.SphereGeometry( 1000 , 60, 40 );
 			worldGeo.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 			var worldMat = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
 			var world = new THREE.Mesh( worldGeo, worldMat );
 
 			scene.add( world );
 		}
+
+		function drawSquare(x1, y1, x2, y2) { 
+
+		    var square = new THREE.Geometry(); 
+
+		    //set 4 points
+		    square.vertices.push( new THREE.Vector3( x1,y2,0) );
+		    square.vertices.push( new THREE.Vector3( x1,y1,0) );
+		    square.vertices.push( new THREE.Vector3( x2,y1,0) );
+		    square.vertices.push( new THREE.Vector3( x2,y2,0) );
+
+		    //push 1 triangle
+		    square.faces.push( new THREE.Face3( 0,1,2) );
+
+		    //push another triangle
+		    square.faces.push( new THREE.Face3( 0,3,2) );
+
+		    //return the square object with BOTH faces
+		    return square;
+		}
+
+		function populateIcons() {
+			var icons = new THREE.Object3D();
+			icons.position.set( 0, -80, -400 );
+			scene.add( icons );
+
+			var iconsArray = [];
+			iconsArray.push( 'models/icon-sechelt-1.json' );
+			iconsArray.push( 'models/icon-infodive-1.json' );
+			iconsArray.push( 'models/icon-polarsea-1.json' );
+
+			var loader = new THREE.ObjectLoader();
+			
+
+			loader.load( iconsArray[0], function ( object ) {
+				//console.log(object);
+				icons.add( object );
+				object.position.set( -240, 0, 0 );
+				var target = makeTarget();
+				//icons.add( target );
+				target.position.set( -240, 0, 0 );
+			});
+
+			loader.load( iconsArray[1], function ( object ) {
+				//console.log(object);
+				icons.add( object );
+				object.position.set( 0, 0, -40 );
+				var target = makeTarget();
+				//icons.add( target );
+				target.position.set( 0, 0, -40 );
+			});
+		
+			loader.load( iconsArray[1], function ( object ) {
+				icons.add( object ); 
+				object.position.set( 240, 0, 0 );
+				var target = makeTarget();
+				//icons.add( target );
+				target.position.set( 240, 0, 0 );				
+			});
+
+			var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2, transparent: true, opacity: 1 } );
+
+			function makeTarget(){
+
+				var geometry = new THREE.CircleGeometry( 160, 4 )
+				geometry.vertices.shift();
+				
+				var line = new THREE.Line( geometry, material );
+				line.position.set( 0, 0, 0 );
+				line.rotation.set( 0, 0, Math.PI / 4 );
+
+				return line;
+
+			}
+
+
+
+		}
+	
+
 
 		function initVideo() {
 			var geometry = new THREE.PlaneGeometry( 1, 1 );
@@ -113,6 +193,7 @@
 		}
 
 		init();
+		populateIcons();
 		setScene();
 		initVideo();
 		animate();
