@@ -77,10 +77,6 @@ VRCursor.prototype.init = function( dom, camera, context ) {
     new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } )
   );
 
-  // if (this.mode == this.modes.mono) {
-  //   cursor.visible = false;
-  // }
-
   // set the depth of cursor
   cursor.position.z = -28;
 
