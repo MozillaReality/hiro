@@ -37,7 +37,7 @@ function VRHud() {
 
 VRHud.prototype.makeConstructNav = function() {
 	var geometry = new THREE.IcosahedronGeometry( 30, 1 );
-  var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, opacity: 1, side: THREE.DoubleSide } );
+  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 1, side: THREE.DoubleSide } );
   var mesh = new THREE.Mesh( geometry, material );
   mesh.position.y = -150;
   mesh.position.z = -600;

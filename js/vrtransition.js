@@ -6,59 +6,24 @@ function VRTransition() {
   //create object
   self.object = new THREE.Object3D();
   self.object.visible = this.visible;
+  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, opacity: 1, wireframe: false, side: THREE.DoubleSide } );
 
-  var geometry = new THREE.IcosahedronGeometry( 700, 1 );
-  var material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 1, side: THREE.DoubleSide } );
+  var loader = new THREE.ObjectLoader();
+  loader.load( 'models/test-4.json', function ( object ) {
 
-  //fragment function: returns a group of meshes created from the faces of the geometry that is passed in
-  function fragment( geometry, material ) {
+    rings = object.children[0].children;
+    rings.reverse();
 
-    var group = new THREE.Group();
-
-    for ( var i = 0; i < geometry.faces.length; i ++ ) {
-
-      var face = geometry.faces[ i ];
-
-      var vertexA = geometry.vertices[ face.a ].clone();
-      var vertexB = geometry.vertices[ face.b ].clone();
-      var vertexC = geometry.vertices[ face.c ].clone();
-
-      var geometry2 = new THREE.Geometry();
-      geometry2.vertices.push( vertexA, vertexB, vertexC );
-      geometry2.faces.push( new THREE.Face3( 0, 1, 2 ) );
-
-      var mesh = new THREE.Mesh( geometry2, material );
-      mesh.position.sub( geometry2.center() );
-
-      var wireframe = new THREE.Mesh(
-        geometry2,
-        new THREE.MeshBasicMaterial( { color: 0xCCCCCC, wireframe: true, wireframeLinewidth: 3 } )
-      )
-      wireframe.position.sub( geometry2.center() );
-
-      mesh.add( wireframe );
-      group.add( mesh );
+    for ( var i = 0; i < rings.length; i++ ){
+      
+      rings[i].children[0].material = material;
 
     }
-    return group;
-  }
 
-  //fragment the geometry
-  var pieces = fragment( geometry, material );
+    object.scale.set( 10, 10, 10 )
+    self.object.add( object );
 
-  //sort the pieces
-  pieces.children.sort( function ( a, b ) {
-
-    return a.position.z - b.position.z;
-    //return a.position.x - b.position.x;     // sort x
-    //return b.position.y - a.position.y;   // sort y
-
-  } );
-
-  pieces.rotation.set( 0, 0, 0 )
-
-  //add pieces to holder object
-  self.object.add( pieces );
+  })
 
 }
 
@@ -73,7 +38,54 @@ VRTransition.prototype.fadeOut = function () {
 
     self.object.visible = true;
     self.visible = true;
+    var rings = self.object.children[0].children[0].children;
+   
+    console.log( "--------" )
+    console.log( rings )
 
+    var cap = rings[0];
+    cap.scale.set( 0.01, 0.01, 0.01 );
+    new TWEEN.Tween( cap.scale )
+      .to ( { x:1, y:1, z:1 }, 1000 )
+      .start();
+
+    for ( i = 1; i < rings.length; i++ ){
+      
+      var r = rings[i].children[0];
+      var delay = i * 80;
+
+      r.scale.set( 0.01, 0.01, 0.01 );
+      new TWEEN.Tween( r.scale )
+        .to ( { x:1, y:1, z:1 }, 0 )
+        .delay( delay )
+        .start();
+
+      var destZ = r.position.z;
+      r.position.setZ( destZ + 100 )
+      new TWEEN.Tween( r.position )
+        .to ( { z:destZ }, 2000 )
+        .delay( delay )
+        .easing( TWEEN.Easing.Quadratic.Out )
+        .start();
+
+      /*
+      r.scale.set( 0.01, 0.01, 0.01 );
+      new TWEEN.Tween( r.scale )
+        .to ( { x:1, y:1, z:1 }, 2000 )
+        .delay( delay )
+        .start();
+
+      r.rotation.set( 0, 0, 1.57 );
+      new TWEEN.Tween( r.rotation )
+        .to ( { x:0, y:0, z:0 }, 2000 )
+        .delay( delay )
+        .start();
+      */
+
+    }
+  
+
+    /*
     var pieces = self.object.children[0];
 
     for ( var i = 0; i < pieces.children.length; i ++ ) {
@@ -89,15 +101,6 @@ VRTransition.prototype.fadeOut = function () {
         //.easing( TWEEN.Easing.Cubic.Out )
         .start();
 
-      /*
-      object.rotation.set( 0, 0, 0.5 );
-      new TWEEN.Tween( object.rotation )
-        .to( { z:0  }, 800 )
-        .delay( delay )
-        //.easing( TWEEN.Easing.Cubic.Out )
-        .start();
-      */
-
       object.scale.set( 0.001, 0.001, 0.001 )
       new TWEEN.Tween( object.scale )
         .to( { x:0.99, y:0.99, z:0.99  }, 600 )
@@ -106,11 +109,12 @@ VRTransition.prototype.fadeOut = function () {
         .start();
 
     }
+    */
 
     //set this long enough to allow for the full number of pieces to play, with their delays
     setTimeout(function() {
       resolve();
-    },2250)
+    },5000)
 
   });
 };
@@ -118,6 +122,7 @@ VRTransition.prototype.fadeOut = function () {
 VRTransition.prototype.fadeIn = function () {
   var self = this;
 
+  /*
   var pieces = self.object.children[0];
 
   for ( var i = 0; i < pieces.children.length; i ++ ) {
@@ -138,6 +143,7 @@ VRTransition.prototype.fadeIn = function () {
       },1200)
 
   }
+  */
 
 };
 

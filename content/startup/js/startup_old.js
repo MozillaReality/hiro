@@ -4,20 +4,24 @@ function startup() {
 	var worldGeo;
 
 	//background sphere
-
 	worldGeo = new THREE.SphereGeometry( 490, 60, 40 );
 	worldGeo.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
-	var worldMat = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg-3.jpg' ) } );
+	var worldMat = new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, map: THREE.ImageUtils.loadTexture( 'images/sechelt-360-2.png' ) } );
 	var world = new THREE.Mesh( worldGeo, worldMat );
 	scene.add( world );
 
 
-
-
 	/*
+	todo: test geometry to match up VRUi scene to content (this).  See VRUi bug: for more info.
+	*/
+	// var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
+	// var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	// var cube = new THREE.Mesh( geometry, material );
+	// cube.scale.set( 50, 50, 50);
+	// scene.add(cube);
+
 
 	//function for exploding objects, from MrDoob
-
 	function explode( geometry, material ) {
 
 		var group = new THREE.Group();
@@ -375,7 +379,6 @@ function startup() {
 
 	}
 
-	*/
 
 	//------------- SITE LOADED -------------//
 

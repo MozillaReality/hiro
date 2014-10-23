@@ -27,7 +27,7 @@ VRLoading.prototype.makeParticle = function() {
 	var geometry = new THREE.SphereGeometry(5, 3, 2);
 	geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -80 ) );
 
-	var material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
+	var material = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.DoubleSide } );
 
 	var particle = new THREE.Mesh( geometry, material );
 
