@@ -6,7 +6,7 @@ function VRTransition() {
   //create object
   self.object = new THREE.Object3D();
   self.object.visible = this.visible;
-  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, opacity: 1, wireframe: true, side: THREE.DoubleSide } );
+  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, opacity: 1, wireframe: false, side: THREE.DoubleSide } );
 
   var loader = new THREE.ObjectLoader();
   loader.load( 'models/test-4.json', function ( object ) {
@@ -43,10 +43,30 @@ VRTransition.prototype.fadeOut = function () {
     console.log( "--------" )
     console.log( rings )
 
-    for ( i = 0; i < rings.length; i++ ){
+    var cap = rings[0];
+    cap.scale.set( 0.01, 0.01, 0.01 );
+    new TWEEN.Tween( cap.scale )
+      .to ( { x:1, y:1, z:1 }, 1000 )
+      .start();
+
+    for ( i = 1; i < rings.length; i++ ){
       
       var r = rings[i].children[0];
-      var delay = i * 180;
+      var delay = i * 80;
+
+      r.scale.set( 0.01, 0.01, 0.01 );
+      new TWEEN.Tween( r.scale )
+        .to ( { x:1, y:1, z:1 }, 0 )
+        .delay( delay )
+        .start();
+
+      var destZ = r.position.z;
+      r.position.setZ( destZ + 100 )
+      new TWEEN.Tween( r.position )
+        .to ( { z:destZ }, 2000 )
+        .delay( delay )
+        .easing( TWEEN.Easing.Quadratic.Out )
+        .start();
 
       /*
       r.scale.set( 0.01, 0.01, 0.01 );
