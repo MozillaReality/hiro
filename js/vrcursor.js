@@ -9,7 +9,8 @@ function VRCursor(mode) {
     xInc: 0,
     yInc: 0
   };
-  this.mode = mode || 'centered';
+  // If mode not specified or mode is not valid it falls back to centered
+  this.mode = this.modes[mode] || 'centered';
 }
 
 VRCursor.modes = VRCursor.prototype.modes = {
