@@ -6,7 +6,8 @@ function VRUi(container) {
 	this.homeUrl = '../content/construct/index.html';
 	this.container = container;
 	this.hud = new VRHud();
-	this.cursor = new VRCursor('hides');
+	this.mode = this.modes.normal;
+	this.cursor = new VRCursor('mono');
 	this.loading = new VRLoading();
 	this.title = new VRTitle();
 	this.transition = new VRTransition();
@@ -35,8 +36,9 @@ function VRUi(container) {
 
 			// cursor
 			var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
-
-			self.scene.add(cursorLayout);
+			if (cursorLayout) {
+				self.scene.add(cursorLayout);
+			}
 
 			// title
 			self.scene.add(self.title.mesh);
@@ -113,25 +115,6 @@ VRUi.prototype.toggleHud = function() {
 	}
 };
 
-VRUi.prototype.initRenderer = function() {
-	this.renderer = new THREE.WebGLRenderer( { alpha: true } );
-  this.renderer.setClearColor( 0x000000, 0 );
-
-  this.scene = new THREE.Scene();
-
-  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-
-	//this.camera.position.z = 1;
-  //this.controls = new THREE.OrbitControls( this.camera );
-
-  // this.controls = new THREE.VRControls( this.camera );
-  // this.effect = new THREE.VREffect( this.renderer );
-  this.setRenderMode(this.modes.normal);
-
-  this.effect.setSize( window.innerWidth, window.innerHeight );
-  this.container.appendChild(this.renderer.domElement);
-  this.initResizeHandler();
-};
 
 VRUi.modes = VRUi.prototype.modes = {
   normal: 1,
@@ -139,14 +122,52 @@ VRUi.modes = VRUi.prototype.modes = {
   vr: 3
 };
 
+VRUi.prototype.initRenderer = function() {
+	this.renderer = new THREE.WebGLRenderer( { alpha: true } );
+  this.renderer.setClearColor( 0x000000, 0 );
+
+  this.scene = new THREE.Scene();
+  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+
+	this.setRenderMode(this.mode);
+
+  this.effect.setSize( window.innerWidth, window.innerHeight );
+
+  this.container.appendChild(this.renderer.domElement);
+
+  this.initResizeHandler();
+};
+
+
+VRUi.prototype.setRenderMode = function(mode) {
+	this.mode = mode;
+	if (mode == VRUi.modes.normal) {
+		console.log('Mono render mode');
+		this.effect = this.renderer;
+		this.controls = null;
+		this.cursor.setMode('mono');
+	} else if (mode == VRUi.modes.vr) {
+		console.log('VR render mode');
+		this.effect = new THREE.VREffect( this.renderer );
+		this.controls = new THREE.VRControls( this.camera );
+		this.cursor.setMode('centered');
+	} else if (mode == VRUi.modes.stereo) {
+		console.log('Stereo render mode');
+		this.effect = new THREE.StereoEffect( this.renderer );
+		this.controls = new THREE.DeviceOrientationControls( this.camera );
+		this.cursor.setMode('centered');
+	}
+
+	this.effect.setSize( window.innerWidth, window.innerHeight );
+}
+
+
+
+
 VRUi.prototype.start = function(mode) {
 	var self = this;
 
 	this.ready.then(function() {
-		// if (mode) {
-		// 	self.setRenderMode(mode);
-		// }
-
 		// start hud
 		self.toggleHud();
 
@@ -157,27 +178,6 @@ VRUi.prototype.start = function(mode) {
 		self.animate();
 	});
 };
-
-VRUi.prototype.setRenderMode = function(mode) {
-	if (mode == VRUi.modes.normal) {
-		console.log('Normal 2d');
-		this.effect = this.renderer;
-		this.controls = null;
-	} else if (mode == VRUi.modes.vr) {
-		console.log('VF');
-
-		this.effect = new THREE.VREffect( this.renderer );
-		this.controls = new THREE.VRControls( this.camera );
-
-	} else if (mode == VRUi.modes.stereo) {
-		console.log('Stereo');
-
-		this.effect = new THREE.StereoEffect( this.renderer );
-		this.controls = new THREE.DeviceOrientationControls( this.camera );
-	}
-
-	this.effect.setSize( window.innerWidth, window.innerHeight );
-}
 
 VRUi.prototype.goHome = function(noTransition) {
 	var home = this.home;
@@ -250,10 +250,6 @@ VRUi.prototype.initLaunchButton = function() {
 };
 
 VRUi.prototype.initKeyboardControls = function() {
- 	/*
- 	todo: Entering VR mode should be done with a button and not a
- 	keyboard key.  This could be part of the startup scene.
- 	*/
  	var self = this;
 
   function onkey(event) {

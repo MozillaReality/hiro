@@ -114,6 +114,8 @@ window.VRManager = (function() {
     var self = this;
 
     console.log('loading url: ' + url);
+
+
     var newTab = new VRTab(url);
     newTab.hide();
     newTab.mount(self.loader);
@@ -128,17 +130,14 @@ window.VRManager = (function() {
       self.loadingTab = null;
       self.currentDemo = newTab;
 
+      newTab.setRenderMode(self.ui.mode);
+
       newTab.show();
 
       // We'll do this elsewhere eventually
       newTab.start();
     });
     newTab.load();
-  };
-
-  VRManager.prototype.noVR = function() {
-    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
-    document.querySelector('#launch-browser').classList.remove('is-hidden');
   };
 
   /*
@@ -169,6 +168,11 @@ window.VRManager = (function() {
       bodyEl.requestPointerLock();
 
       self.ui.setRenderMode(self.ui.modes.vr);
+
+      if (self.currentDemo) {
+       self.currentDemo.setRenderMode(self.ui.mode);
+      }
+
     } else {
       console.log('no vr mode available');
     }
@@ -179,6 +183,9 @@ window.VRManager = (function() {
     console.log('Exiting VR mode');
     this.unloadCurrent();
     this.ui.setRenderMode(this.ui.modes.normal);
+    if (self.currentDemo) {
+      self.currentDemo.setRenderMode(this.ui.mode);
+    }
     this.ui.reset();
   };
 

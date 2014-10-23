@@ -2,13 +2,29 @@ function VRCursor(mode) {
   this.enabled = false;
   this.context = null;
   this.layout = null;
+  this.mouse = null;
   this.rotation = {
     x: 0,
     y: 0,
     xInc: 0,
     yInc: 0
   };
-  this.mode = this.modes[mode] || this.modes.centered;
+  this.mode = mode || 'centered';
+}
+
+VRCursor.modes = VRCursor.prototype.modes = {
+  centered: 1,
+  mouseSync: 2,
+  inFOV: 3,
+  hides: 4,
+  mono: 5
+};
+
+VRCursor.prototype.setMode = function(mode) {
+  console.log('setting cursor: ' + mode);
+
+  this.mode = this.modes[mode];
+
   switch (this.mode) {
     case this.modes.centered:
       this.updatePosition = this.updatePositionCentered;
@@ -22,15 +38,11 @@ function VRCursor(mode) {
     case this.modes.hides:
       this.updatePosition = this.updatePositionHides;
       break;
+    case this.modes.mono:
+      this.updatePosition = function() {};
+      break;
   }
 }
-
-VRCursor.modes = VRCursor.prototype.modes = {
-  centered: 1,
-  mouseSync: 2,
-  inFOV: 3,
-  hides: 4
-};
 
 // enable cursor with context, otherwise pick last
 VRCursor.prototype.enable = function(context) {
@@ -55,13 +67,19 @@ VRCursor.prototype.init = function( dom, camera, context ) {
   this.camera = camera;
   this.context = context;
   var layout = this.layout = new THREE.Group();
-  layout.visible = this.enabled;
   var raycaster = new THREE.Raycaster();
   var cursorPivot = new THREE.Object3D();
+
+  this.projector = new THREE.Projector();
+
   var cursor = new THREE.Mesh(
     new THREE.SphereGeometry( 0.5, 5, 5 ),
     new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } )
   );
+
+  // if (this.mode == this.modes.mono) {
+  //   cursor.visible = false;
+  // }
 
   // set the depth of cursor
   cursor.position.z = -28;
@@ -144,10 +162,24 @@ VRCursor.prototype.headQuat = function() {
 // VR Cursor events
 VRCursor.prototype.onMouseMoved = function(e) {
   e.preventDefault();
+
   if (!this.enabled) {
     return false;
   }
 
+  // get vectors for 2d mono mouse
+  if (this.mode == this.modes.mono) {
+    var mouse = new THREE.Vector3( ( e.clientX / window.innerWidth ) * 2 - 1,   //x
+      -( e.clientY / window.innerHeight ) * 2 + 1,  //y
+      0.5 );
+
+    mouse.unproject(this.camera)
+    mouse.sub(this.camera.position);
+    mouse.normalize();
+    this.mouse = mouse;
+  }
+
+  // everything below assumes pointerlock
   if (this.mode === this.modes.hides) {
     if (!this.cursor.visible) {
       this.showQuat = new THREE.Quaternion().copy(this.headQuat());
@@ -392,21 +424,27 @@ VRCursor.prototype.updateCursorIntersection = function() {
   var camera = this.camera;
   var raycaster = this.raycaster;
   var cursor = this.cursor;
+  var mouse = this.mouse;
 
-  var cursorPosition = cursor.matrixWorld;
-  vector = new THREE.Vector3().setFromMatrixPosition(cursorPosition);
+  if (mouse && this.mode == this.modes.mono) {
+    raycaster.set( camera.position, mouse );
+  } else {
+    var cursorPosition = cursor.matrixWorld;
+    vector = new THREE.Vector3().setFromMatrixPosition(cursorPosition);
 
-  // Draws RAY
-  // var geometry = new THREE.Geometry();
-  // geometry.vertices.push( camera.position );
-  // geometry.vertices.push( vector.sub( camera.position ).normalize().multiplyScalar(5000) );
-  // this.scene.remove(this.line);
-  // this.line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000}));
-  // this.scene.add(this.line);
+    // Draws RAY
+    // var geometry = new THREE.Geometry();
+    // geometry.vertices.push( camera.position );
+    // geometry.vertices.push( vector.sub( camera.position ).normalize().multiplyScalar(5000) );
+    // this.scene.remove(this.line);
+    // this.line = new THREE.Line(geometry, new THREE.LineBasicMaterial({color: 0xFF0000}));
+    // this.scene.add(this.line);
 
-  raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+    raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+  }
 
   var intersects = raycaster.intersectObjects( this.context.children );
+
   var intersected;
   var i;
 

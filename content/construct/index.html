@@ -29,7 +29,7 @@
 	<script src="js/StereoEffect.js"></script>
 
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
-	<script src="js/vrclient.js"></script>
+	<script src="../../js/vrclient.js"></script>
 	<script>
 		var parameters = ( function () {
 			var parameters = {};
@@ -55,20 +55,30 @@
 
 			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
 
-			if ( parameters.mode === 'cardboard' ) {
-				controls = new THREE.DeviceOrientationControls( camera );
-				effect = new THREE.StereoEffect( renderer );
-
-			} else {
-				controls = new THREE.VRControls( camera );
-				effect = new THREE.VREffect( renderer );
-			}
+			effect = renderer;
 
 			effect.setSize( window.innerWidth, window.innerHeight );
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
 			VRClient.ready();
+
+			VRClient.onRenderModeChange = function(mode) {
+				var modes = VRClient.renderModes;
+				if (mode == modes.normal) {
+					console.log('Mono mode');
+					controls = null;
+					effect = renderer;
+				} else if (mode == modes.stereo) {
+					console.log('Stereo mode');
+					controls = new THREE.DeviceOrientationControls( camera );
+					effect = new THREE.StereoEffect( renderer );
+				} else if (mode == modes.vr) {
+					console.log('VR mode');
+					controls = new THREE.VRControls( camera );
+					effect = new THREE.VREffect( renderer );
+				}
+			}
 		}
 
 		function setScene() {
@@ -108,7 +118,9 @@
 		}
 
 		function render() {
-			controls.update();
+			if (controls) {
+				controls.update();
+			}
 			effect.render( scene, camera );
 		}
 
