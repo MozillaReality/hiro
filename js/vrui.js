@@ -169,7 +169,7 @@ VRUi.prototype.start = function(mode) {
 
 	this.ready.then(function() {
 		// start hud
-		self.toggleHud();
+		//self.toggleHud();
 
 		// start to home
 		self.goHome(true);

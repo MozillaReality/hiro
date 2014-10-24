@@ -82,7 +82,7 @@ p {
   bottom: 0;
   left: 0;
   height: 6em;
-  background-color: rgba( 0, 0, 0, 0.8);
+  background-color: rgba( 0, 0, 0, 0.4);
 }
 
 #launch-content #logo {
@@ -97,8 +97,8 @@ p {
 
 #launch-content #modes {
   position: absolute;
-  bottom: 2em;
-  left: 50%;
+  top: 2em;
+  right: 2em;
   padding: 0;
   margin: 0;
 }
@@ -110,11 +110,21 @@ p {
 }
 
 #launch-content #modes a {
-  color: gray;
+  color: rgba( 255, 255, 255, 1 );
   text-decoration: none;
+  font-size: 0.8em;
   font-weight: 400;
   padding: 0.3em 0.5em;
-  border: 1px solid gray;
+  margin: 0 0.2em;
+  width: 5em;
+  display: block;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba( 255, 255, 255, 0.25 );
+}
+
+#launch-content #modes a:hover {
+  border: 1px solid rgba( 255, 255, 255, 1 );
+  background: rgba( 255, 255, 255, 0.25 );
 }
 
 
@@ -132,7 +142,7 @@ p {
 }
 
 #launch-content #links a {
-  color: gray;
+  color: rgba( 255, 255, 255, 1 );
   text-decoration: none;
   font-weight: 400;
   padding: 0.5em;
@@ -140,8 +150,8 @@ p {
 }
 
 #launch-content #links a:hover {
+  color: rgba( 255, 255, 255, 1 );
   background: rgba( 194, 25, 131, 0.25 );
-  color: white;
 }
 
 .flat-list li {

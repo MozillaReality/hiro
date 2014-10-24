@@ -46,6 +46,7 @@
 		var geometry, material, cube;
 
 		function init() {
+
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.autoClear = false;
 			renderer.setClearColor( 0x000000 );
@@ -81,13 +82,38 @@
 			}
 		}
 
-		function setScene() {
-			var worldGeo = new THREE.SphereGeometry( 1000 , 60, 40 );
-			worldGeo.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
-			var worldMat = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
-			var world = new THREE.Mesh( worldGeo, worldMat );
+		function createMockupCylinder(){
 
-			scene.add( world );
+			var radius = 850;	
+			var circumference = radius * 2 * 3.14;
+			var height = circumference / 4;
+
+			var holder = new THREE.Object3D();
+
+			var mockup = new THREE.Mesh(
+				new THREE.CylinderGeometry( radius, radius, height, 60, 1, true ),
+				new THREE.MeshBasicMaterial( { 
+					transparent: true, 
+					//side: THREE.DoubleSide,
+					map: THREE.ImageUtils.loadTexture( 'images/content-1.png' )
+				} )
+			);
+
+			mockup.geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+			//mockup.scale.set( -1, 1, 1 );
+			//holder.position.set( 0, 0, 0 )
+			scene.add( mockup );
+
+		}
+
+		function setScene() {
+			
+			var geometry = new THREE.SphereGeometry( 1000 , 60, 40 );
+			geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
+			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
+			var sky = new THREE.Mesh( geometry, material );
+
+			scene.add( sky );
 		}
 
 		function drawSquare(x1, y1, x2, y2) { 
@@ -111,18 +137,35 @@
 		}
 
 		function populateIcons() {
+			
 			var icons = new THREE.Object3D();
 			icons.position.set( 0, -80, -400 );
 			scene.add( icons );
 
 			var iconsArray = [];
-			iconsArray.push( 'models/icon-sechelt-1.json' );
-			iconsArray.push( 'models/icon-infodive-1.json' );
+			iconsArray.push( 'models/icon-sechelt-3.json' );
+			iconsArray.push( 'models/icon-sechelt-3.json' );
 			iconsArray.push( 'models/icon-polarsea-1.json' );
 
 			var loader = new THREE.ObjectLoader();
-			
 
+			var light1 = new THREE.DirectionalLight( 0xffffff, 0.15 );
+			light1.position.set( 100, 110, 150 )
+			scene.add( light1 );
+
+			function createShadow(){
+				
+				var shadow = new THREE.Mesh(
+					new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
+					new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } ) 
+				);
+
+				shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
+
+				return shadow;
+
+			}
+			
 			loader.load( iconsArray[0], function ( object ) {
 				//console.log(object);
 				icons.add( object );
@@ -130,8 +173,30 @@
 				var target = makeTarget();
 				//icons.add( target );
 				target.position.set( -240, 0, 0 );
+
+				var shadow = createShadow();
+				shadow.position.setY( -130 );
+				object.add( shadow );
 			});
 
+			loader.load( iconsArray[1], function ( object ) {
+				//console.log(object);
+				icons.add( object );
+				object.position.set( 0, 60, 300 );
+				//object.position.set( 0, 79, 394 );
+				var target = makeTarget();
+				//icons.add( target );
+				object.position.set( 0, 60, 300 );
+				//object.position.set( 0, 79, 394 );
+				object.scale.set( 0.1, 0.1, 0.1 );
+
+				var shadow = createShadow();
+				shadow.position.setY( -130 );
+				//object.add( shadow );
+			});
+
+
+			/*
 			loader.load( iconsArray[1], function ( object ) {
 				//console.log(object);
 				icons.add( object );
@@ -141,13 +206,14 @@
 				target.position.set( 0, 0, -40 );
 			});
 		
-			loader.load( iconsArray[1], function ( object ) {
+			loader.load( iconsArray[2], function ( object ) {
 				icons.add( object ); 
 				object.position.set( 240, 0, 0 );
 				var target = makeTarget();
 				//icons.add( target );
 				target.position.set( 240, 0, 0 );				
 			});
+			*/
 
 			var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2, transparent: true, opacity: 1 } );
 
@@ -163,12 +229,7 @@
 				return line;
 
 			}
-
-
-
 		}
-	
-
 
 		function initVideo() {
 			var geometry = new THREE.PlaneGeometry( 1, 1 );
@@ -205,6 +266,7 @@
 		}
 
 		init();
+		createMockupCylinder();
 		populateIcons();
 		setScene();
 		initVideo();
