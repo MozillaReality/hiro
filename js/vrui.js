@@ -23,7 +23,7 @@ function VRUi(container) {
 
 	//self.scene.add(self.gridlines());
 
-	this.ready = Promise.all([this.hud.ready, this.title.ready])
+	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
 		.then(function() {
 			// add hud layout to scene
 			self.scene.add(self.hud.layout);
@@ -34,11 +34,9 @@ function VRUi(container) {
 			// loading progress
 			self.scene.add(self.loading.mesh);
 
-			// cursor
-			var cursorLayout = self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
-			if (cursorLayout) {
-				self.scene.add(cursorLayout);
-			}
+			// add cursor to scene
+			self.scene.add(self.cursor.layout);
+			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
 			// title
 			self.scene.add(self.title.mesh);
@@ -146,16 +144,19 @@ VRUi.prototype.setRenderMode = function(mode) {
 		this.effect = this.renderer;
 		this.controls = null;
 		this.cursor.setMode('mono');
+		this.cursor.hide();
 	} else if (mode == VRUi.modes.vr) {
 		console.log('VR render mode');
 		this.effect = new THREE.VREffect( this.renderer );
 		this.controls = new THREE.VRControls( this.camera );
 		this.cursor.setMode('centered');
+		this.cursor.show();
 	} else if (mode == VRUi.modes.stereo) {
 		console.log('Stereo render mode');
 		this.effect = new THREE.StereoEffect( this.renderer );
 		this.controls = new THREE.DeviceOrientationControls( this.camera );
 		this.cursor.setMode('centered');
+		this.cursor.show();
 	}
 
 	this.effect.setSize( window.innerWidth, window.innerHeight );

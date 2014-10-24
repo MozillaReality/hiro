@@ -77,7 +77,6 @@ window.VRManager = (function() {
         document.webkitFullscreenElement;
 
       if (fullscreenElement == null) {
-        console.log('exiting');
         self.exitVR();
       }
     };
@@ -104,7 +103,6 @@ window.VRManager = (function() {
   VRManager.prototype.unloadCurrent = function() {
     var self = this;
 
-    console.log('cleaning up old demo');
     if (self.currentDemo) {
       self.currentDemo.destroy();
     }
@@ -114,7 +112,6 @@ window.VRManager = (function() {
     var self = this;
 
     console.log('loading url: ' + url);
-
 
     var newTab = new VRTab(url);
     newTab.hide();
@@ -181,12 +178,16 @@ window.VRManager = (function() {
 
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
-    this.unloadCurrent();
+
+    // this.unloadCurrent();
+
     this.ui.setRenderMode(this.ui.modes.normal);
-    if (self.currentDemo) {
-      self.currentDemo.setRenderMode(this.ui.mode);
+
+    if (this.currentDemo) {
+      this.currentDemo.setRenderMode(this.ui.mode);
     }
-    this.ui.reset();
+
+    //this.ui.reset();
   };
 
   VRManager.prototype.zeroSensor = function () {
