@@ -1,15 +1,62 @@
 function VRCursor(mode) {
+  var self = this;
+
   this.enabled = false;
+
+  // current scene context in which the cursor is operating
   this.context = null;
+
+  // Object 3d for cursor
   this.layout = null;
+
+  // system mouse vector
   this.mouse = null;
+
   this.rotation = {
     x: 0,
     y: 0,
     xInc: 0,
     yInc: 0
   };
+
+  // VR cursor position
+  this.position = {
+    x: 0,
+    y: 0
+  }
+
+  // object which cursor currently intersects
+  this.objectMouseOver = null;
+
+  // cursor operating mode
   this.mode = mode || 'centered';
+
+  //  return promise when all the necessary three cursor components are ready.
+  this.ready = new Promise(function(resolve) {
+      self.layout = new THREE.Group();
+      self.raycaster = new THREE.Raycaster();
+      self.cursorPivot = new THREE.Object3D();
+      self.projector = new THREE.Projector();
+
+      // cursor mesh
+      self.cursor = new THREE.Mesh(
+        new THREE.SphereGeometry( 0.5, 5, 5 ),
+        new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } )
+      );
+
+      // set the depth of cursor
+      self.cursor.position.z = -28;
+
+      self.cursorPivot.add(self.cursor);
+
+      self.layout.add(self.cursorPivot);
+
+      resolve();
+  });
+
+  // bind "real" mouse events.
+  this.bindEvents();
+
 }
 
 VRCursor.modes = VRCursor.prototype.modes = {
@@ -66,38 +113,6 @@ VRCursor.prototype.init = function( dom, camera, context ) {
   this.dom = dom;
   this.camera = camera;
   this.context = context;
-  var layout = this.layout = new THREE.Group();
-  var raycaster = new THREE.Raycaster();
-  var cursorPivot = new THREE.Object3D();
-
-  this.projector = new THREE.Projector();
-
-  var cursor = new THREE.Mesh(
-    new THREE.SphereGeometry( 0.5, 5, 5 ),
-    new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } )
-  );
-
-  // set the depth of cursor
-  cursor.position.z = -28;
-
-  this.raycaster = raycaster;
-  this.cursorPivot = cursorPivot;
-  this.cursor = cursor;
-
-  cursorPivot.add(cursor);
-  layout.add(cursorPivot);
-
-  // set origin VR cursor positioning
-  this.position = {
-    x: 0,
-    y: 0
-  }
-  this.objectMouseOver = null;
-
-  // bind "real" mouse events.
-  this.bindEvents();
-
-  return layout;
 }
 
 // VR Cursor events
