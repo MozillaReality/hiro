@@ -67,11 +67,12 @@ VRTitle.prototype.makeSiteMesh = function() {
 
 VRTitle.prototype.show = function() {
 	var self = this;
+	if (!self.visible) {
+		self.visible = true;
+		self.mesh.visible = true;
 
-	self.visible = true;
-	self.mesh.visible = true;
-
-	self.animateIn(self.mesh);
+		self.animateIn(self.mesh);
+	}
 }
 
 VRTitle.prototype.hide = function() {

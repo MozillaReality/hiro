@@ -107,6 +107,16 @@ window.VRClient = (function() {
         case 'renderMode':
           self.setRenderMode(msg.data);
           break;
+        case 'onBlur':
+          if (typeof self.onBlur == 'function') {
+            self.onBlur();
+          }
+          break;
+        case 'onFocus':
+          if (typeof self.onFocus == 'function') {
+            self.onFocus();
+          }
+          break;
       }
     }, false);
   }
@@ -135,15 +145,11 @@ window.VRClient = (function() {
     return this.wait;
   };
 
-
-  // if this demo has an exit
+  // if this demo has an completed and we can shit it down.
   VRClient.prototype.ended = function() {
     this.sendMessage('ended');
-  }
-
-  VRClient.prototype.getVR = function () {
-    return this.getVR;
   };
+
 
   VRClient.prototype.zeroSensor = function () {
     var self = this;

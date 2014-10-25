@@ -99,6 +99,21 @@ VRTab.prototype.setRenderMode = function(mode) {
   })
 };
 
+// tell content that we have switched in or away.
+VRTab.prototype.blur = function() {
+  var self = this;
+  this.loaded.then(function() {
+    self.sendMessage('onBlur');
+  });
+};
+
+VRTab.prototype.focus = function() {
+  var self = this;
+  this.loaded.then(function() {
+    self.sendMessage('onFocus');
+  });
+};
+
 VRTab.prototype.onWindowResize = function () {
   // This triggers the resize event within the iframe when the parent window resizes
   var iframe = this.iframe;

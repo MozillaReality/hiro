@@ -21,7 +21,7 @@
 	</head>
 	<body>
 	</body>
-	<script src="js/three.min.js"></script>
+	<script src="../../js/vendor/three.min.js"></script>
 	<script src="js/tween.min.js"></script>
 	<script src="js/VRControls.js"></script>
 	<script src="js/VREffect.js"></script>
@@ -30,6 +30,8 @@
 
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 	<script src="../../js/vrclient.js"></script>
+	<script src="../../js/vrcursor.js"></script>
+
 	<script>
 		var parameters = ( function () {
 			var parameters = {};
@@ -44,47 +46,80 @@
 		var camera, scene, renderer;
 		var controls, effect, vrEffect;
 		var geometry, material, cube;
+		var cursor;
 
 		function init() {
-
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.autoClear = false;
 			renderer.setClearColor( 0x000000 );
+
 			document.body.appendChild( renderer.domElement );
 
 			scene = new THREE.Scene();
 
 			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
 
-			effect = renderer;
+			cursor = new VRCursor();
+
+			cursor.ready.then(function() {
+				scene.add(cursor.layout);
+				cursor.init(renderer.domElement, camera, scene);
+				cursor.enable();
+			});
+
+			setRenderMode(VRClient.renderModes.normal);
 
 			effect.setSize( window.innerWidth, window.innerHeight );
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
-			VRClient.ready();
 
-			VRClient.onRenderModeChange = function(mode) {
+			// handle render mode changes from VR client and set appropriate renderer and control for mode.
+			VRClient.onRenderModeChange = setRenderMode;
+
+			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
 				if (mode == modes.normal) {
 					console.log('Mono mode');
 					controls = null;
 					effect = renderer;
+					cursor.setMode('mono');
+					cursor.hide();
 				} else if (mode == modes.stereo) {
 					console.log('Stereo mode');
 					controls = new THREE.DeviceOrientationControls( camera );
 					effect = new THREE.StereoEffect( renderer );
+					cursor.setMode('centered');
+					cursor.show();
 				} else if (mode == modes.vr) {
 					console.log('VR mode');
 					controls = new THREE.VRControls( camera );
 					effect = new THREE.VREffect( renderer );
+					cursor.setMode('centered');
+					cursor.show();
 				}
 			}
+
+			VRClient.onBlur = function() {
+				console.log('content blurred');
+				cursor.disable();
+			}
+
+			VRClient.onFocus = function() {
+				console.log('content focused');
+				cursor.enable();
+			}
+
+			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
+			light.position.set( 100, 110, 150 )
+			scene.add( light );
+
+			// Announce to Javris that everything is ready to go and we can reveal content.
+			VRClient.ready();
 		}
 
 		function createMockupCylinder(){
-
-			var radius = 850;	
+			var radius = 850;
 			var circumference = radius * 2 * 3.14;
 			var height = circumference / 4;
 
@@ -92,8 +127,8 @@
 
 			var mockup = new THREE.Mesh(
 				new THREE.CylinderGeometry( radius, radius, height, 60, 1, true ),
-				new THREE.MeshBasicMaterial( { 
-					transparent: true, 
+				new THREE.MeshBasicMaterial( {
+					transparent: true,
 					//side: THREE.DoubleSide,
 					map: THREE.ImageUtils.loadTexture( 'images/content-1.png' )
 				} )
@@ -106,8 +141,8 @@
 
 		}
 
-		function setScene() {
-			
+		function setSky() {
+
 			var geometry = new THREE.SphereGeometry( 1000 , 60, 40 );
 			geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
@@ -116,9 +151,9 @@
 			scene.add( sky );
 		}
 
-		function drawSquare(x1, y1, x2, y2) { 
+		function drawSquare(x1, y1, x2, y2) {
 
-		    var square = new THREE.Geometry(); 
+		    var square = new THREE.Geometry();
 
 		    //set 4 points
 		    square.vertices.push( new THREE.Vector3( x1,y2,0) );
@@ -136,111 +171,53 @@
 		    return square;
 		}
 
+
 		function populateIcons() {
-			
-			var icons = new THREE.Object3D();
-			icons.position.set( 0, -80, -400 );
-			scene.add( icons );
-
-			var iconsArray = [];
-			iconsArray.push( 'models/icon-sechelt-3.json' );
-			iconsArray.push( 'models/icon-sechelt-3.json' );
-			iconsArray.push( 'models/icon-polarsea-1.json' );
-
 			var loader = new THREE.ObjectLoader();
 
-			var light1 = new THREE.DirectionalLight( 0xffffff, 0.15 );
-			light1.position.set( 100, 110, 150 )
-			scene.add( light1 );
+			// create some geometry around our loaded 3d object for raycasting.
+			var icon = new THREE.Mesh(
+				new THREE.BoxGeometry( 20, 20, 20 ),
+				new THREE.MeshNormalMaterial({ wireframe: true }) );
 
-			function createShadow(){
-				
+			icon.position.set(0,-10,-50);
+
+			scene.add(icon)
+
+			loader.load('models/icon-sechelt-3.json', function ( object ) {
 				var shadow = new THREE.Mesh(
 					new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
-					new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } ) 
+					new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } )
 				);
-
 				shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
-
-				return shadow;
-
-			}
-			
-			loader.load( iconsArray[0], function ( object ) {
-				//console.log(object);
-				icons.add( object );
-				object.position.set( -240, 0, 0 );
-				var target = makeTarget();
-				//icons.add( target );
-				target.position.set( -240, 0, 0 );
-
-				var shadow = createShadow();
 				shadow.position.setY( -130 );
+
 				object.add( shadow );
+
+				object.scale.set(0.1,0.1,0.1);
+
+				icon.add(object);
 			});
 
-			loader.load( iconsArray[1], function ( object ) {
-				//console.log(object);
-				icons.add( object );
-				object.position.set( 0, 60, 300 );
-				//object.position.set( 0, 79, 394 );
-				var target = makeTarget();
-				//icons.add( target );
-				object.position.set( 0, 60, 300 );
-				//object.position.set( 0, 79, 394 );
-				object.scale.set( 0.1, 0.1, 0.1 );
-
-				var shadow = createShadow();
-				shadow.position.setY( -130 );
-				//object.add( shadow );
-			});
+			icon.addEventListener('click', function() {
+				VRClient.load('http://mozvr.github.io/sechelt');
+			})
 
 
-			/*
-			loader.load( iconsArray[1], function ( object ) {
-				//console.log(object);
-				icons.add( object );
-				object.position.set( 0, 0, -40 );
-				var target = makeTarget();
-				//icons.add( target );
-				target.position.set( 0, 0, -40 );
-			});
-		
-			loader.load( iconsArray[2], function ( object ) {
-				icons.add( object ); 
-				object.position.set( 240, 0, 0 );
-				var target = makeTarget();
-				//icons.add( target );
-				target.position.set( 240, 0, 0 );				
-			});
-			*/
+			// var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2, transparent: true, opacity: 1 } );
 
-			var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2, transparent: true, opacity: 1 } );
+			// function makeTarget(){
 
-			function makeTarget(){
+			// 	var geometry = new THREE.CircleGeometry( 160, 4 )
+			// 	geometry.vertices.shift();
 
-				var geometry = new THREE.CircleGeometry( 160, 4 )
-				geometry.vertices.shift();
-				
-				var line = new THREE.Line( geometry, material );
-				line.position.set( 0, 0, 0 );
-				line.rotation.set( 0, 0, Math.PI / 4 );
+			// 	var line = new THREE.Line( geometry, material );
+			// 	line.position.set( 0, 0, 0 );
+			// 	line.rotation.set( 0, 0, Math.PI / 4 );
 
-				return line;
+			// 	return line;
 
-			}
-		}
-
-		function initVideo() {
-			var geometry = new THREE.PlaneGeometry( 1, 1 );
-			var material = new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } );
-
-			var mesh = new THREE.Mesh( geometry, material );
-
-			mesh.position.set(0,0,-30);
-			mesh.scale.set(10, 10, 1);
-
-			//scene.add(mesh);
+			// }
 		}
 
 		function onWindowResize() {
@@ -262,14 +239,20 @@
 			if (controls) {
 				controls.update();
 			}
+
+			cursor.update();
+
 			effect.render( scene, camera );
 		}
 
 		init();
-		createMockupCylinder();
+
+		//createMockupCylinder();
+
 		populateIcons();
-		setScene();
-		initVideo();
+
+		setSky();
+
 		animate();
 
 	</script>

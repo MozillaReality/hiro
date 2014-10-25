@@ -1,14 +1,14 @@
 window.VRManager = (function() {
-  // options
-
-  /**
-  * @param {string} dom container to load JAVRIS experience into.
-  **/
   function VRManager(container) {
     var self = this;
 
+    // container is where the whole experience lives.  Fullscreen VR mode is activated on this container.
     self.container = document.querySelector(container);
+
+    // The loader is loads in external content.
     self.loader = self.container.querySelector('#loader');
+
+    // start a UI into it's own web GL context.
     self.ui = new VRUi(self.container.querySelector('#ui'));
 
     // this promise resolves when VR devices are detected.
@@ -45,6 +45,7 @@ window.VRManager = (function() {
       }
     })
 
+    // post message handler.
     window.addEventListener("message", function (e) {
       var msg = e.data;
       if (!msg.type) {
@@ -52,7 +53,8 @@ window.VRManager = (function() {
       }
       switch (msg.type) {
         case 'load':
-          self.load(msg.data);
+          // self.load(msg.data);
+          self.ui.load(msg.data);
           break;
         case 'ready':
           if (self.readyCallback) {
@@ -67,6 +69,8 @@ window.VRManager = (function() {
       }
     }, false);
 
+
+    // listen for fullscreen event changes.
     document.addEventListener('mozfullscreenchange',handleFsChange);
 
     document.addEventListener('webkitfullscreenchange',handleFsChange)
@@ -127,6 +131,7 @@ window.VRManager = (function() {
       self.loadingTab = null;
       self.currentDemo = newTab;
 
+      // set render mode of new demo to current UI mode.
       newTab.setRenderMode(self.ui.mode);
 
       newTab.show();
@@ -144,7 +149,7 @@ window.VRManager = (function() {
     var self = this;
 
     if (self.vrIsReady) {
-      // full screen
+      // start fullscreen on the container element.
       var fs = self.container;
 
       if (fs.requestFullscreen) {
@@ -166,10 +171,10 @@ window.VRManager = (function() {
 
       self.ui.setRenderMode(self.ui.modes.vr);
 
+      // tell loaded content that we are changing render modes.
       if (self.currentDemo) {
        self.currentDemo.setRenderMode(self.ui.mode);
       }
-
     } else {
       console.log('no vr mode available');
     }
@@ -179,15 +184,13 @@ window.VRManager = (function() {
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
 
-    // this.unloadCurrent();
-
+    // put UI back into mono mode
     this.ui.setRenderMode(this.ui.modes.normal);
 
+    // tell content that we have changed render modes.
     if (this.currentDemo) {
       this.currentDemo.setRenderMode(this.ui.mode);
     }
-
-    //this.ui.reset();
   };
 
   VRManager.prototype.zeroSensor = function () {

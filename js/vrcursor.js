@@ -31,6 +31,8 @@ function VRCursor(mode) {
   // cursor operating mode
   this.mode = mode || 'centered';
 
+  this.setMode(this.mode);
+
   //  return promise when all the necessary three cursor components are ready.
   this.ready = new Promise(function(resolve) {
       self.layout = new THREE.Group();
@@ -41,7 +43,7 @@ function VRCursor(mode) {
       // cursor mesh
       self.cursor = new THREE.Mesh(
         new THREE.SphereGeometry( 0.5, 5, 5 ),
-        new THREE.MeshBasicMaterial( { color: 0xffff00, side: THREE.DoubleSide } )
+        new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, side: THREE.DoubleSide } )
       );
 
       // set the depth of cursor
@@ -183,7 +185,6 @@ VRCursor.prototype.onMouseMoved = function(e) {
     var mouse = new THREE.Vector3( ( e.clientX / window.innerWidth ) * 2 - 1,   //x
       -( e.clientY / window.innerHeight ) * 2 + 1,  //y
       0.5 );
-
     mouse.unproject(this.camera)
     mouse.sub(this.camera.position);
     mouse.normalize();
@@ -437,6 +438,11 @@ VRCursor.prototype.updateCursorIntersection = function() {
   var cursor = this.cursor;
   var mouse = this.mouse;
 
+  if (!camera) {
+    // no camera available yet.
+    return false;
+  }
+
   if (mouse && this.mode == this.modes.mono) {
     raycaster.set( camera.position, mouse );
   } else {
@@ -453,6 +459,7 @@ VRCursor.prototype.updateCursorIntersection = function() {
 
     raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
   }
+
 
   var intersects = raycaster.intersectObjects( this.context.children );
 

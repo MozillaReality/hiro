@@ -110,7 +110,6 @@ VRHud.prototype.hide = function() {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 		if (self.visible) {
-
 			self.constructNavMesh.visible = false;
 
 			self.animateScaleOut(self.hudItems).then(function() {

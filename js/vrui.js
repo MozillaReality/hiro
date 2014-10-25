@@ -59,6 +59,7 @@ VRUi.prototype.gridlines = function() {
 
 VRUi.prototype.load = function(url, opts) {
 	var self = this;
+	var opts = opts || {};
 	var hideLoading = opts.hideLoading || false;
 	this.hud.hide()
 		.then(function() {
@@ -71,7 +72,12 @@ VRUi.prototype.load = function(url, opts) {
 					if (opts.title || opts.authors) {
 						self.title.setTitle(opts.title);
 						self.title.setAuthor(opts.author);
+					} else {
+						self.title.setTitle('');
+						self.title.setAuthor(url);
 					}
+
+					self.title.show();
 
 					self.currentUrl = url;
 
@@ -96,6 +102,8 @@ VRUi.prototype.load = function(url, opts) {
 						}, 3000);
 					}
 
+
+
 				});
 		});
 };
@@ -106,10 +114,14 @@ VRUi.prototype.toggleHud = function() {
 		this.hud.show();
 		this.title.show();
 		this.cursor.enable();
+		console.log('showing');
+		VRManager.currentDemo.blur();
 	} else {
 		this.hud.hide();
 		this.title.hide();
 		this.cursor.disable();
+		console.log('hiding');
+		VRManager.currentDemo.focus();
 	}
 };
 
@@ -181,6 +193,7 @@ VRUi.prototype.start = function(mode) {
 };
 
 VRUi.prototype.goHome = function(noTransition) {
+	var self = this;
 	var home = this.home;
 
 	var opts = {
@@ -190,7 +203,6 @@ VRUi.prototype.goHome = function(noTransition) {
 	}
 
 	this.isHome = true;
-
 
 	if (noTransition) {
 		// skip transitions and titles, load content directly.
