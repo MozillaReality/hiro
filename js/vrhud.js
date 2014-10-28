@@ -6,7 +6,7 @@ function VRHud() {
 	this.hudItems = [];
 	this.layout = new THREE.Group();
 	this.layout.visible = this.visible;
-	this.constructNavMesh = null;
+	this.homeButtonMesh = null;
 	this.d23 = null;
 
 	this.ready = new Promise(function(resolve, reject) {
@@ -19,7 +19,7 @@ function VRHud() {
 
 			self.setBackground();
 
-			self.makeConstructNav();
+			self.makeHomeButtonMesh();
 
 			self.makeLayout().then(function() {
 				// var date = new Date;
@@ -35,7 +35,7 @@ function VRHud() {
 	return this;
 };
 
-VRHud.prototype.makeConstructNav = function() {
+VRHud.prototype.makeHomeButtonMesh = function() {
 	var geometry = new THREE.IcosahedronGeometry( 30, 1 );
   var material = new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 1, side: THREE.DoubleSide } );
   var mesh = new THREE.Mesh( geometry, material );
@@ -62,12 +62,16 @@ VRHud.prototype.makeConstructNav = function() {
 		VRManager.ui.goHome();
 	});
 
-	this.constructNavMesh = mesh;
+	this.homeButtonMesh = mesh;
 
   this.layout.add(mesh);
 }
 
 VRHud.prototype.setBackground = function() {
+	/*
+	create a sphere that wraps the user.   This should sit in-between the
+	HUD and the loaded content
+	*/
 	var geometry = new THREE.SphereGeometry( 700 );
 	var material = new THREE.MeshBasicMaterial( {color: 0x00000, side: THREE.BackSide, transparent: true, opacity: 0.5 } );
 	var cylinder = new THREE.Mesh( geometry, material );
@@ -94,9 +98,9 @@ VRHud.prototype.show = function() {
 			self.visible = true;
 
 			if (VRManager.ui.isHome) {
-				self.constructNavMesh.visible = false;
+				self.homeButtonMesh.visible = false;
 			} else {
-				self.constructNavMesh.visible = true;
+				self.homeButtonMesh.visible = true;
 			}
 
 			self.animateScaleIn(self.hudItems).then(function() {
@@ -110,7 +114,7 @@ VRHud.prototype.hide = function() {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 		if (self.visible) {
-			self.constructNavMesh.visible = false;
+			self.homeButtonMesh.visible = false;
 
 			self.animateScaleOut(self.hudItems).then(function() {
 				self.layout.visible = false;

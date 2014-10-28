@@ -114,18 +114,21 @@ VRUi.prototype.toggleHud = function() {
 		this.hud.show();
 		this.title.show();
 		this.cursor.enable();
-		console.log('showing');
+		console.log('showing HUD');
 		VRManager.currentDemo.blur();
 	} else {
 		this.hud.hide();
 		this.title.hide();
 		this.cursor.disable();
-		console.log('hiding');
+		console.log('hiding HUD');
 		VRManager.currentDemo.focus();
 	}
 };
 
 
+/*
+todo: need to normalize these settings with the same ones that are in cursor
+*/
 VRUi.modes = VRUi.prototype.modes = {
   normal: 1,
   stereo: 2,
@@ -135,7 +138,6 @@ VRUi.modes = VRUi.prototype.modes = {
 VRUi.prototype.initRenderer = function() {
 	this.renderer = new THREE.WebGLRenderer( { alpha: true } );
   this.renderer.setClearColor( 0x000000, 0 );
-
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
 
@@ -231,23 +233,27 @@ VRUi.prototype.animate = function() {
 	var self = this;
 	var controls = self.controls;
 
-	if (VRManager.mode == VRUi.modes.vr) {
-		var headQuat = controls.getVRState().hmd.rotation;
-	}
-
+	// apply headset orientation and position to camera
 	if (self.controls) {
 		self.controls.update();
 	}
 
 	self.transition.update();
+
 	self.loading.update();
+
 	self.title.update();
+
+	// apply the VR headset orientation and position to cursor
+	if (VRManager.mode == VRUi.modes.vr) {
+		var headQuat = controls.getVRState().hmd.rotation;
+	}
 	self.cursor.update(headQuat);
 
-	// tween
+	// run any animation tweens
 	TWEEN.update();
 
-	// three.js render
+	// three.js renderer and effects.
 	this.effect.render(this.scene, this.camera);
 
 	requestAnimationFrame(this.animate.bind(this));
@@ -270,12 +276,17 @@ VRUi.prototype.initKeyboardControls = function() {
       event.preventDefault();
     }
 
+    //console.log(event.keyCode)
+
     switch (event.keyCode) {
       case 70: // f
         VRManager.enableVR();
         break;
       case 90: // z
         VRManager.zeroSensor();
+      	break;
+      case 83: // s
+      	self.setRenderMode(self.modes.stereo);
       	break;
       case 32: // space
         self.toggleHud();

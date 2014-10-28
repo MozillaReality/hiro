@@ -16,7 +16,7 @@ function VRTitle() {
 			var titleMesh = d23.getMesh('#site-title');
 			mesh.add( titleMesh );
 
-			// site mesh
+			// currently loaded site mesh
 			var siteMesh = self.makeSiteMesh();
 			self.siteMesh = siteMesh;
 			mesh.add( siteMesh );
@@ -57,6 +57,10 @@ VRTitle.prototype.update = function() {
 	}
 }
 
+/*
+mesh that represents the currently loaded site.
+This could be used as the 'favicon'
+*/
 VRTitle.prototype.makeSiteMesh = function() {
 	var geometry = new THREE.IcosahedronGeometry( 70, 1 );
   var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true, transparent: true, opacity: 1, side: THREE.DoubleSide } );

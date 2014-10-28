@@ -8,10 +8,12 @@ function VRTab(url) {
   self.iframe = iframe;
   self.url = url + '?timestamp=' + Date.now();
 
+  // listen for tab to tell us it's ready
   self.ready = new Promise(function (resolve, reject) {
     self.listenFor('ready', resolve);
   });
 
+  // listen for tab to tell us it's safe to shut down.
   self.ended = new Promise(function (resolve, reject) {
     self.listenFor('ended', resolve);
   });
@@ -24,6 +26,7 @@ function VRTab(url) {
   window.addEventListener( 'resize', this.onWindowResize.bind(this), false );
 }
 
+// sends post message to content.
 VRTab.prototype.sendMessage = function (type, data) {
   if ('contentWindow' in this.iframe) {
     this.iframe.contentWindow.postMessage({
@@ -33,12 +36,13 @@ VRTab.prototype.sendMessage = function (type, data) {
   }
 };
 
+// listen for post message incoming from tab.
 VRTab.prototype.listenFor = function (type, handler) {
   var self = this;
 
   function handle(e) {
     /*
-    ideall the iframe href and event source href match, but because
+    ideally the iframe href and event source href match, but because
     we only have a single content iframe, we should be able to make the
     assumption that the current iframe loaded is the one that is dispatching
     the events.
@@ -92,6 +96,7 @@ VRTab.prototype.start = function () {
   });
 };
 
+// tell content that we have switched render modes.
 VRTab.prototype.setRenderMode = function(mode) {
   var self = this;
   self.loaded.then(function() {
