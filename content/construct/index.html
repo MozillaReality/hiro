@@ -47,6 +47,9 @@
 		var controls, effect, vrEffect;
 		var geometry, material, cube;
 		var cursor;
+		var icons;
+		var iconsArray = [];
+
 
 		function init() {
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -151,6 +154,8 @@
 			scene.add( sky );
 		}
 
+		/* Depracated. Can probably delete... */
+
 		function drawSquare(x1, y1, x2, y2) {
 
 		    var square = new THREE.Geometry();
@@ -171,53 +176,228 @@
 		    return square;
 		}
 
+		/* Depracated. Can probably delete... */
 
-		function populateIcons() {
-			var loader = new THREE.ObjectLoader();
+		function makeIconTarget(){
 
-			// create some geometry around our loaded 3d object for raycasting.
-			var icon = new THREE.Mesh(
-				new THREE.BoxGeometry( 20, 20, 20 ),
-				new THREE.MeshNormalMaterial({ wireframe: true }) );
+			var geometry = new THREE.CircleGeometry( 160, 4 )
+			geometry.vertices.shift();
+			
+			var line = new THREE.Line( geometry, material );
+			line.position.set( 0, 0, 0 );
+			line.rotation.set( 0, 0, Math.PI / 4 );
 
-			icon.position.set(0,-10,-50);
+			return line;
 
-			scene.add(icon)
+		}
 
-			loader.load('models/icon-sechelt-3.json', function ( object ) {
-				var shadow = new THREE.Mesh(
-					new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
-					new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } )
-				);
-				shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
-				shadow.position.setY( -130 );
+		function makeIconHolder( width, height, depth, url, posX, posY, posZ ) {
 
-				object.add( shadow );
+			var holder = new THREE.Mesh(
+				new THREE.BoxGeometry( width, height, depth, 1, 1 ),
+				new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true	} )
+			)
 
-				object.scale.set(0.1,0.1,0.1);
+			holder.position.set( posX, posY, posZ );
 
-				icon.add(object);
-			});
-
-			icon.addEventListener('click', function() {
-				VRClient.load('http://mozvr.github.io/sechelt');
+			holder.addEventListener('click', function() {
+				VRClient.load( url );
+				console.log( url );
 			})
 
+			return holder;
 
-			// var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2, transparent: true, opacity: 1 } );
+		}
 
-			// function makeTarget(){
+		function makeIconShadow(  ){
 
-			// 	var geometry = new THREE.CircleGeometry( 160, 4 )
-			// 	geometry.vertices.shift();
+			var shadow = new THREE.Mesh(
+				new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
+				new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } ) 
+			);
 
-			// 	var line = new THREE.Line( geometry, material );
-			// 	line.position.set( 0, 0, 0 );
-			// 	line.rotation.set( 0, 0, Math.PI / 4 );
+			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
 
-			// 	return line;
+			return shadow;
 
-			// }
+		}
+
+
+		function populateIcons() {
+
+			icons = new THREE.Object3D();
+			icons.position.set( 0, -80, -400 );
+			scene.add( icons );
+
+			iconsArray = [];
+			iconsArray.push( 'models/icon-sechelt-3.json' );
+			iconsArray.push( 'models/icon-polarsea-1.json' );
+			iconsArray.push( 'models/icon-infodive-1.json' );
+
+			var loader = new THREE.ObjectLoader();
+
+			loader.load( iconsArray[0], function ( object ) {
+
+				var holder = makeIconHolder( 200, 200, 200, "http://mozvr.github.io/sechelt", -240, 0, 0 );
+				icons.add( holder );
+
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+
+				holder.add( object );
+				
+			});
+
+			loader.load( iconsArray[1], function ( object ) {
+
+				var holder = makeIconHolder( 200, 200, 200, "http://mozvr.github.io/polarsea/", 0, 0, 0 );
+				icons.add( holder );
+
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+
+				holder.add( object );
+			});
+
+			loader.load( iconsArray[2], function ( object ) {
+
+				var holder = makeIconHolder( 200, 200, 200, "http://mozvr.github.io/infodive/index2.html", 240, 0, 0 );
+				icons.add( holder );
+
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+
+				holder.add( object );
+
+				/* Define colors */
+
+				var colors = [ 
+					0xEF2D5E, //pink
+					0xFCED49, //yellow
+					0x1BA0D1, //blue
+					0xA00B5F, //purple
+					0x93B75D, //green
+				];
+
+				/* Make dots */
+
+				for ( var i = 0; i < 10; i++ ){
+
+					var geometry = new THREE.SphereGeometry( 3, 20, 20 );
+					var material = new THREE.MeshBasicMaterial( {
+						color: colors[Math.floor(Math.random() * colors.length)]
+					} );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( getRandomInt( -50, 50 ), 0, getRandomInt( -50, 50 ) )
+					object.add( mesh );
+
+				}
+
+				/* Make arcs */
+
+				var arcs = new THREE.Object3D();
+				var quantity = 20;
+				var points = 100;
+
+				function getRandomInt( min, max ) {
+				    return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
+				}
+
+				var geometry = new THREE.Geometry()
+				var curve = new THREE.CubicBezierCurve3();
+				curve.v0 = new THREE.Vector3(0, 0, 0);
+				curve.v1 = new THREE.Vector3(0, 50, 0);
+				curve.v2 = new THREE.Vector3(35, 50, 0);
+				curve.v3 = new THREE.Vector3(35, 0, 0);
+
+				for (var j = 0; j < points; j++) {
+					geometry.vertices.push( curve.getPoint( j / points ) )
+				}
+				
+				geometry.dynamic = false
+
+				for ( var i = 0; i < quantity; i++ ){
+
+					/*
+					var material = new THREE.LineBasicMaterial( { 
+						color: colors[Math.floor(Math.random() * colors.length)], 
+						linewidth: 20,
+						opacity: 1,
+						transparent: true
+					});
+
+					var arc = new THREE.Line( geometry, material )
+					*/
+
+					var geometry = new THREE.CylinderGeometry( 30, 30, 4, 40, 1, true );
+					var material = new THREE.MeshBasicMaterial( { 
+						color: colors[Math.floor(Math.random() * colors.length)], 
+						side: THREE.DoubleSide,
+						opacity: 1,
+						transparent: true
+					});
+
+					var arc = new THREE.Mesh( geometry, material )
+
+					arc.position.set( getRandomInt( -50, 50 ), 0, getRandomInt( -50, 50 ) )
+					arc.rotation.set( Math.PI / 2, 0, getRandomInt( 0, 4 ) );
+					arc.scale.set( 0.75, 0.75, 0.75 )
+					object.add( arc );
+				}
+
+				/* Make lines */
+
+				var lines = new THREE.Object3D();
+
+				var quantity = 8;
+				var increment = 12;
+				var lengths = [
+					191,
+					188,
+					183,
+					176,
+					164,
+					147,
+					124,
+					86,
+					0
+				]
+
+				var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, opacity: 0.15, transparent: true } );
+
+				for( var i = 0; i < quantity; i++ ){
+					
+					var length = lengths[i];
+
+					var geometry = new THREE.Geometry()
+					geometry.vertices.push(new THREE.Vector3(0, 0, 0 - length/2));
+					geometry.vertices.push(new THREE.Vector3(0, 0, length/2));
+
+					var line = new THREE.Line( geometry, material );
+					line.position.set( i * increment, 0, 0 )
+					lines.add( line );
+
+					if( i > 0 ) {
+						var twin = line.clone();
+						twin.position.set( 0 - i * increment, 0, 0 )
+						lines.add( twin );
+					}
+
+				}
+
+				var lines2 = lines.clone();
+				lines2.rotation.set( 0, Math.PI / 2, 0 )
+				
+				lines.add( lines2 );
+				lines.position.setY( -1.4 );
+				object.add(lines);
+				//object.rotation.set( Math.PI / 4, 0, 0 )
+
+			});
+
 		}
 
 		function onWindowResize() {
@@ -246,13 +426,9 @@
 		}
 
 		init();
-
-		//createMockupCylinder();
-
-		populateIcons();
-
+		createMockupCylinder();
 		setSky();
-
+		populateIcons();
 		animate();
 
 	</script>
