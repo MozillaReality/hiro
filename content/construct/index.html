@@ -114,7 +114,8 @@
 			}
 
 			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
-			light.position.set( 100, 110, 150 )
+			light.position.set( 100, 110, 150 );
+
 			scene.add( light );
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
@@ -176,231 +177,313 @@
 		    return square;
 		}
 
-		/* Depracated. Can probably delete... */
-
-		function makeIconTarget(){
-
-			var geometry = new THREE.CircleGeometry( 160, 4 )
-			geometry.vertices.shift();
-
-			var line = new THREE.Line( geometry, material );
-			line.position.set( 0, 0, 0 );
-			line.rotation.set( 0, 0, Math.PI / 4 );
-
-			return line;
-
-		}
-
-		function makeIconHolder( width, height, depth, url, posX, posY, posZ ) {
+		function makeIconHolder( url ) {
 			var holder = new THREE.Mesh(
-				new THREE.BoxGeometry( width, height, depth, 1, 1 ),
-				new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true	} )
+				new THREE.BoxGeometry( 200, 200, 200, 1, 1 ),
+				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
 			)
-
-			holder.position.set( posX, posY, posZ );
 
 			holder.addEventListener('click', function() {
 				console.log('clicked holder');
 				VRClient.load( url );
 				console.log( url );
+			});
+
+			holder.addEventListener('mouseover', function(e) {
+				var target = e.target;
+				var position = target.position;
+				var userData = target.userData;
+
+				var x = userData.position.x;
+				if (userData.position.x > 0) {
+					x = userData.position.x - 2;
+				} else if (userData.position.x < 0) {
+					x = userData.position.x + 2;
+				}
+
+				var arcPosition = getArcPosition(
+					new THREE.Vector3(x, userData.position.y+0.5, userData.position.z), 7);
+
+				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 			})
+
+			holder.addEventListener('mouseout', function(e) {
+				var target = e.target;
+				var position = target.position;
+				var userData = target.userData;
+
+				var arcPosition = getArcPosition(
+					new THREE.Vector3(userData.position.x, userData.position.y, userData.position.z), 10);
+
+				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+			})
+
+
+
 
 			return holder;
 
 		}
 
 		function makeIconShadow(  ){
-
 			var shadow = new THREE.Mesh(
 				new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
 				new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } )
 			);
 
 			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
-
 			return shadow;
-
 		}
 
 
 		function populateIcons() {
-			// base positioning of icons position.
-			var iconBasePos = {
+			var icons = {
+				sechelt: {
+					model: 'models/icon-sechelt-3.json',
+					url: 'http://mozvr.github.io/sechelt'
+				},
+				polar: {
+					model: 'models/icon-polarsea-1.json',
+					url: 'http://mozvr.github.io/polarsea/'
+				},
+				dive: {
+					model: 'models/icon-infodive-1.json',
+					url: 'http://mozvr.github.io/infodive/index2.html'
+				}
+			}
+			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: -80,
-				z: -400
+				y: -2,
+				z: -10
 			};
+			var iconBaseScale = 0.02;	// scale icons
+			var spread = 4.5;	// spread between icons
+			var depth = 10;	// depth at which icons are placed.
 
-			// sechelt
-			var loader = new THREE.ObjectLoader();
-			loader.load( 'models/icon-sechelt-3.json', function ( object ) {
-				// relative object positioning to iconBasePos.
-				var x = -250,
-					y = 0,
-					z = 0;
+			var Sechelt = new Promise(function(resolve) {
+				var loader = new THREE.ObjectLoader();
+				loader.load( icons.sechelt.model, function ( object ) {
+					// relative object positioning to iconBasePos.
+					var x = iconBasePos.x - spread,
+						y = iconBasePos.y + 0,
+						z = iconBasePos.z + 0;
 
-				var holder = makeIconHolder( 200, 200, 200, "http://mozvr.github.io/sechelt", iconBasePos.x+x, iconBasePos.y+y, iconBasePos.z+z );
-				var shadow = makeIconShadow();
-				shadow.position.setY( -130 );
-				holder.add( shadow );
-				holder.add( object );
-				scene.add(holder)
+					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
+
+					var holder = makeIconHolder( icons.sechelt.url );
+					// store original position for later use.
+					holder.userData.position = new THREE.Vector3(x, y, z);
+
+					// set onto arc.
+					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+
+					var shadow = makeIconShadow();
+					shadow.position.setY( -130 );
+					holder.add( shadow );
+					holder.add( object );
+					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+					scene.add(holder)
+
+					resolve();
+				});
 			});
 
-			// polar sea
-			loader.load( 'models/icon-polarsea-1.json', function ( object ) {
-				// relative object positioning to iconBasePos.
-				var x = 0,
-					y = 0,
-					z = 0;
+			var Polar = new Promise(function(resolve) {
+				var loader = new THREE.ObjectLoader();
+				loader.load( icons.polar.model, function ( object ) {
+					// relative object positioning to iconBasePos.
+					var x = iconBasePos.x + 0,
+						y = iconBasePos.y + 0,
+						z = iconBasePos.z + 0;
 
-				var holder = makeIconHolder( 200, 200, 200, "http://mozvr.github.io/polarsea/", iconBasePos.x+x, iconBasePos.y+y, iconBasePos.z+z );
-				var shadow = makeIconShadow();
-				shadow.position.setY( -130 );
-				holder.add( shadow );
-				holder.add( object );
-				scene.add(holder)
+					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
+
+					var holder = makeIconHolder( icons.polar.url );
+					// store original position for later use.
+					holder.userData.position = new THREE.Vector3(x, y, z);
+
+					// set onto arc.
+					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+
+					var shadow = makeIconShadow();
+					shadow.position.setY( -130 );
+					holder.add( shadow );
+					holder.add( object );
+					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+					scene.add(holder)
+
+					resolve();
+				});
 			});
 
-			// information diving
-			loader.load( 'models/icon-infodive-1.json', function ( object ) {
-				// relative object positioning to iconBasePos.
-				var x = 240,
-					y = 0,
-					z = 0;
+			var Dive = new Promise(function(resolve) {
+				var loader = new THREE.ObjectLoader();
+				loader.load( icons.dive.model, function ( object ) {
+					// relative object positioning to iconBasePos.
+					var x = iconBasePos.x + spread,
+						y = iconBasePos.y + 0,
+						z = iconBasePos.z + 0;
 
-				var holder = makeIconHolder( 200, 200, 200, "http://mozvr.github.io/infodive/index2.html", iconBasePos.x+x, iconBasePos.y+y, iconBasePos.z+z );
-				var shadow = makeIconShadow();
-				shadow.position.setY( -130 );
-				holder.add( shadow );
-				holder.add( object );
-				scene.add(holder)
+					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
 
-				/* Define colors */
-				var colors = [
-					0xEF2D5E, //pink
-					0xFCED49, //yellow
-					0x1BA0D1, //blue
-					0xA00B5F, //purple
-					0x93B75D, //green
-				];
+					var holder = makeIconHolder(  icons.dive.url );
+					// store original position for later use.
+					holder.userData.position = new THREE.Vector3(x, y, z);
 
-				/* Make dots */
+					// set onto arc.
+					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 
-				for ( var i = 0; i < 10; i++ ){
-					var geometry = new THREE.SphereGeometry( 3, 20, 20 );
-					var material = new THREE.MeshBasicMaterial( {
-						color: colors[Math.floor(Math.random() * colors.length)]
-					} );
-					var mesh = new THREE.Mesh( geometry, material );
-					mesh.position.set( getRandomInt( -50, 50 ), 0, getRandomInt( -50, 50 ) )
-					object.add( mesh );
+					var shadow = makeIconShadow();
+					shadow.position.setY( -130 );
+					holder.add( shadow );
+					holder.add( object );
+					holder.add( makeInfoDive() );
+					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+					scene.add(holder);
 
-				}
+					resolve();
+				});
+			});
 
-				/* Make arcs */
+			Promise.all([Sechelt, Polar, Dive]).then(function() {
 
-				var arcs = new THREE.Object3D();
-				var quantity = 20;
-				var points = 100;
+				// var amount = 10;
+				// icons.forEach(function(element) {
+				// 	if (element.userData.position) {
+				// 		element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
+				// 		element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
+				// 		element.lookAt( vector.set( 0, element.position.y, 0 ) );
+				// 	}
+				// });
+			})
+		}
 
-				function getRandomInt( min, max ) {
-				    return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
-				}
+		function getArcPosition(position, amount) {
+			return {
+				x: Math.sin( position.x / amount ) * amount,
+				y: position.y,
+				z: - Math.cos( position.x / amount ) * amount
+			}
+		}
+
+		function makeInfoDive() {
+			var object = new THREE.Object3D();
+
+			/* Define colors */
+			var colors = [
+				0xEF2D5E, //pink
+				0xFCED49, //yellow
+				0x1BA0D1 //blue
+			];
+
+			function getRandom( min, max ) {
+		    return Math.random() * ( max - min + 1 ) + min;
+			}
+
+			/* Make dots */
+			var numDots = 10;
+
+			for ( var i = 0; i < numDots; i++ ){
+				var geometry = new THREE.SphereGeometry( getRandom(1,5), 10, 10 );
+				var material = new THREE.MeshBasicMaterial( {
+					color: colors[Math.floor(Math.random() * colors.length)]
+				} );
+				var mesh = new THREE.Mesh( geometry, material );
+				mesh.position.set( getRandom( -50, 50 ),  getRandom( 0, 30 ), getRandom( -50, 50 ) )
+
+				object.add( mesh );
+			}
+
+			/* Make arcs */
+			var arcs = new THREE.Object3D();
+			var quantity = 10;
+			var points = 50;
+
+			var geometry = new THREE.Geometry()
+			var curve = new THREE.CubicBezierCurve3();
+			curve.v0 = new THREE.Vector3(0, 0, 0);
+			curve.v1 = new THREE.Vector3(0, 50, 0);
+			curve.v2 = new THREE.Vector3(35, 50, 0);
+			curve.v3 = new THREE.Vector3(35, 0, 0);
+
+			for (var j = 0; j < points; j++) {
+				geometry.vertices.push( curve.getPoint( j / points ) )
+			}
+
+			geometry.dynamic = false
+
+			for ( var i = 0; i < quantity; i++ ){
+				var geometry = new THREE.CylinderGeometry( 30, 30, 4, 40, 1, true );
+				var material = new THREE.MeshBasicMaterial( {
+					color: colors[Math.floor(Math.random() * colors.length)],
+					side: THREE.DoubleSide,
+					opacity: 1,
+					transparent: true
+				});
+
+				var arc = new THREE.Mesh( geometry, material )
+
+				arc.position.set( getRandom( -50, 50 ), 0, getRandom( -50, 50 ) )
+				arc.rotation.set( Math.PI / 2, 0, getRandom( 0, 4 ) );
+				arc.scale.set( 0.75, 0.75, getRandom( 0.2, 1.5 )  )
+				object.add( arc );
+			}
+
+			/* Make lines */
+			var lines = new THREE.Object3D();
+
+			var quantity = 8;
+			var increment = 12;
+			var lengths = [
+				191,
+				188,
+				183,
+				176,
+				164,
+				147,
+				124,
+				86,
+				0
+			]
+
+			var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, opacity: 0.15, transparent: true } );
+
+			for( var i = 0; i < quantity; i++ ){
+
+				var length = lengths[i];
 
 				var geometry = new THREE.Geometry()
-				var curve = new THREE.CubicBezierCurve3();
-				curve.v0 = new THREE.Vector3(0, 0, 0);
-				curve.v1 = new THREE.Vector3(0, 50, 0);
-				curve.v2 = new THREE.Vector3(35, 50, 0);
-				curve.v3 = new THREE.Vector3(35, 0, 0);
+				geometry.vertices.push(new THREE.Vector3(0, 0, 0 - length/2));
+				geometry.vertices.push(new THREE.Vector3(0, 0, length/2));
 
-				for (var j = 0; j < points; j++) {
-					geometry.vertices.push( curve.getPoint( j / points ) )
+				var line = new THREE.Line( geometry, material );
+				line.position.set( i * increment, 0, 0 )
+				lines.add( line );
+
+				if( i > 0 ) {
+					var twin = line.clone();
+					twin.position.set( 0 - i * increment, 0, 0 )
+					lines.add( twin );
 				}
 
-				geometry.dynamic = false
+			}
 
-				for ( var i = 0; i < quantity; i++ ){
+			var lines2 = lines.clone();
+			lines2.rotation.set( 0, Math.PI / 2, 0 )
 
-					/*
-					var material = new THREE.LineBasicMaterial( {
-						color: colors[Math.floor(Math.random() * colors.length)],
-						linewidth: 20,
-						opacity: 1,
-						transparent: true
-					});
+			lines.add( lines2 );
+			lines.position.setY( -1.4 );
+			object.add(lines);
+			//object.rotation.set( Math.PI / 4, 0, 0 )
 
-					var arc = new THREE.Line( geometry, material )
-					*/
-
-					var geometry = new THREE.CylinderGeometry( 30, 30, 4, 40, 1, true );
-					var material = new THREE.MeshBasicMaterial( {
-						color: colors[Math.floor(Math.random() * colors.length)],
-						side: THREE.DoubleSide,
-						opacity: 1,
-						transparent: true
-					});
-
-					var arc = new THREE.Mesh( geometry, material )
-
-					arc.position.set( getRandomInt( -50, 50 ), 0, getRandomInt( -50, 50 ) )
-					arc.rotation.set( Math.PI / 2, 0, getRandomInt( 0, 4 ) );
-					arc.scale.set( 0.75, 0.75, 0.75 )
-					object.add( arc );
-				}
-
-				/* Make lines */
-
-				var lines = new THREE.Object3D();
-
-				var quantity = 8;
-				var increment = 12;
-				var lengths = [
-					191,
-					188,
-					183,
-					176,
-					164,
-					147,
-					124,
-					86,
-					0
-				]
-
-				var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, opacity: 0.15, transparent: true } );
-
-				for( var i = 0; i < quantity; i++ ){
-
-					var length = lengths[i];
-
-					var geometry = new THREE.Geometry()
-					geometry.vertices.push(new THREE.Vector3(0, 0, 0 - length/2));
-					geometry.vertices.push(new THREE.Vector3(0, 0, length/2));
-
-					var line = new THREE.Line( geometry, material );
-					line.position.set( i * increment, 0, 0 )
-					lines.add( line );
-
-					if( i > 0 ) {
-						var twin = line.clone();
-						twin.position.set( 0 - i * increment, 0, 0 )
-						lines.add( twin );
-					}
-
-				}
-
-				var lines2 = lines.clone();
-				lines2.rotation.set( 0, Math.PI / 2, 0 )
-
-				lines.add( lines2 );
-				lines.position.setY( -1.4 );
-				object.add(lines);
-				//object.rotation.set( Math.PI / 4, 0, 0 )
-
-			});
-
+			return object;
 		}
+
+
+
+
+
+
 
 		function onWindowResize() {
 			var innerWidth = window.innerWidth;
@@ -428,9 +511,13 @@
 		}
 
 		init();
-		createMockupCylinder();
+
+		//createMockupCylinder();
+
 		setSky();
+
 		populateIcons();
+
 		animate();
 
 	</script>
