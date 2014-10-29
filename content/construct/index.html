@@ -196,15 +196,26 @@
 
 				var x = userData.position.x;
 				if (userData.position.x > 0) {
-					x = userData.position.x - 2;
+					x = userData.position.x - 0.5;
 				} else if (userData.position.x < 0) {
-					x = userData.position.x + 2;
+					x = userData.position.x + 0.5;
 				}
 
 				var arcPosition = getArcPosition(
-					new THREE.Vector3(x, userData.position.y+0.5, userData.position.z), 7);
+					new THREE.Vector3(
+						x,
+						userData.position.y + 0.3,
+						userData.position.z
+					),
+					9	// distance from user
+				);
 
-				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				// position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+
+				var tween = new TWEEN.Tween( position )
+					.to(arcPosition, 500 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.start();
 			})
 
 			holder.addEventListener('mouseout', function(e) {
@@ -215,11 +226,12 @@
 				var arcPosition = getArcPosition(
 					new THREE.Vector3(userData.position.x, userData.position.y, userData.position.z), 10);
 
-				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				// position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				var tween = new TWEEN.Tween( position )
+					.to(arcPosition, 800 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.start();
 			})
-
-
-
 
 			return holder;
 
@@ -260,103 +272,87 @@
 			var spread = 4.5;	// spread between icons
 			var depth = 10;	// depth at which icons are placed.
 
-			var Sechelt = new Promise(function(resolve) {
-				var loader = new THREE.ObjectLoader();
-				loader.load( icons.sechelt.model, function ( object ) {
-					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x - spread,
-						y = iconBasePos.y + 0,
-						z = iconBasePos.z + 0;
+			var loader = new THREE.ObjectLoader();
+			loader.load( icons.sechelt.model, function ( object ) {
+				// relative object positioning to iconBasePos.
+				var x = iconBasePos.x - spread,
+					y = iconBasePos.y + 0,
+					z = iconBasePos.z + 0;
 
-					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
+				var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
 
-					var holder = makeIconHolder( icons.sechelt.url );
-					// store original position for later use.
-					holder.userData.position = new THREE.Vector3(x, y, z);
+				var holder = makeIconHolder( icons.sechelt.url );
+				// store original position for later use.
+				holder.userData.position = new THREE.Vector3(x, y, z);
 
-					// set onto arc.
-					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				// set onto arc.
+				holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 
-					var shadow = makeIconShadow();
-					shadow.position.setY( -130 );
-					holder.add( shadow );
-					holder.add( object );
-					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
-					scene.add(holder)
-
-					resolve();
-				});
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+				holder.add( object );
+				holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+				scene.add(holder)
 			});
 
-			var Polar = new Promise(function(resolve) {
-				var loader = new THREE.ObjectLoader();
-				loader.load( icons.polar.model, function ( object ) {
-					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x + 0,
-						y = iconBasePos.y + 0,
-						z = iconBasePos.z + 0;
+			var loader = new THREE.ObjectLoader();
+			loader.load( icons.polar.model, function ( object ) {
+				// relative object positioning to iconBasePos.
+				var x = iconBasePos.x + 0,
+					y = iconBasePos.y + 0,
+					z = iconBasePos.z + 0;
 
-					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
+				var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
 
-					var holder = makeIconHolder( icons.polar.url );
-					// store original position for later use.
-					holder.userData.position = new THREE.Vector3(x, y, z);
+				var holder = makeIconHolder( icons.polar.url );
+				// store original position for later use.
+				holder.userData.position = new THREE.Vector3(x, y, z);
 
-					// set onto arc.
-					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				holder.addEventListener('mouseover', function() {
+				})
 
-					var shadow = makeIconShadow();
-					shadow.position.setY( -130 );
-					holder.add( shadow );
-					holder.add( object );
-					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
-					scene.add(holder)
+				// set onto arc.
+				holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 
-					resolve();
-				});
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+				holder.add( object );
+				holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+				scene.add(holder)
+
 			});
 
-			var Dive = new Promise(function(resolve) {
-				var loader = new THREE.ObjectLoader();
-				loader.load( icons.dive.model, function ( object ) {
-					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x + spread,
-						y = iconBasePos.y + 0,
-						z = iconBasePos.z + 0;
 
-					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
+			var loader = new THREE.ObjectLoader();
+			loader.load( icons.dive.model, function ( object ) {
+				// relative object positioning to iconBasePos.
+				var x = iconBasePos.x + spread,
+					y = iconBasePos.y + 0,
+					z = iconBasePos.z + 0;
 
-					var holder = makeIconHolder(  icons.dive.url );
-					// store original position for later use.
-					holder.userData.position = new THREE.Vector3(x, y, z);
+				var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
 
-					// set onto arc.
-					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				var holder = makeIconHolder(  icons.dive.url );
+				// store original position for later use.
+				holder.userData.position = new THREE.Vector3(x, y, z);
 
-					var shadow = makeIconShadow();
-					shadow.position.setY( -130 );
-					holder.add( shadow );
-					holder.add( object );
-					holder.add( makeInfoDive() );
-					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
-					scene.add(holder);
+				// set onto arc.
+				holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 
-					resolve();
-				});
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+				holder.add( object );
+				holder.add( makeInfoDive() );
+				holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+				scene.add(holder);
 			});
-
-			Promise.all([Sechelt, Polar, Dive]).then(function() {
-
-				// var amount = 10;
-				// icons.forEach(function(element) {
-				// 	if (element.userData.position) {
-				// 		element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-				// 		element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-				// 		element.lookAt( vector.set( 0, element.position.y, 0 ) );
-				// 	}
-				// });
-			})
 		}
+
+
+
 
 		function getArcPosition(position, amount) {
 			return {
