@@ -60,7 +60,7 @@
 
 			scene = new THREE.Scene();
 
-			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
 
 			cursor = new VRCursor();
 
@@ -123,7 +123,7 @@
 		}
 
 		function createMockupCylinder(){
-			var radius = 850;
+			var radius = 1;
 			var circumference = radius * 2 * 3.14;
 			var height = circumference / 4;
 
@@ -134,13 +134,12 @@
 				new THREE.MeshBasicMaterial( {
 					transparent: true,
 					//side: THREE.DoubleSide,
-					map: THREE.ImageUtils.loadTexture( 'images/content-1.png' )
+					map: THREE.ImageUtils.loadTexture( 'images/content-6.png' )
 				} )
 			);
 
 			mockup.geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
-			//mockup.scale.set( -1, 1, 1 );
-			//holder.position.set( 0, 0, 0 )
+			mockup.position.set( 0, 0, 0 )
 			scene.add( mockup );
 
 		}
@@ -480,11 +479,6 @@
 		}
 
 
-
-
-
-
-
 		function onWindowResize() {
 			var innerWidth = window.innerWidth;
 			var innweHeight =  window.innerHeight;
@@ -512,11 +506,11 @@
 
 		init();
 
-		//createMockupCylinder();
+		createMockupCylinder();
 
 		setSky();
 
-		populateIcons();
+		//populateIcons();
 
 		animate();
 
