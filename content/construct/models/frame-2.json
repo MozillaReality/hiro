@@ -1,0 +1,43 @@
+{
+	"metadata": {
+		"version": 4.3,
+		"type": "Object",
+		"generator": "ObjectExporter"
+	},
+	"geometries": [
+		{
+			"uuid": "EE015E6E-BB08-4FC9-B3ED-0DFBB47B55AF",
+			"type": "Geometry",
+			"data": {
+				"vertices": [-100,-161.994,0,-100,161.916,0,100,-161.994,0,100,161.916,0,-92.1488,-154.143,0,-92.1488,154.065,0,92.1488,-154.143,0,92.1488,154.065,0],
+				"normals": [0,0,1],
+				"uvs": [[0,1]],
+				"faces": [40,0,4,1,0,0,0,0,0,0,40,4,5,1,0,0,0,0,0,0,40,2,6,0,0,0,0,0,0,0,40,6,4,0,0,0,0,0,0,0,40,3,7,2,0,0,0,0,0,0,40,7,6,2,0,0,0,0,0,0,40,1,5,3,0,0,0,0,0,0,40,5,7,3,0,0,0,0,0,0]
+			}
+		}],
+	"materials": [
+		{
+			"uuid": "087F2C94-ABDF-4BDD-9D6A-9D43ABF941D8",
+			"type": "MeshPhongMaterial",
+			"name": "Mat",
+			"color": 13421772,
+			"ambient": 16777215,
+			"emissive": 0,
+			"specular": 3355443,
+			"shininess": 0.5
+		}],
+	"object": {
+		"uuid": "D35D3363-6654-4E43-98A1-266999079B35",
+		"type": "Object3D",
+		"name": "frame",
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"children": [
+			{
+				"uuid": "43418D7F-45E6-4FDF-98CF-67D411163FB3",
+				"type": "Mesh",
+				"geometry": "EE015E6E-BB08-4FC9-B3ED-0DFBB47B55AF",
+				"material": "087F2C94-ABDF-4BDD-9D6A-9D43ABF941D8",
+				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+			}]
+	}
+}

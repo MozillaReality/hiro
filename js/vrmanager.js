@@ -185,7 +185,7 @@ window.VRManager = (function() {
     console.log('Exiting VR mode');
 
     // put UI back into mono mode
-    this.ui.setRenderMode(this.ui.modes.normal);
+    this.ui.setRenderMode(this.ui.modes.mono);
 
     // tell content that we have changed render modes.
     if (this.currentDemo) {

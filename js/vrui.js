@@ -6,7 +6,7 @@ function VRUi(container) {
 	this.homeUrl = '../content/construct/index.html';
 	this.container = container;
 	this.hud = new VRHud();
-	this.mode = this.modes.normal;
+	this.mode = this.modes.mono;
 	this.cursor = new VRCursor('mono');
 	this.loading = new VRLoading();
 	this.title = new VRTitle();
@@ -102,8 +102,6 @@ VRUi.prototype.load = function(url, opts) {
 						}, 3000);
 					}
 
-
-
 				});
 		});
 };
@@ -130,7 +128,7 @@ VRUi.prototype.toggleHud = function() {
 todo: need to normalize these settings with the same ones that are in cursor
 */
 VRUi.modes = VRUi.prototype.modes = {
-  normal: 1,
+  mono: 1,
   stereo: 2,
   vr: 3
 };
@@ -153,10 +151,11 @@ VRUi.prototype.initRenderer = function() {
 
 VRUi.prototype.setRenderMode = function(mode) {
 	this.mode = mode;
-	if (mode == VRUi.modes.normal) {
+	if (mode == VRUi.modes.mono) {
 		console.log('Mono render mode');
 		this.effect = this.renderer;
-		this.controls = null;
+		// apply vr controls anyways.
+		this.controls = new THREE.VRControls( this.camera );
 		this.cursor.setMode('mono');
 		this.cursor.hide();
 	} else if (mode == VRUi.modes.vr) {
@@ -185,6 +184,9 @@ VRUi.prototype.start = function(mode) {
 	this.ready.then(function() {
 		// start hud
 		//self.toggleHud();
+		// VRManager.vrReady.then(function() {
+		// 	console.log('*** VR detected');
+		// });
 
 		// start to home
 		self.goHome(true);
@@ -232,10 +234,16 @@ VRUi.prototype.reset = function() {
 VRUi.prototype.animate = function() {
 	var self = this;
 	var controls = self.controls;
+	var headQuat;
 
 	// apply headset orientation and position to camera
-	if (self.controls) {
+	if (controls) {
 		self.controls.update();
+
+		if (typeof controls.getVRState === 'function') {
+			headQuat = controls.getVRState().hmd.rotation;
+		//	console.log('controls', headQuat);
+		}
 	}
 
 	self.transition.update();
@@ -244,10 +252,6 @@ VRUi.prototype.animate = function() {
 
 	self.title.update();
 
-	// apply the VR headset orientation and position to cursor
-	if (VRManager.mode == VRUi.modes.vr) {
-		var headQuat = controls.getVRState().hmd.rotation;
-	}
 	self.cursor.update(headQuat);
 
 	// run any animation tweens

@@ -122,7 +122,18 @@
 			VRClient.ready();
 		}
 
-		function createMockupCylinder(){
+
+
+
+
+
+
+
+
+
+		/* Make scene */
+
+		function makeMockupCylinder(){
 			var radius = 1;
 			var circumference = radius * 2 * 3.14;
 			var height = circumference / 4;
@@ -144,15 +155,204 @@
 
 		}
 
-		function setSky() {
+		function makeSky() {
 
+			
+
+			/* Old */
+			/*
 			var geometry = new THREE.SphereGeometry( 1000 , 60, 40 );
 			geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
 			var sky = new THREE.Mesh( geometry, material );
-
 			scene.add( sky );
+			*/
 		}
+
+		function makeScene() {
+
+			// variables and setup
+
+			camera.position.set( 0, 1.68, 0 );
+			var loader = new THREE.ObjectLoader();
+
+			// sky
+
+			var geometry = new THREE.SphereGeometry( 1000, 64, 32 );
+
+			var vertices = geometry.vertices;
+			var faces = geometry.faces;
+
+			var colorTop = new THREE.Color( 0xdc72aa );
+			var colorMiddle = new THREE.Color( 0xfbdfd3 );
+			var colorBottom = new THREE.Color( 0xd7b8b2 );
+
+			for ( var i = 0, l = faces.length; i < l; i ++ ) {
+
+				var face = faces[ i ];
+
+				var vertex1 = vertices[ face.a ];
+				var vertex2 = vertices[ face.b ];
+				var vertex3 = vertices[ face.c ];
+
+				var color1 = colorMiddle.clone();
+				color1.lerp( vertex1.y > 0 ? colorTop : colorBottom, Math.abs( vertex1.y ) / 1000 );
+
+				var color2 = colorMiddle.clone();
+				color2.lerp( vertex2.y > 0 ? colorTop : colorBottom, Math.abs( vertex2.y ) / 1000 );
+
+				var color3 = colorMiddle.clone();
+				color3.lerp( vertex3.y > 0 ? colorTop : colorBottom, Math.abs( vertex3.y ) / 1000 );
+
+				face.vertexColors.push( color1, color2, color3 );
+
+			}
+
+			var material = new THREE.MeshBasicMaterial( {
+				vertexColors: THREE.VertexColors,
+				side: THREE.BackSide,
+				depthWrite: false,
+				depthTest: false,
+				fog: false
+			} );
+
+			sky = new THREE.Mesh( geometry, material );
+			scene.add( sky );
+			
+
+			// fog
+
+			scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
+
+			// frame
+
+			var frame;
+
+			loader.load( 'models/frame-3.json', function ( object ) {
+
+				frame = object;
+				frame.position.set( 0, 0, -200 );
+				frame.traverse( function( obj ){
+					if ( obj.hasOwnProperty( "material" ) ){
+						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+					}
+				});
+				scene.add( frame );
+
+			});
+
+			// cover story
+
+			var wherever;
+
+			loader.load( 'models/wherever.json', function ( object ) {
+
+				wherever = object;
+				wherever.scale.set( 0.18, 0.18, 0.18 );
+				wherever.position.set( 0, 60, -200 );
+				wherever.traverse( function( obj ){
+					if ( obj.hasOwnProperty( "material" ) ){
+						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+					}
+				});
+				scene.add( wherever );
+				//console.log( wherever );
+
+			});
+
+
+			// water
+
+			var geometry = new THREE.PlaneBufferGeometry( 100000, 100000 );
+			var material = new THREE.MeshBasicMaterial( {
+				color: colorMiddle,
+				opacity: 0.75,
+				transparent: true
+			} );
+			water = new THREE.Mesh( geometry, material );
+			water.position.y = 0;
+			water.rotation.x = - Math.PI / 2;
+			water.renderDepth = 2;
+			scene.add( water );
+
+			//scene
+
+			loader.load( 'models/sechelt-1.json', function ( object ) {
+
+				var landscape = object.getObjectByName( 'lanscape' );
+
+				var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
+				reflection.material.side = THREE.BackSide;
+				reflection.position.y = 7.7;
+				reflection.scale.y = -1;
+				landscape.parent.add( reflection );
+				landscape.parent.position.y = -4;
+
+				scene.add( object );
+
+				// load sounds
+				/*
+				var listener = new THREE.AudioListener();
+				camera.add( listener );
+
+				var sound = new THREE.Audio( listener );
+				sound.load( 'sounds/78389__inchadney__seagulls.ogg' );
+				sound.position.set( 475, 50, 850 );
+				sound.setLoop( true );
+				sound.setRefDistance( 100 );
+				scene.add( sound );
+
+				var sound = new THREE.Audio( listener );
+				sound.load( 'sounds/23707__hazure__seagull.ogg' );
+				sound.position.set( 10, 50, -200 );
+				sound.setLoop( true );
+				sound.setRefDistance( 100 );
+				scene.add( sound );
+
+				var sound = new THREE.Audio( listener );
+				sound.load( 'sounds/235428__allanz10d__calm-ocean-breeze-simulation.ogg' );
+				sound.position.set( -30, 0, -750 );
+				sound.setLoop( true );
+				sound.setRefDistance( 100 );
+				scene.add( sound );
+				*/
+
+				// load camera path
+				/*
+				var loader = new THREE.C4DCurveLoader();
+				loader.load( 'models/flightpath-1.txt', function ( line ) {
+
+					cameraPath = line;
+					
+					// once scene and camera path are loaded, start animate() and tell VRClient ready.
+
+					setTimeout(function() {
+
+						animate();
+						VRClient.ready();
+
+					}, 500);
+
+
+				} );
+				*/
+
+			} );
+
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+		/* Make icons */
 
 		/* Depracated. Can probably delete... */
 
@@ -217,9 +417,6 @@
 				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 			})
 
-
-
-
 			return holder;
 
 		}
@@ -227,7 +424,7 @@
 		function makeIconShadow(  ){
 			var shadow = new THREE.Mesh(
 				new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
-				new THREE.MeshBasicMaterial( { color: 0x629cc2, wireframe: false, transparent: true, opacity: 1 } )
+				new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 0.2 } )
 			);
 
 			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
@@ -252,14 +449,15 @@
 			}
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: -2,
-				z: -10
+				y: 1,
+				z: -2
 			};
 			var iconBaseScale = 0.02;	// scale icons
 			var spread = 4.5;	// spread between icons
 			var depth = 10;	// depth at which icons are placed.
 
 			var Sechelt = new Promise(function(resolve) {
+				
 				var loader = new THREE.ObjectLoader();
 				loader.load( icons.sechelt.model, function ( object ) {
 					// relative object positioning to iconBasePos.
@@ -280,7 +478,7 @@
 					shadow.position.setY( -130 );
 					holder.add( shadow );
 					holder.add( object );
-					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 					scene.add(holder)
 
 					resolve();
@@ -288,6 +486,7 @@
 			});
 
 			var Polar = new Promise(function(resolve) {
+				
 				var loader = new THREE.ObjectLoader();
 				loader.load( icons.polar.model, function ( object ) {
 					// relative object positioning to iconBasePos.
@@ -316,6 +515,7 @@
 			});
 
 			var Dive = new Promise(function(resolve) {
+				
 				var loader = new THREE.ObjectLoader();
 				loader.load( icons.dive.model, function ( object ) {
 					// relative object positioning to iconBasePos.
@@ -506,11 +706,11 @@
 
 		init();
 
-		createMockupCylinder();
+		//makeMockupCylinder();
 
-		setSky();
+		makeScene();
 
-		//populateIcons();
+		populateIcons();
 
 		animate();
 
