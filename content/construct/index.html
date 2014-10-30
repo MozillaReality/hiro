@@ -23,8 +23,8 @@
 	</body>
 	<script src="../../js/vendor/three.min.js"></script>
 	<script src="js/tween.min.js"></script>
-	<script src="js/VRControls.js"></script>
-	<script src="js/VREffect.js"></script>
+	<script src="../../js/vendor/VRControls.js"></script>
+	<script src="../../js/vendor/VREffect.js"></script>
 	<script src="js/DeviceOrientationControls.js"></script>
 	<script src="js/StereoEffect.js"></script>
 
@@ -70,7 +70,7 @@
 				cursor.enable();
 			});
 
-			setRenderMode(VRClient.renderModes.normal);
+			setRenderMode(VRClient.renderModes.mono);
 
 			effect.setSize( window.innerWidth, window.innerHeight );
 
@@ -82,9 +82,9 @@
 
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
-				if (mode == modes.normal) {
+				if (mode == modes.mono) {
 					console.log('Mono mode');
-					controls = null;
+					controls = new THREE.VRControls( camera );
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
@@ -101,6 +101,7 @@
 					cursor.setMode('centered');
 					cursor.show();
 				}
+				onWindowResize();
 			}
 
 			VRClient.onBlur = function() {
@@ -265,7 +266,7 @@
 			}
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: -2,
+				y: -5,
 				z: -10
 			};
 			var iconBaseScale = 0.02;	// scale icons
@@ -474,9 +475,6 @@
 
 			return object;
 		}
-
-
-
 
 
 

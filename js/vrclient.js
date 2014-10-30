@@ -111,7 +111,7 @@ window.VRClient = (function() {
   };
 
   VRClient.renderModes = VRClient.prototype.renderModes = {
-    normal: 1,
+    mono: 1,
     stereo: 2,
     vr: 3
   };

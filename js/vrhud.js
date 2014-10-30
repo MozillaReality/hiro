@@ -216,6 +216,7 @@ VRHud.prototype.makeLayout = function() {
 			}
 		}
 
+		//layout.scale.set(0.5,0.5,0.5);
 		bend( layout, 600 );
 
 		resolve();
