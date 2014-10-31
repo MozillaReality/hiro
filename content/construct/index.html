@@ -88,12 +88,15 @@
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
+
 				} else if (mode == modes.stereo) {
 					console.log('Stereo mode');
-					controls = new THREE.DeviceOrientationControls( camera );
+					// controls = new THREE.DeviceOrientationControls( camera );
+					controls = null;
 					effect = new THREE.StereoEffect( renderer );
-					cursor.setMode('centered');
-					cursor.show();
+					//cursor.setMode('centered');
+					cursor.disable();
+
 				} else if (mode == modes.vr) {
 					console.log('VR mode');
 					controls = new THREE.VRControls( camera );

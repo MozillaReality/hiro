@@ -1,3 +1,10 @@
+/*
+VRUi
+- Provides a three.js context for various UI components: hud, titling, loading and transitions.
+- Hosts inputs: cursor, keyboard and VR headset orientation.
+- Manages different rendering modes.
+*/
+
 'use strict';
 
 function VRUi(container) {
@@ -87,7 +94,7 @@ VRUi.prototype.load = function(url, opts) {
 						self.loading.show();
 					}
 
-					VRManager.readyCallback = function() {
+					function onTabReady() {
 						self.loading.hide();
 
 						self.transition.fadeIn();
@@ -95,10 +102,15 @@ VRUi.prototype.load = function(url, opts) {
 						// hide title after set amount of time
 						setTimeout(function() {
 							if (!self.hud.visible) {
-								self.title.hide();
+								self.title.hide().then(function() {
+									// console.log('hiding container');
+									// self.container.style.display = 'none';
+								})
 							}
 						}, 3000);
 					}
+
+					VRManager.readyCallback = onTabReady;
 
 				});
 		});
@@ -149,6 +161,7 @@ VRUi.prototype.initRenderer = function() {
 
 VRUi.prototype.setRenderMode = function(mode) {
 	this.mode = mode;
+
 	if (mode == VRUi.modes.mono) {
 		console.log('Mono render mode');
 		this.effect = this.renderer;
@@ -156,18 +169,20 @@ VRUi.prototype.setRenderMode = function(mode) {
 		this.controls = new THREE.VRControls( this.camera );
 		this.cursor.setMode('mono');
 		this.cursor.hide();
+
 	} else if (mode == VRUi.modes.vr) {
 		console.log('VR render mode');
 		this.effect = new THREE.VREffect( this.renderer );
 		this.controls = new THREE.VRControls( this.camera );
-		this.cursor.setMode('inFOV');
+		this.cursor.setMode('centered');
 		this.cursor.show();
+
 	} else if (mode == VRUi.modes.stereo) {
 		console.log('Stereo render mode');
 		this.effect = new THREE.StereoEffect( this.renderer );
-		this.controls = new THREE.DeviceOrientationControls( this.camera );
+		this.controls = null;
 		this.cursor.setMode('centered');
-		this.cursor.show();
+		this.cursor.disable();
 	}
 
 	this.effect.setSize( window.innerWidth, window.innerHeight );
@@ -182,9 +197,6 @@ VRUi.prototype.start = function(mode) {
 	this.ready.then(function() {
 		// start hud
 		//self.toggleHud();
-		// VRManager.vrReady.then(function() {
-		// 	console.log('*** VR detected');
-		// });
 
 		// start to home
 		self.goHome(true);
