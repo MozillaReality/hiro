@@ -131,10 +131,14 @@
 
 
 
-		/* Make scene */
+
+
+
+		/*====================== Make scene ======================*/
 
 		function makeMockupCylinder(){
-			var radius = 1;
+
+			var radius = 10;
 			var circumference = radius * 2 * 3.14;
 			var height = circumference / 4;
 
@@ -145,7 +149,7 @@
 				new THREE.MeshBasicMaterial( {
 					transparent: true,
 					//side: THREE.DoubleSide,
-					map: THREE.ImageUtils.loadTexture( 'images/content-6.png' )
+					map: THREE.ImageUtils.loadTexture( 'images/content-10.png' )
 				} )
 			);
 
@@ -156,8 +160,6 @@
 		}
 
 		function makeSky() {
-
-			
 
 			/* Old */
 			/*
@@ -219,7 +221,6 @@
 			sky = new THREE.Mesh( geometry, material );
 			scene.add( sky );
 			
-
 			// fog
 
 			scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
@@ -256,10 +257,8 @@
 					}
 				});
 				scene.add( wherever );
-				//console.log( wherever );
 
 			});
-
 
 			// water
 
@@ -290,53 +289,6 @@
 
 				scene.add( object );
 
-				// load sounds
-				/*
-				var listener = new THREE.AudioListener();
-				camera.add( listener );
-
-				var sound = new THREE.Audio( listener );
-				sound.load( 'sounds/78389__inchadney__seagulls.ogg' );
-				sound.position.set( 475, 50, 850 );
-				sound.setLoop( true );
-				sound.setRefDistance( 100 );
-				scene.add( sound );
-
-				var sound = new THREE.Audio( listener );
-				sound.load( 'sounds/23707__hazure__seagull.ogg' );
-				sound.position.set( 10, 50, -200 );
-				sound.setLoop( true );
-				sound.setRefDistance( 100 );
-				scene.add( sound );
-
-				var sound = new THREE.Audio( listener );
-				sound.load( 'sounds/235428__allanz10d__calm-ocean-breeze-simulation.ogg' );
-				sound.position.set( -30, 0, -750 );
-				sound.setLoop( true );
-				sound.setRefDistance( 100 );
-				scene.add( sound );
-				*/
-
-				// load camera path
-				/*
-				var loader = new THREE.C4DCurveLoader();
-				loader.load( 'models/flightpath-1.txt', function ( line ) {
-
-					cameraPath = line;
-					
-					// once scene and camera path are loaded, start animate() and tell VRClient ready.
-
-					setTimeout(function() {
-
-						animate();
-						VRClient.ready();
-
-					}, 500);
-
-
-				} );
-				*/
-
 			} );
 
 		}
@@ -350,35 +302,220 @@
 
 
 
+		/*====================== Make text links ======================*/
 
+		function drawSquare( xVal, yVal ) {
 
-		/* Make icons */
+			var x1 = 0 - xVal / 2;
+			var x2 = 0 + xVal / 2;
+			var y1 = 0 - yVal / 2;
+			var y2 = 0 + yVal / 2;
 
-		/* Depracated. Can probably delete... */
+			console.log( x1, y1, x2, y2 );
 
-		function drawSquare(x1, y1, x2, y2) {
-
-		    var square = new THREE.Geometry();
+		    var geometry = new THREE.Geometry();
 
 		    //set 4 points
-		    square.vertices.push( new THREE.Vector3( x1,y2,0) );
-		    square.vertices.push( new THREE.Vector3( x1,y1,0) );
-		    square.vertices.push( new THREE.Vector3( x2,y1,0) );
-		    square.vertices.push( new THREE.Vector3( x2,y2,0) );
+		    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
+		    geometry.vertices.push( new THREE.Vector3( x1, y1, 0 ) );
+		    geometry.vertices.push( new THREE.Vector3( x2, y1, 0 ) );
+		    geometry.vertices.push( new THREE.Vector3( x2, y2, 0 ) );
+		    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
 
-		    //push 1 triangle
-		    square.faces.push( new THREE.Face3( 0,1,2) );
+			var square = new THREE.Line( 
+				geometry, 
+				new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } ) 
+			);
 
-		    //push another triangle
-		    square.faces.push( new THREE.Face3( 0,3,2) );
-
-		    //return the square object with BOTH faces
 		    return square;
 		}
 
+
+		function makeLinkHighlight( width, height, depth ){
+
+			var frame = new THREE.Object3D();
+
+			var front = drawSquare( width, height );
+			front.rotation.set( 0, 0, 0 );
+			front.position.set( 0, 0, depth / 2 );
+			frame.add( front );
+
+			var back = drawSquare( width, height );
+			back.rotation.set( 0, 0, 0 );
+			back.position.set( 0, 0, 0 - depth / 2 );
+			frame.add( back );
+
+			var top = drawSquare( width, depth );
+			top.rotation.set( Math.PI / 2, 0, 0 );
+			top.position.set( 0, height / 2, 0 );
+			frame.add( top );
+
+			var bottom = drawSquare( width, depth );
+			bottom.rotation.set( Math.PI / 2, 0, 0 );
+			bottom.position.set( 0, 0 - height / 2, 0 );
+			frame.add( bottom );
+
+			var left = drawSquare( depth, height );
+			left.rotation.set( 0, Math.PI / 2, 0 );
+			left.position.set( 0 - width / 2, 0, 0 );
+			frame.add( left );
+
+			var right = drawSquare( depth, height );
+			right.rotation.set( 0, Math.PI / 2, 0 );
+			right.position.set( width / 2, 0, 0 );
+			frame.add( right );
+
+			var cube = new THREE.Mesh(
+				new THREE.BoxGeometry( width, height, depth ),
+				new THREE.MeshBasicMaterial( { color: 0x22caf0, transparent: true, opacity: 0, depthWrite: false } )
+			)
+			cube.add( frame );
+
+			return cube;
+
+		}
+
+
+		var linkSound = document.createElement( 'audio' )
+		var source = document.createElement( 'source' )
+		source.src = '/sounds/click.mp3';
+		linkSound.volume = 0.05;
+		linkSound.appendChild( source );
+
+
+		function makeLink( img, url, position, rotation ) {
+
+			//var sound = soundLinkHover;
+			var pX = position.x;
+			var pY = position.y;
+			var pZ = position.z;
+			var rX = rotation.x;
+			var rY = rotation.y;
+			var rZ = rotation.z;
+
+			var texWidth, texHeight, texRatio;
+			var texture = THREE.ImageUtils.loadTexture( img, {}, function(){ 
+
+				texWidth = texture.image.naturalWidth;
+				texHeight = texture.image.naturalHeight;
+				texRatio = texHeight / texWidth;
+
+				geometry.verticesNeedUpdate = true;
+				geometry.applyMatrix( new THREE.Matrix4().makeScale( 1, texRatio, 1 ) );
+
+				highlight.scale.set( 1, texRatio, 1 )
+				link.scale.set( 1.75, 1.75, 1.75 );
+
+			} );
+
+			var geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
+			var material = new THREE.MeshBasicMaterial( {	transparent: true, map: texture } );
+			var link = new THREE.Mesh( geometry, material );
+			link.rotation.set( rX, rY, rZ )
+			link.position.set( pX, pY, pZ );
+
+			var highlight = makeLinkHighlight( 1.1, 1.1, 0.2 );
+
+			link.addEventListener( 'click', function() {
+				
+				VRClient.load( url );
+				console.log( url );
+
+			});
+
+			link.addEventListener( 'mouseover', function( e ) {
+
+				linkSound.play();
+				var highlight = e.target.children[0];
+
+				highlight.traverse( function( obj ){
+					if ( obj.hasOwnProperty( "material" ) ){
+						obj.material.opacity = 0.25;
+					}
+				});
+
+				highlight.scale.setZ( 0.1 );
+				var t = new TWEEN.Tween( highlight.scale )
+					.to( { z:0.5 }, 150 )
+					.start();
+
+			});
+
+			link.addEventListener( 'mouseout', function( e ) {
+
+				var highlight = e.target.children[0]
+
+				highlight.traverse( function( obj ){
+					if ( obj.hasOwnProperty( "material" ) ){
+						obj.material.opacity = 0;
+					}
+				});
+
+			});
+
+			//link.rotation.set( 0.8, 0.8, 0 )
+
+			link.add( highlight );
+			return ( link );
+
+
+		}
+
+		function populateLinks() {
+
+			var links = {
+				leap: {
+					tex: 'images/txt-leap.png',
+					url: 'http://mozvr.github.io/sechelt',
+					position: { x:-3.25, y:2, z:-4 },
+					rotation: { x:0, y:0.6, z:0 }
+				},
+				interview: {
+					tex: 'images/txt-interview.png',
+					url: 'http://mozvr.github.io/polarsea/',
+					position: { x:-3.25, y:3.25, z:-4 },
+					rotation: { x:0, y:0.6, z:0 }
+				},
+				panorama: {
+					tex: 'images/txt-panorama.png',
+					url: 'http://mozvr.github.io/sechelt',
+					position: { x:3.25, y:2, z:-4 },
+					rotation: { x:0, y:-0.6, z:0 }
+				},
+				futureofthevrweb: {
+					tex: 'images/txt-futureofthevrweb.png',
+					url: 'http://mozvr.github.io/polarsea/',
+					position: { x:3.25, y:3.25, z:-4 },
+					rotation: { x:0, y:-0.6, z:0 }
+				},
+			}
+
+			scene.add( makeLink( links.leap.tex, links.leap.url, links.leap.position, links.leap.rotation ) );
+			scene.add( makeLink( links.interview.tex, links.interview.url, links.interview.position, links.interview.rotation ) );
+			scene.add( makeLink( links.panorama.tex, links.panorama.url, links.panorama.position, links.panorama.rotation ) );
+			scene.add( makeLink( links.futureofthevrweb.tex, links.futureofthevrweb.url, links.futureofthevrweb.position, links.futureofthevrweb.rotation ) );
+
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+		/*====================== Make icons ======================*/
+
+
 		function makeIconHolder( url ) {
+
 			var holder = new THREE.Mesh(
-				new THREE.BoxGeometry( 200, 200, 200, 1, 1 ),
+				new THREE.BoxGeometry( 160, 100, 180, 1, 1 ),
 				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
 			)
 
@@ -389,50 +526,50 @@
 			});
 
 			holder.addEventListener('mouseover', function(e) {
-				var target = e.target;
-				var position = target.position;
-				var userData = target.userData;
+				
+				// set tween destination position by starting with canonical position, as stored in the object's userData
 
-				var x = userData.position.x;
-				if (userData.position.x > 0) {
-					x = userData.position.x - 2;
-				} else if (userData.position.x < 0) {
-					x = userData.position.x + 2;
-				}
+				var destinationY = e.target.userData.position.y + 0.1;
 
-				var arcPosition = getArcPosition(
-					new THREE.Vector3(x, userData.position.y+0.5, userData.position.z), 7);
+				var tween = new TWEEN.Tween( e.target.position )
+					.to( { y: destinationY }, 500 )
+					.easing( TWEEN.Easing.Exponential.Out )
+					.start();
 
-				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
 			})
 
 			holder.addEventListener('mouseout', function(e) {
-				var target = e.target;
-				var position = target.position;
-				var userData = target.userData;
+				
+				// set tween destination position by starting with canonical position, as stored in the object's userData
 
-				var arcPosition = getArcPosition(
-					new THREE.Vector3(userData.position.x, userData.position.y, userData.position.z), 10);
+				var destinationY = e.target.userData.position.y;
 
-				position.set(arcPosition.x, arcPosition.y, arcPosition.z);
+				var tween = new TWEEN.Tween( e.target.position )
+					.to( { y: destinationY }, 500 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.start();
+
 			})
 
 			return holder;
 
 		}
 
+
 		function makeIconShadow(  ){
+
 			var shadow = new THREE.Mesh(
 				new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
 				new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 0.2 } )
 			);
-
 			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
+
 			return shadow;
 		}
 
 
 		function populateIcons() {
+
 			var icons = {
 				sechelt: {
 					model: 'models/icon-sechelt-3.json',
@@ -447,99 +584,100 @@
 					url: 'http://mozvr.github.io/infodive/index2.html'
 				}
 			}
+
+			var loader = new THREE.ObjectLoader();
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: 1,
-				z: -2
+				y: 0.6,
+				z: -4.5
 			};
-			var iconBaseScale = 0.02;	// scale icons
+			var iconBaseScale = 0.015;	// scale icons
 			var spread = 4.5;	// spread between icons
 			var depth = 10;	// depth at which icons are placed.
 
 			var Sechelt = new Promise(function(resolve) {
 				
-				var loader = new THREE.ObjectLoader();
 				loader.load( icons.sechelt.model, function ( object ) {
+					
 					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x - spread,
+					var x = iconBasePos.x - 2.25,
 						y = iconBasePos.y + 0,
-						z = iconBasePos.z + 0;
+						z = iconBasePos.z - 1.5;
 
-					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
-
+					// create parent holder object
 					var holder = makeIconHolder( icons.sechelt.url );
+					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+					holder.position.set( x, y, z);
+					holder.add( object );
+
 					// store original position for later use.
 					holder.userData.position = new THREE.Vector3(x, y, z);
 
-					// set onto arc.
-					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
-
+					// create dropshadow
 					var shadow = makeIconShadow();
 					shadow.position.setY( -130 );
 					holder.add( shadow );
-					holder.add( object );
-					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+					
 					scene.add(holder)
-
 					resolve();
+
 				});
 			});
 
 			var Polar = new Promise(function(resolve) {
 				
-				var loader = new THREE.ObjectLoader();
 				loader.load( icons.polar.model, function ( object ) {
+					
 					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x + 0,
+					var x = iconBasePos.x + 0.5,
 						y = iconBasePos.y + 0,
-						z = iconBasePos.z + 0;
+						z = iconBasePos.z - 0;
 
-					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
-
+					// create parent holder object
 					var holder = makeIconHolder( icons.polar.url );
+					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+					holder.position.set( x, y, z);
+					holder.add( object );
+
 					// store original position for later use.
 					holder.userData.position = new THREE.Vector3(x, y, z);
 
-					// set onto arc.
-					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
-
+					// create dropshadow
 					var shadow = makeIconShadow();
 					shadow.position.setY( -130 );
 					holder.add( shadow );
-					holder.add( object );
-					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
+					
 					scene.add(holder)
-
 					resolve();
+
 				});
 			});
 
 			var Dive = new Promise(function(resolve) {
 				
-				var loader = new THREE.ObjectLoader();
 				loader.load( icons.dive.model, function ( object ) {
+					
 					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x + spread,
+					var x = iconBasePos.x + 2,
 						y = iconBasePos.y + 0,
-						z = iconBasePos.z + 0;
+						z = iconBasePos.z - 3.25;
 
-					var arcPosition = getArcPosition(new THREE.Vector3(x, y, z), depth);
+					// create parent holder object
+					var holder = makeIconHolder( icons.sechelt.url );
+					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+					holder.position.set( x, y, z);
+					holder.add( object );
+					holder.add( makeInfoDive() );
 
-					var holder = makeIconHolder(  icons.dive.url );
 					// store original position for later use.
 					holder.userData.position = new THREE.Vector3(x, y, z);
 
-					// set onto arc.
-					holder.position.set(arcPosition.x, arcPosition.y, arcPosition.z);
-
+					// create dropshadow
 					var shadow = makeIconShadow();
 					shadow.position.setY( -130 );
 					holder.add( shadow );
-					holder.add( object );
-					holder.add( makeInfoDive() );
-					holder.scale.set(iconBaseScale, iconBaseScale, iconBaseScale);
-					scene.add(holder);
-
+					
+					scene.add(holder)
 					resolve();
 				});
 			});
@@ -557,6 +695,8 @@
 			})
 		}
 
+
+		/*
 		function getArcPosition(position, amount) {
 			return {
 				x: Math.sin( position.x / amount ) * amount,
@@ -564,8 +704,11 @@
 				z: - Math.cos( position.x / amount ) * amount
 			}
 		}
+		*/
+
 
 		function makeInfoDive() {
+
 			var object = new THREE.Object3D();
 
 			/* Define colors */
@@ -709,6 +852,8 @@
 		//makeMockupCylinder();
 
 		makeScene();
+
+		populateLinks();
 
 		populateIcons();
 
