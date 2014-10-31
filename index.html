@@ -15,123 +15,168 @@
 
       <!-- This is the container in which all the UI elements load into -->
       <div id="ui" class="fit"></div>
+    </div><!-- #container -->
 
+    <div id="navigation">
+      <div id="logo" class="float-left">mozvr.com</div>
+
+      <div id="links" class="float-left">
+        <ul class="flat-list group">
+          <li>
+            <a href="https://github.com/MozVR" target="_blank">Readme</a>
+          </li>
+          <li>
+            <a href="https://github.com/MozVR" target="_blank">GitHub</a>
+          </li>
+          <li>
+            <a href="http://mozvr.com/blog" target="_blank">Blog</a>
+          </li>
+        </ul>
       </div>
-      <div id="launch">
-        <div id="launch-content">
+
+      <div id="modes" class="float-right">
+        <ul class="flat-list group">
+          <li id="viewing">
+            Viewing in
+          </li>
+
+          <li>
+            <a href="" id="mono" class="button-wire-small button-wire-selected is-hidden">Mono</a>
+          </li>
+          <li>
+            <a href="" id="stereo" class="button-wire-small is-hidden">Stereo</a>
+          </li>
+          <li>
+            <a href="" id="vr" class="button-wire-small is-hidden">VR</a>
+          </li>
 
 
-          <!-- <div id="logo"></div>
+          <li>
+            <button id="download" class="button-download is-hidden"></button>
+          </li>
+        </ul>
 
-          <br/>
-
-          <div id="tagline">Step into the web</div>
-
-          <br/> -->
-
-
-          <!-- OLD VERSION
-          <div id="launch-vrenabled">
-            <button class="launch-button large-button">Enter VR</button>
-
-
-            <br/>
-
-            <div id="launch-credits">
-              <p>
-              Mozilla Research Presents a Virtual Reality Web Experiment<br/>
-              Josh Carpenter  |  Casey Yee  |  Matthew Claypotch<br/>
-              vlad Vukivevic  |  Diego Marcos  |  Ricardo Cabello<br/>
-              <b>Built with WebGL</b>
-              </p>
-            </div>
-          </div> -->
-
-
-          <!-- NEW VERSION -->
-          <div id="launch-vrenabled">
-            <button class="launch-button large-button is-hidden">Enter VR</button>
-
-            <footer>
-              <div id="logo"></div>
-            </footer>
-
-            <ul id="modes" class="flat-list">
-              <li>
-                <a href="">Mono</a>
-              </li>
-              <li>
-                <a href="">Stereo</a>
-              </li>
-              <li>
-                <a href="">VR</a>
-              </li>
-            </ul>
-
-            <ul id="links" class="flat-list">
-              <li>
-                <a href="https://github.com/MozVR" target="_blank">GitHub</a>
-              </li>
-              <li>
-                <a href="http://mozvr.com/builds" target="_blank">Builds</a>
-              </li>
-              <li>
-                <a href="http://mozvr.com/readme" target="_blank">Read Me</a>
-              </li>
-            </ul>
-
-
-          </div>
-
-          <div id="launch-browser" class='is-hidden'>
-            <h1>Hiro requires a VR-enabled browser<br/>Get Firefox VR builds:</h1>
-
-
-            <button class="large-button download">
-              <div class="alpha">Windows</div>
-              <div class="download-size">39MB | exe</div>
-            </button>
-
-            <button class="large-button download">
-              <div class="alpha">Mac</div>
-              <div class="download-size">92MB | dmg</div>
-            </button>
-
-
-            <br/>
-
-            <div id="experimental">
-              <p>Note: Firefox VR builds are experimental,<br/>
-              and for testing purposes only.</p>
-
-              <p><a href='#'>Release Notes</a></p>
-            </div>
-          </div>
-
+        <div class="status animate-in-out is-hidden" id="vrEnabled">
+          VR Browser detected
         </div>
 
-      </div>
-    </div>
+        <div class="status status-bubble is-hidden" id="vrDownload">
+          <em>mozvr.com is a virtual reality website.</em><br/>
+          To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
 
-    <script src="js/vendor/three.min.js"></script>
+          <p class="center">
+            <button class="button-wire">Get Firefox VR</button>
+            <button class="button-wire" id="download-dismiss">Not now</button>
+          </p>
+        </div>
 
-    <script src="js/vendor/VRControls.js"></script>
-    <script src="js/vendor/DeviceOrientationControls.js"></script>
-    <script src="js/vendor/VREffect.js"></script>
-    <script src="js/vendor/StereoEffect.js"></script>
+        </div><!-- #status -->
 
-    <script src="js/vendor/tween.min.js"></script>
-    <script src="js/lib/dom2three.js"></script>
+      </div><!-- #mode -->
 
-    <script src="js/vrutils.js"></script>
-    <script src="js/vrtab.js"></script>
-    <script src="js/vrtransition.js"></script>
-    <script src="js/vrsound.js"></script>
-    <script src="js/vrcursor.js"></script>
-    <script src="js/vrhud.js"></script>
-    <script src="js/vrtitle.js"></script>
-    <script src="js/vrloading.js"></script>
-    <script src="js/vrui.js"></script>
-    <script src="js/vrmanager.js"></script>
+    </div><!-- #navigation -->
   </body>
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/VRControls.js"></script>
+  <script src="js/vendor/DeviceOrientationControls.js"></script>
+  <script src="js/vendor/VREffect.js"></script>
+  <script src="js/vendor/StereoEffect.js"></script>
+  <script src="js/vendor/tween.min.js"></script>
+  <script src="js/lib/dom2three.js"></script>
+  <script src="js/vrutils.js"></script>
+  <script src="js/vrtab.js"></script>
+  <script src="js/vrtransition.js"></script>
+  <script src="js/vrsound.js"></script>
+  <script src="js/vrcursor.js"></script>
+  <script src="js/vrhud.js"></script>
+  <script src="js/vrtitle.js"></script>
+  <script src="js/vrloading.js"></script>
+  <script src="js/vrui.js"></script>
+  <script src="js/vrmanager.js"></script>
+
+  <script>
+    window.DomUi = (function() {
+      function DomUi() {
+
+        // download dialogue displays when no VR compatible browser is detected.
+        var downloadDialogue = document.querySelector('#vrDownload');
+        var statusDialogue = document.querySelector('#vrEnabled');
+        var downloadButton = document.querySelector('#download');
+        var dissmissButton = document.querySelector('#download-dismiss');
+
+        function toggleDownloadDialogue(e) {
+          e.preventDefault();
+          downloadDialogue.classList.toggle('is-hidden');
+        }
+
+        downloadButton.addEventListener('click', toggleDownloadDialogue);
+        dissmissButton.addEventListener('click', toggleDownloadDialogue);
+
+
+        // mode buttons
+        var monoButton = document.querySelector('#mono');
+        var stereoButton = document.querySelector('#stereo');
+        var vrButton = document.querySelector('#vr');
+
+        // vr
+        vrButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          VRManager.enableVR();
+
+          // exitVr returns the user back to mono mode by default, so we'll assume that for now and style button accordingly.
+          document.querySelector('.button-wire-selected').classList.remove('button-wire-selected');
+          monoButton.classList.add('button-wire-selected');
+        })
+
+        VRManager.vrReady.then(function() {
+          console.log('----- VR detected');
+          // VR detected
+          // show all available modes
+          monoButton.classList.remove('is-hidden');
+          stereoButton.classList.remove('is-hidden');
+          vrButton.classList.remove('is-hidden');
+
+          // hide download dialogue
+          downloadDialogue.classList.add('is-hidden');
+          statusDialogue.classList.remove('is-hidden');
+
+          // download button
+          downloadButton.classList.add('is-hidden');
+
+        }, function() {
+          console.log('----- NoVR detected');
+          // VR not detected
+          monoButton.classList.remove('is-hidden');
+          stereoButton.classList.remove('is-hidden');
+          vrButton.classList.add('is-hidden');
+
+          // show download dialogue
+          downloadDialogue.classList.remove('is-hidden');
+          statusDialogue.classList.add('is-hidden');
+
+          // download button
+          downloadButton.classList.remove('is-hidden');
+        });
+
+        // stereo
+        stereoButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          VRManager.enableStereo();
+          document.querySelector('.button-wire-selected').classList.remove('button-wire-selected');
+          this.classList.add('button-wire-selected');
+        });
+
+        // mono
+        monoButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          VRManager.enableMono();
+          document.querySelector('.button-wire-selected').classList.remove('button-wire-selected');
+          this.classList.add('button-wire-selected');
+        });
+
+      }
+
+      return new DomUi();
+    })();
+  </script>
 </html>

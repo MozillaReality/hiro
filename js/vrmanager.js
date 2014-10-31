@@ -1,3 +1,10 @@
+/*
+VRManger
+- Juggles VRtab/content iframe loading, switching and unloading.
+- Fullscreen switching.
+- Detection of VR hardware.
+*/
+
 window.VRManager = (function() {
   function VRManager(container) {
     var self = this;
@@ -85,24 +92,23 @@ window.VRManager = (function() {
       }
     };
 
-    self.vrReady
-      .then(function() {
-          self.VRstart();
-        }, function(){
-          self.NoVRstart();
-        });
+    // self.vrReady
+    //   .then(function() {
+    //       self.VRstart();
+    //     }, function(){
+    //       self.NoVRstart();
+    //     });
+
+    self.ui.start();
+
   }
 
-  VRManager.prototype.VRstart = function() {
-    console.log('----- VR detected');
-    this.ui.start();
-  }
-  VRManager.prototype.NoVRstart = function() {
-    console.log('----- NoVR detected');
-    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
-    document.querySelector('#launch-browser').classList.remove('is-hidden');
-    this.ui.start();
-  }
+  // VRManager.prototype.VRstart = function() {
+  //   this.ui.start();
+  // }
+  // VRManager.prototype.NoVRstart = function() {
+  //   this.ui.start();
+  // }
 
   VRManager.prototype.unloadCurrent = function() {
     var self = this;
@@ -180,6 +186,25 @@ window.VRManager = (function() {
     }
   };
 
+  VRManager.prototype.enableStereo = function() {
+    var self = this;
+
+    self.ui.setRenderMode(self.ui.modes.stereo);
+
+    if (self.currentDemo) {
+     self.currentDemo.setRenderMode(self.ui.mode);
+    }
+  };
+
+  VRManager.prototype.enableMono = function() {
+    var self = this;
+
+    self.ui.setRenderMode(self.ui.modes.mono);
+
+    if (self.currentDemo) {
+     self.currentDemo.setRenderMode(self.ui.mode);
+    }
+  };
 
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
@@ -196,6 +221,7 @@ window.VRManager = (function() {
   VRManager.prototype.zeroSensor = function () {
     var self = this;
     self.vrReady.then(function () {
+      console.log('zeroing sensor');
       self.positionDevice.zeroSensor();
     });
   };

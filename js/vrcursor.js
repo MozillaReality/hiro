@@ -229,12 +229,15 @@ VRCursor.prototype.onMouseMoved = function(e) {
 };
 
 VRCursor.prototype.onMouseClicked = function(e) {
-  e.preventDefault();
+  var target = e.target;
+
   if (!this.enabled) {
     return false;
   }
-  if (this.objectMouseOver) {
-    this.objectMouseOver.dispatchEvent(this.events.clickEvent);
+  if (target.tagName == 'BODY' ||
+    target.tagName == 'CANVAS' &&
+    this.objectMouseOver) {
+      this.objectMouseOver.dispatchEvent(this.events.clickEvent);
   }
 }
 

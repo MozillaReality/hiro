@@ -81,11 +81,15 @@ VRTitle.prototype.show = function() {
 
 VRTitle.prototype.hide = function() {
 	self = this;
-	self.animateOut(self.mesh).then(function() {
+	var animDone = self.animateOut(self.mesh);
+
+	animDone.then(function() {
 		self.visible = false;
 		self.mesh.visible = false;
 		self.setAuthor('');
 	});
+
+	return animDone;
 };
 
 VRTitle.prototype.setAuthor = function(value) {
