@@ -95,12 +95,22 @@ window.VRManager = (function() {
 
   VRManager.prototype.VRstart = function() {
     console.log('----- VR detected');
+    document.querySelector('.mono').classList.remove('is-hidden');
+    document.querySelector('.stereo').classList.remove('is-hidden');
+    document.querySelector('.vr').classList.remove('is-hidden');
+    document.querySelector('.download').classList.add('is-hidden');
+    document.querySelector('#vrEnabled').classList.remove('is-hidden');
+    document.querySelector('#vrDownload').classList.add('is-hidden');
     this.ui.start();
   }
   VRManager.prototype.NoVRstart = function() {
     console.log('----- NoVR detected');
-    document.querySelector('#launch-vrenabled').classList.add('is-hidden');
-    document.querySelector('#launch-browser').classList.remove('is-hidden');
+    document.querySelector('.mono').classList.remove('is-hidden');
+    document.querySelector('.stereo').classList.remove('is-hidden');
+    document.querySelector('.vr').classList.add('is-hidden');
+    document.querySelector('.download').classList.remove('is-hidden');
+    document.querySelector('#vrEnabled').classList.add('is-hidden');
+    document.querySelector('#vrDownload').classList.remove('is-hidden');
     this.ui.start();
   }
 
@@ -196,6 +206,7 @@ window.VRManager = (function() {
   VRManager.prototype.zeroSensor = function () {
     var self = this;
     self.vrReady.then(function () {
+      console.log('zeroing sensor');
       self.positionDevice.zeroSensor();
     });
   };

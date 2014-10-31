@@ -15,120 +15,85 @@
 
       <!-- This is the container in which all the UI elements load into -->
       <div id="ui" class="fit"></div>
+    </div><!-- #container -->
 
+    <div id="navigation">
+      <div id="logo" class="float-left">mozvr.com</div>
+
+      <div id="links" class="float-left">
+        <ul class="flat-list group">
+          <li>
+            <a href="https://github.com/MozVR" target="_blank">Readme</a>
+          </li>
+          <li>
+            <a href="https://github.com/MozVR" target="_blank">GitHub</a>
+          </li>
+          <li>
+            <a href="http://mozvr.com/blog" target="_blank">Blog</a>
+          </li>
+        </ul>
       </div>
-      <div id="launch">
-        <div id="launch-content">
+
+      <div id="modes" class="float-right">
+        <ul class="flat-list group">
+          <li id="viewing">
+            Viewing in
+          </li>
 
 
-          <!-- <div id="logo"></div>
-
-          <br/>
-
-          <div id="tagline">Step into the web</div>
-
-          <br/> -->
-
-
-          <!-- OLD VERSION
-          <div id="launch-vrenabled">
-            <button class="launch-button large-button">Enter VR</button>
+          <li class="mono is-hidden">
+            <a href="">Mono</a>
+          </li>
+          <li class="stereo is-hidden">
+            <a href="">Stereo</a>
+          </li>
+          <li class="vr is-hidden">
+            <a href="">VR</a>
+          </li>
 
 
-            <br/>
+          <li class="download is-hidden">
+            <button class="button-download"></button>
+          </li>
+        </ul>
 
-            <div id="launch-credits">
-              <p>
-              Mozilla Research Presents a Virtual Reality Web Experiment<br/>
-              Josh Carpenter  |  Casey Yee  |  Matthew Claypotch<br/>
-              vlad Vukivevic  |  Diego Marcos  |  Ricardo Cabello<br/>
-              <b>Built with WebGL</b>
-              </p>
-            </div>
-          </div> -->
-
-
-          <!-- NEW VERSION -->
-          <div id="launch-vrenabled">
-            <button class="launch-button large-button is-hidden">Enter VR</button>
-
-            <footer>
-              <div id="logo"></div>
-            </footer>
-
-            <ul id="modes" class="flat-list">
-              <li>
-                <a href="">Mono</a>
-              </li>
-              <li>
-                <a href="">Stereo</a>
-              </li>
-              <li>
-                <a href="">VR</a>
-              </li>
-            </ul>
-
-            <ul id="links" class="flat-list">
-              <li>
-                <a href="https://github.com/MozVR" target="_blank">GitHub</a>
-              </li>
-              <li>
-                <a href="http://mozvr.com/blog" target="_blank">Blog</a>
-              </li>
-            </ul>
-
-
-          </div>
-
-          <div id="launch-browser" class='is-hidden'>
-            <h1>Hiro requires a VR-enabled browser<br/>Get Firefox VR builds:</h1>
-
-
-            <button class="large-button download">
-              <div class="alpha">Windows</div>
-              <div class="download-size">39MB | exe</div>
-            </button>
-
-            <button class="large-button download">
-              <div class="alpha">Mac</div>
-              <div class="download-size">92MB | dmg</div>
-            </button>
-
-
-            <br/>
-
-            <div id="experimental">
-              <p>Note: Firefox VR builds are experimental,<br/>
-              and for testing purposes only.</p>
-
-              <p><a href='#'>Release Notes</a></p>
-            </div>
-          </div>
-
+        <div class="status is-hidden is-hidden" id="vrEnabled">
+          VR Browser detected
         </div>
 
-      </div>
-    </div>
+        <div class="status status-bubble is-hidden" id="vrDownload">
+          <p>
+            <em>mozvr.com is a virtual reality website.</em><br/>
+            To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
+          </p>
 
-    <script src="js/vendor/three.min.js"></script>
+          <p>
+            <button class="button-wire">Get Firefox VR</button>
+          </p>
+        </div>
 
-    <script src="js/vendor/VRControls.js"></script>
-    <script src="js/vendor/DeviceOrientationControls.js"></script>
-    <script src="js/vendor/VREffect.js"></script>
-    <script src="js/vendor/StereoEffect.js"></script>
+        </div><!-- #status -->
 
-    <script src="js/vendor/tween.min.js"></script>
-    <script src="js/lib/dom2three.js"></script>
+      </div><!-- #mode -->
 
-    <script src="js/vrutils.js"></script>
-    <script src="js/vrtab.js"></script>
-    <script src="js/vrtransition.js"></script>
-    <script src="js/vrsound.js"></script>
-    <script src="js/vrcursor.js"></script>
-    <script src="js/vrhud.js"></script>
-    <script src="js/vrtitle.js"></script>
-    <script src="js/vrloading.js"></script>
-    <script src="js/vrui.js"></script>
-    <script src="js/vrmanager.js"></script>
+    </div><!-- #navigation -->
   </body>
+
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/VRControls.js"></script>
+  <script src="js/vendor/DeviceOrientationControls.js"></script>
+  <script src="js/vendor/VREffect.js"></script>
+  <script src="js/vendor/StereoEffect.js"></script>
+  <script src="js/vendor/tween.min.js"></script>
+  <script src="js/lib/dom2three.js"></script>
+  <script src="js/vrutils.js"></script>
+  <script src="js/vrtab.js"></script>
+  <script src="js/vrtransition.js"></script>
+  <script src="js/vrsound.js"></script>
+  <script src="js/vrcursor.js"></script>
+  <script src="js/vrhud.js"></script>
+  <script src="js/vrtitle.js"></script>
+  <script src="js/vrloading.js"></script>
+  <script src="js/vrui.js"></script>
+  <script src="js/vrmanager.js"></script>
 </html>

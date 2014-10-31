@@ -19,8 +19,6 @@ function VRUi(container) {
 
 	this.initKeyboardControls();
 
-	this.initLaunchButton();
-
 	//self.scene.add(self.gridlines());
 
 	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
@@ -162,7 +160,7 @@ VRUi.prototype.setRenderMode = function(mode) {
 		console.log('VR render mode');
 		this.effect = new THREE.VREffect( this.renderer );
 		this.controls = new THREE.VRControls( this.camera );
-		this.cursor.setMode('centered');
+		this.cursor.setMode('inFOV');
 		this.cursor.show();
 	} else if (mode == VRUi.modes.stereo) {
 		console.log('Stereo render mode');
@@ -263,14 +261,6 @@ VRUi.prototype.animate = function() {
 	requestAnimationFrame(this.animate.bind(this));
 }
 
-VRUi.prototype.initLaunchButton = function() {
-	var button = document.querySelector('.launch-button');
-
-	button.addEventListener('click', function() {
-		VRManager.enableVR();
-	});
-
-};
 
 VRUi.prototype.initKeyboardControls = function() {
  	var self = this;
