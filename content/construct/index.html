@@ -22,11 +22,11 @@
 	<body>
 	</body>
 	<script src="../../js/vendor/three.min.js"></script>
-	<script src="js/tween.min.js"></script>
-	<script src="js/VRControls.js"></script>
-	<script src="js/VREffect.js"></script>
-	<script src="js/DeviceOrientationControls.js"></script>
-	<script src="js/StereoEffect.js"></script>
+	<script src="../../js/vendor/tween.min.js"></script>
+	<script src="../../js/vendor/VRControls.js"></script>
+	<script src="../../js/vendor/VREffect.js"></script>
+	<script src="../../js/vendor/DeviceOrientationControls.js"></script>
+	<script src="../../js/vendor/StereoEffect.js"></script>
 
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 	<script src="../../js/vrclient.js"></script>
@@ -49,6 +49,7 @@
 		var cursor;
 		var icons;
 		var iconsArray = [];
+		var userHeight = -1.75;
 
 
 		function init() {
@@ -178,7 +179,7 @@
 
 			// variables and setup
 
-			camera.position.set( 0, 1.68, 0 );
+			camera.position.set( 0, 0, 0 );
 			var loader = new THREE.ObjectLoader();
 
 			// sky
@@ -223,7 +224,7 @@
 
 			sky = new THREE.Mesh( geometry, material );
 			scene.add( sky );
-			
+
 			// fog
 
 			scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
@@ -272,7 +273,7 @@
 				transparent: true
 			} );
 			water = new THREE.Mesh( geometry, material );
-			water.position.y = 0;
+			water.position.y = userHeight;
 			water.rotation.x = - Math.PI / 2;
 			water.renderDepth = 2;
 			scene.add( water );
@@ -285,10 +286,10 @@
 
 				var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
 				reflection.material.side = THREE.BackSide;
-				reflection.position.y = 7.7;
+				reflection.position.y = 7.7 + userHeight;
 				reflection.scale.y = -1;
 				landscape.parent.add( reflection );
-				landscape.parent.position.y = -4;
+				landscape.parent.position.y = -4 + userHeight;
 
 				scene.add( object );
 
@@ -314,7 +315,7 @@
 			var y1 = 0 - yVal / 2;
 			var y2 = 0 + yVal / 2;
 
-			console.log( x1, y1, x2, y2 );
+			//console.log( x1, y1, x2, y2 );
 
 		    var geometry = new THREE.Geometry();
 
@@ -325,9 +326,9 @@
 		    geometry.vertices.push( new THREE.Vector3( x2, y2, 0 ) );
 		    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
 
-			var square = new THREE.Line( 
-				geometry, 
-				new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } ) 
+			var square = new THREE.Line(
+				geometry,
+				new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } )
 			);
 
 		    return square;
@@ -397,7 +398,7 @@
 			var rZ = rotation.z;
 
 			var texWidth, texHeight, texRatio;
-			var texture = THREE.ImageUtils.loadTexture( img, {}, function(){ 
+			var texture = THREE.ImageUtils.loadTexture( img, {}, function(){
 
 				texWidth = texture.image.naturalWidth;
 				texHeight = texture.image.naturalHeight;
@@ -420,7 +421,7 @@
 			var highlight = makeLinkHighlight( 1.1, 1.1, 0.2 );
 
 			link.addEventListener( 'click', function() {
-				
+
 				VRClient.load( url );
 				console.log( url );
 
@@ -470,25 +471,25 @@
 				leap: {
 					tex: 'images/txt-leap.png',
 					url: 'http://mozvr.github.io/sechelt',
-					position: { x:-3.25, y:2, z:-4 },
+					position: { x:-3.25, y:2+userHeight, z:-4 },
 					rotation: { x:0, y:0.6, z:0 }
 				},
 				interview: {
 					tex: 'images/txt-interview.png',
 					url: 'http://mozvr.github.io/polarsea/',
-					position: { x:-3.25, y:3.25, z:-4 },
+					position: { x:-3.25, y:3.25+userHeight, z:-4 },
 					rotation: { x:0, y:0.6, z:0 }
 				},
 				panorama: {
 					tex: 'images/txt-panorama.png',
 					url: 'http://mozvr.github.io/sechelt',
-					position: { x:3.25, y:2, z:-4 },
+					position: { x:3.25, y:2+userHeight, z:-4 },
 					rotation: { x:0, y:-0.6, z:0 }
 				},
 				futureofthevrweb: {
 					tex: 'images/txt-futureofthevrweb.png',
 					url: 'http://mozvr.github.io/polarsea/',
-					position: { x:3.25, y:3.25, z:-4 },
+					position: { x:3.25, y:3.25+userHeight, z:-4 },
 					rotation: { x:0, y:-0.6, z:0 }
 				},
 			}
@@ -529,7 +530,7 @@
 			});
 
 			holder.addEventListener('mouseover', function(e) {
-				
+
 				// set tween destination position by starting with canonical position, as stored in the object's userData
 
 				var destinationY = e.target.userData.position.y + 0.1;
@@ -542,7 +543,7 @@
 			})
 
 			holder.addEventListener('mouseout', function(e) {
-				
+
 				// set tween destination position by starting with canonical position, as stored in the object's userData
 
 				var destinationY = e.target.userData.position.y;
@@ -598,116 +599,84 @@
 			var spread = 4.5;	// spread between icons
 			var depth = 10;	// depth at which icons are placed.
 
-			var Sechelt = new Promise(function(resolve) {
-				
-				loader.load( icons.sechelt.model, function ( object ) {
-					
-					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x - 2.25,
-						y = iconBasePos.y + 0,
-						z = iconBasePos.z - 1.5;
 
-					// create parent holder object
-					var holder = makeIconHolder( icons.sechelt.url );
-					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-					holder.position.set( x, y, z);
-					holder.add( object );
+			loader.load( icons.sechelt.model, function ( object ) {
 
-					// store original position for later use.
-					holder.userData.position = new THREE.Vector3(x, y, z);
+				// relative object positioning to iconBasePos.
+				var x = iconBasePos.x - 2.25,
+					y = iconBasePos.y + userHeight,
+					z = iconBasePos.z - 1.5;
 
-					// create dropshadow
-					var shadow = makeIconShadow();
-					shadow.position.setY( -130 );
-					holder.add( shadow );
-					
-					scene.add(holder)
-					resolve();
+				// create parent holder object
+				var holder = makeIconHolder( icons.sechelt.url );
+				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+				holder.position.set( x, y, z);
+				holder.add( object );
 
-				});
+				// store original position for later use.
+				holder.userData.position = new THREE.Vector3(x, y, z);
+
+				// create dropshadow
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+
+				scene.add(holder)
+
 			});
 
-			var Polar = new Promise(function(resolve) {
-				
-				loader.load( icons.polar.model, function ( object ) {
-					
-					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x + 0.5,
-						y = iconBasePos.y + 0,
-						z = iconBasePos.z - 0;
+			loader.load( icons.polar.model, function ( object ) {
 
-					// create parent holder object
-					var holder = makeIconHolder( icons.polar.url );
-					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-					holder.position.set( x, y, z);
-					holder.add( object );
+				// relative object positioning to iconBasePos.
+				var x = iconBasePos.x + 0.5,
+					y = iconBasePos.y + userHeight,
+					z = iconBasePos.z - 0;
 
-					// store original position for later use.
-					holder.userData.position = new THREE.Vector3(x, y, z);
+				// create parent holder object
+				var holder = makeIconHolder( icons.polar.url );
+				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+				holder.position.set( x, y, z);
+				holder.add( object );
 
-					// create dropshadow
-					var shadow = makeIconShadow();
-					shadow.position.setY( -130 );
-					holder.add( shadow );
-					
-					scene.add(holder)
-					resolve();
+				// store original position for later use.
+				holder.userData.position = new THREE.Vector3(x, y, z);
 
-				});
+				// create dropshadow
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+
+				scene.add(holder)
+
 			});
 
-			var Dive = new Promise(function(resolve) {
-				
-				loader.load( icons.dive.model, function ( object ) {
-					
-					// relative object positioning to iconBasePos.
-					var x = iconBasePos.x + 2,
-						y = iconBasePos.y + 0,
-						z = iconBasePos.z - 3.25;
+			loader.load( icons.dive.model, function ( object ) {
 
-					// create parent holder object
-					var holder = makeIconHolder( icons.sechelt.url );
-					holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-					holder.position.set( x, y, z);
-					holder.add( object );
-					holder.add( makeInfoDive() );
+				// relative object positioning to iconBasePos.
+				var x = iconBasePos.x + 2,
+					y = iconBasePos.y + 0,y = iconBasePos.y + userHeight,
+					z = iconBasePos.z - 3.25;
 
-					// store original position for later use.
-					holder.userData.position = new THREE.Vector3(x, y, z);
+				// create parent holder object
+				var holder = makeIconHolder( icons.sechelt.url );
+				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+				holder.position.set( x, y, z);
+				holder.add( object );
+				holder.add( makeInfoDive() );
 
-					// create dropshadow
-					var shadow = makeIconShadow();
-					shadow.position.setY( -130 );
-					holder.add( shadow );
-					
-					scene.add(holder)
-					resolve();
-				});
+				// store original position for later use.
+				holder.userData.position = new THREE.Vector3(x, y, z);
+
+				// create dropshadow
+				var shadow = makeIconShadow();
+				shadow.position.setY( -130 );
+				holder.add( shadow );
+
+				scene.add(holder)
+
 			});
 
-			Promise.all([Sechelt, Polar, Dive]).then(function() {
-
-				// var amount = 10;
-				// icons.forEach(function(element) {
-				// 	if (element.userData.position) {
-				// 		element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-				// 		element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-				// 		element.lookAt( vector.set( 0, element.position.y, 0 ) );
-				// 	}
-				// });
-			})
 		}
-
-
-		/*
-		function getArcPosition(position, amount) {
-			return {
-				x: Math.sin( position.x / amount ) * amount,
-				y: position.y,
-				z: - Math.cos( position.x / amount ) * amount
-			}
-		}
-		*/
 
 
 		function makeInfoDive() {

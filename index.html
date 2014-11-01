@@ -65,9 +65,7 @@
           To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
 
           <p class="center">
-            <a href="download.html">
-              <button class="button-wire">Get Firefox VR</button>
-            </a>
+            <a href="download.html"><button class="button-wire">Get Firefox VR</button></a>
             <button class="button-wire" id="download-dismiss">Not now</button>
           </p>
         </div>
@@ -108,7 +106,17 @@
 
         function toggleDownloadDialogue(e) {
           e.preventDefault();
-          downloadDialogue.classList.toggle('is-hidden');
+
+          var style = downloadDialogue.style;
+          var classes = downloadDialogue.classList;
+
+          if (classes.contains('is-minimized')) {
+            style.transform = 'translate(0, 0) scale(1,1)';
+          } else {
+            style.transform = 'translate(11rem, 5rem) scale(0,0)';
+          }
+
+          classes.toggle('is-minimized');
         }
 
         downloadButton.addEventListener('click', toggleDownloadDialogue);
@@ -135,7 +143,7 @@
           // VR detected
           // show all available modes
           monoButton.classList.remove('is-hidden');
-          stereoButton.classList.remove('is-hidden');
+          // stereoButton.classList.remove('is-hidden');
           vrButton.classList.remove('is-hidden');
 
           // hide download dialogue
@@ -149,7 +157,7 @@
           console.log('----- NoVR detected');
           // VR not detected
           monoButton.classList.remove('is-hidden');
-          stereoButton.classList.remove('is-hidden');
+          // stereoButton.classList.remove('is-hidden');
           vrButton.classList.add('is-hidden');
 
           // show download dialogue

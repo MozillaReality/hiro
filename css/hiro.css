@@ -136,23 +136,29 @@ body {
   background: #fff;
   color: #626262;
   padding: 1rem 1.5rem 1rem 1.5rem;
+  opacity: 1;
+  transition: all 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940);
 }
+
+
+.status-bubble:after { /* bubble pointer */
+  position: absolute;
+  content: " ";
+  width: 0;
+  height: 0;
+  right: 0.75rem;
+  bottom: -0.9rem;
+  border-top: 1rem solid #fff;
+  border-left: 1rem solid transparent;
+}
+
 .status em {
   color: #000;
   font-style: normal;
   font-size: 1rem;
   display: inline-block;
   margin-bottom: 0.5rem;
-}
-.status-bubble:after {
-  position: absolute;
-  content: " ";
-  width: 0;
-  height: 0;
-  right: 0.75rem;
-  bottom: -1rem;
-  border-top: 1rem solid #fff;
-  border-left: 1rem solid transparent;
+
 }
 
 .button-wire {
@@ -164,6 +170,10 @@ body {
   margin: 0.1rem;
   color: #000;
   cursor: pointer;
+}
+.button-wire:hover {
+  background: #efefef;
+  border: 1px solid transparent;
 }
 
 .button-download {
