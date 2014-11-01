@@ -1,0 +1,167 @@
+html, body {
+  height: 100%;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  background: #efefef;
+  margin: 0;
+  font-weight: 400;
+  color: #333;
+  font-size: 1.0rem;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+h1 {
+  font-size: 6.5rem;
+  margin: 0;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+h4 {
+  font-size: 1rem;
+  margin: 1rem 0 1rem 0;
+  border-bottom: 1px dotted #333;
+  padding: 1rem 0 1rem 0;
+}
+
+ul {
+  padding: 0 0 0 1rem;
+  margin: 0;
+}
+
+li {
+  padding: 0.5rem 0 0.5rem 0;
+  margin: 0;
+  list-style: none;
+}
+
+footer {
+  width: 800px;
+  margin: auto;
+}
+
+.container {
+  width: 800px;
+  margin: 2rem auto 2rem auto;
+  padding: 2rem;
+}
+
+.content {
+  background: #fff;
+}
+
+.menu {
+  width: 800px;
+  margin: 2rem auto 2rem auto;
+  background: #fff;
+  border: 0;
+}
+
+.menu ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+.menu li {
+  list-style: none;
+  text-align: center;
+  flex-grow: 1;
+  padding: 1rem;
+  text-transform: uppercase;
+}
+.menu li.selected {
+  background: #333;
+  color: #fff;
+}
+
+.large-button {
+  border: 0.5rem solid #333;
+  padding: 1rem;
+  width: 18rem;
+  background: transparent;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0.5rem;
+  cursor: pointer;
+}
+.large-button:hover {
+  background: #333;
+  color: #fff;
+}
+
+.key-button {
+  min-width: 2rem;
+  height: 2rem;
+  display: inline-block;
+  border: 0.2rem solid #333;
+  font-size: 1.2rem;
+  line-height: 1.8rem;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0rem 0.5rem 0rem 0.5rem;
+}
+
+.instruction {
+  font-size: 1.2rem;
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.key-label {
+  margin: 0 0 0 1rem;
+  display: inline-block;
+  font-size: 1.2rem;
+}
+
+.download {
+  display: inline-block;
+}
+
+.header {
+  color: #333;
+  border-bottom: 1px dotted #333;
+}
+
+
+
+/* helpers */
+.center {
+  text-align: center;
+}
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
+}
+.margin-auto {
+  margin: auto;
+}
+.group:after { /* clearfix */
+  content: "";
+  display: table;
+  clear: both;
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>MozVR</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/instructions.css">
+    <link rel='stylesheet' href='fonts/montserrat/montserrat.css' type='text/css'>
+  </head>
+  <body>
+
+    <div class="menu">
+      <ul>
+        <li class="selected">Controls</li>
+        <li>Tips</li>
+        <li>Troubleshooting</li>
+      </ul>
+    </div>
+
+
+    <div class="container content">
+      <h2 class="center">Controls</h2>
+
+      <P class="instruction">
+      Press <span class="key-button">F</span> for fullscreen VR mode.
+      </P>
+
+      <p class="instruction">
+        Put on your headset. <u>Look around!</u>
+      </p>
+
+      <p class="instruction">
+        <u>Click</u> with the mouse
+      </p>
+
+      <P class="instruction">
+        Press <span class="key-button">space</span> for menu.
+      </P>
+
+      <P class="instruction">
+        Press <span class="key-button">esc</span> to exit VR.
+      </P>
+
+    </div>
+
+    <div class="container content">
+
+      <h2 class="center">Tips</h2>
+
+
+      <h4>“Mirrored” display settings are recommended</h4>
+      <p>
+        Direct to Rift support is currently buggy, and setting the displlays to be unique works, but requires dragging the browser window to the HMD display, which becomes awkward.
+      </p>
+
+      <ul>
+        <li>
+          <b>Mac:</b> System Preferences > Displays
+        </li>
+        <li>
+          <b>Windows:</b> Display  > Screen Resolution
+        </li>
+      </ul>
+
+      <h4>Set Mac display settings to 60hz</h4>
+      <p>
+        Macs exhibit extreme judder at the DK2’s default 75hz refresh rate. Configuring the display preferences to 60hz mostly addresses the problem. Running at 60hz does result in increased latency and pixel persistence (smearing), but in our experience the tradeoff is well worth it.
+      </p>
+
+      <ul>
+        <li>
+          <b>Mac:</b> System Preferences > Displays
+        </li>
+      </ul>
+
+    </div>
+
+    <div class="container content">
+      <h2 class="center">Troubleshooting</h2>
+
+      <p>
+        First make sure you are using a VR-enabled browser like our experimental Firefox builds. Normal Firefox will not work. Get Firefox with VR support here.
+      </p>
+
+      <p>
+        Also make sure that your headset is plugged in, and that it is powered on.
+      </p>
+
+      <p>
+        If the above are true, first try restarting the browser and reloading this page. Does the problem persist?
+      </p>
+
+      <p>
+        If so, try restarting the Oculus Rift SDK service. See: OculusConfigUtil  > Tools > Advanced > Restart Service. Then restart the browser again.
+      </p>
+    </div>
+
+    <footer>
+      <p class="center">&copy; mozilla research</p>
+    </footer>
+
+  </body>
+  <script>
+  </script>
+</html>

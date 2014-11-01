@@ -163,6 +163,7 @@ body {
   padding: 0.2rem 0.5rem;
   margin: 0.1rem;
   color: #000;
+  cursor: pointer;
 }
 
 .button-download {
@@ -173,6 +174,7 @@ body {
   border-radius: 1rem;
   margin: 0 0 0 1rem;
   position: relative;
+  cursor: pointer;
 }
 
 .button-download:after {
