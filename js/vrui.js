@@ -252,7 +252,6 @@ VRUi.prototype.animate = function() {
 
 		if (typeof controls.getVRState === 'function') {
 			headQuat = controls.getVRState().hmd.rotation;
-		//	console.log('controls', headQuat);
 		}
 	}
 

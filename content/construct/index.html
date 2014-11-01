@@ -85,7 +85,7 @@
 				var modes = VRClient.renderModes;
 				if (mode == modes.normal) {
 					console.log('Mono mode');
-					controls = null;
+					controls = new THREE.VRControls( camera );
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
