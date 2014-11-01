@@ -3,6 +3,7 @@ VRUi
 - Provides a three.js context for various UI components: hud, titling, loading and transitions.
 - Hosts inputs: cursor, keyboard and VR headset orientation.
 - Manages different rendering modes.
+	- VREffect handles the camera stereo effects while VRManager is responsible for calling full-screen.
 */
 
 'use strict';
@@ -277,9 +278,10 @@ VRUi.prototype.initKeyboardControls = function() {
  	var self = this;
 
   function onkey(event) {
-    if (!(event.metaKey || event.altKey || event.ctrlKey)) {
-      event.preventDefault();
-    }
+
+    // if (!(event.metaKey || event.altKey || event.ctrlKey)) {
+    //   event.preventDefault();
+    // }
 
     //console.log(event.keyCode)
 
@@ -288,7 +290,7 @@ VRUi.prototype.initKeyboardControls = function() {
         VRManager.enableVR();
         break;
       case 90: // z
-        VRManager.zeroSensor();
+      	VRManager.zeroSensor();
       	break;
       case 83: // s
       	self.setRenderMode(self.modes.stereo);

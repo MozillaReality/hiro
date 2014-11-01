@@ -51,6 +51,9 @@ window.VRClient = (function() {
         case 'renderMode':
           self.setRenderMode(msg.data);
           break;
+        case 'onZeroSensor':
+          self.zeroSensor();
+          break;
         case 'onBlur':
           if (typeof self.onBlur == 'function') {
             self.onBlur();
@@ -98,7 +101,9 @@ window.VRClient = (function() {
   VRClient.prototype.zeroSensor = function () {
     var self = this;
     self.getVR.then(function () {
-      self.positionDevice.zeroSensor();
+      if (typeof self.onZeroSensor == 'function') {
+        self.onZeroSensor();
+      }
     });
   };
 

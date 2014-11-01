@@ -92,12 +92,13 @@ window.VRManager = (function() {
       }
     };
 
-    // self.vrReady
-    //   .then(function() {
-    //       self.VRstart();
-    //     }, function(){
-    //       self.NoVRstart();
-    //     });
+    self.vrReady
+      .then(function() {
+          //self.VRstart();
+        }, function(){
+          console.log('*** VR Not ready')
+          //self.NoVRstart();
+        });
 
     self.ui.start();
 
@@ -162,8 +163,8 @@ window.VRManager = (function() {
         fs.requestFullscreen({ vrDisplay: self.hmdDevice });
       } else if (fs.mozRequestFullScreen) {
         fs.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
-      } else if (fs.webkitRequestFullScreen) {
-        fs.webkitRequestFullScreen({ vrDisplay: self.hmdDevice });
+      } else if (fs.webkitRequestFullscreen) {
+        fs.webkitRequestFullscreen({ vrDisplay: self.hmdDevice });
       }
 
       // reserve pointer lock for the cursor.
@@ -222,7 +223,15 @@ window.VRManager = (function() {
     var self = this;
     self.vrReady.then(function () {
       console.log('zeroing sensor');
-      self.positionDevice.zeroSensor();
+
+      // reset sensor on UI
+      self.ui.controls.zeroSensor();
+
+      // reset sensor on vrtab content
+      if (self.currentDemo) {
+        self.currentDemo.zeroSensor();
+      }
+
     });
   };
 

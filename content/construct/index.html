@@ -49,7 +49,7 @@
 		var cursor;
 		var icons;
 		var iconsArray = [];
-		var userHeight = -1.75;
+		var userHeight = -1.65;
 
 
 		function init() {
@@ -78,9 +78,6 @@
 			window.addEventListener( 'resize', onWindowResize, false );
 
 
-			// handle render mode changes from VR client and set appropriate renderer and control for mode.
-			VRClient.onRenderModeChange = setRenderMode;
-
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
 				if (mode == modes.normal) {
@@ -105,6 +102,13 @@
 					cursor.setMode('centered');
 					cursor.show();
 				}
+			}
+			// handle render mode changes from VR client and set appropriate renderer and control for mode.
+			VRClient.onRenderModeChange = setRenderMode;
+
+			VRClient.onZeroSensor = function() {
+				console.log('sensor zero');
+				controls.zeroSensor();
 			}
 
 			VRClient.onBlur = function() {
@@ -179,6 +183,7 @@
 
 			// variables and setup
 
+			//camera.position.set( 0, -userHeight, 0 );
 			camera.position.set( 0, 0, 0 );
 			var loader = new THREE.ObjectLoader();
 
@@ -236,7 +241,7 @@
 			loader.load( 'models/frame-3.json', function ( object ) {
 
 				frame = object;
-				frame.position.set( 0, 0, -200 );
+				frame.position.set( 0, userHeight, -200 );
 				frame.traverse( function( obj ){
 					if ( obj.hasOwnProperty( "material" ) ){
 						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
@@ -254,7 +259,7 @@
 
 				wherever = object;
 				wherever.scale.set( 0.18, 0.18, 0.18 );
-				wherever.position.set( 0, 60, -200 );
+				wherever.position.set( 0, 60 + userHeight, -200 );
 				wherever.traverse( function( obj ){
 					if ( obj.hasOwnProperty( "material" ) ){
 						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
@@ -286,7 +291,7 @@
 
 				var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
 				reflection.material.side = THREE.BackSide;
-				reflection.position.y = 7.7 + userHeight;
+				reflection.position.y = 6.7 - userHeight;
 				reflection.scale.y = -1;
 				landscape.parent.add( reflection );
 				landscape.parent.position.y = -4 + userHeight;
@@ -592,7 +597,7 @@
 			var loader = new THREE.ObjectLoader();
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: 0.6,
+				y: 0.6 + userHeight,
 				z: -4.5
 			};
 			var iconBaseScale = 0.015;	// scale icons
@@ -604,7 +609,7 @@
 
 				// relative object positioning to iconBasePos.
 				var x = iconBasePos.x - 2.25,
-					y = iconBasePos.y + userHeight,
+					y = iconBasePos.y + 0,
 					z = iconBasePos.z - 1.5;
 
 				// create parent holder object
@@ -629,7 +634,7 @@
 
 				// relative object positioning to iconBasePos.
 				var x = iconBasePos.x + 0.5,
-					y = iconBasePos.y + userHeight,
+					y = iconBasePos.y + 0,
 					z = iconBasePos.z - 0;
 
 				// create parent holder object
@@ -654,7 +659,7 @@
 
 				// relative object positioning to iconBasePos.
 				var x = iconBasePos.x + 2,
-					y = iconBasePos.y + 0,y = iconBasePos.y + userHeight,
+					y = iconBasePos.y + 0,
 					z = iconBasePos.z - 3.25;
 
 				// create parent holder object

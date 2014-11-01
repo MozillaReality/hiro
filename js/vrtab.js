@@ -119,6 +119,13 @@ VRTab.prototype.focus = function() {
   });
 };
 
+VRTab.prototype.zeroSensor = function() {
+  var self = this;
+  this.loaded.then(function() {
+    self.sendMessage('onZeroSensor');
+  });
+}
+
 VRTab.prototype.onWindowResize = function () {
   // This triggers the resize event within the iframe when the parent window resizes
   var iframe = this.iframe;
