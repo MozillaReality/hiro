@@ -6,45 +6,82 @@ function VRTitle() {
 	this.d23 = null;
 
 	this.ready = new Promise(function(resolve, reject) {
-		self.d23 = new DOM2three('../data/title/index.json');
-		var d23 = self.d23;
 
-		d23.onload = function() {
-			var mesh = new THREE.Group();
+		var d23 = new DOM2three.load('../d23/title');
 
-			// title
-			var titleMesh = d23.getMesh('#site-title');
-			mesh.add( titleMesh );
+		d23.loaded
+			.then( function() {
+				var mesh = new THREE.Group();
 
-			// currently loaded site mesh
-			var siteMesh = self.makeSiteMesh();
-			self.siteMesh = siteMesh;
-			mesh.add( siteMesh );
+				// current site frame
+				var node = d23.getNodeById('current', true);
+				mesh.add(node.mesh);
+
+				// loaded site globe geo
+				// var siteMesh = self.makeSiteMesh();
+				// self.siteMesh = siteMesh;
+				// mesh.add( siteMesh );
+
+				// function curve(mesh) {
+				// 	console.log(mesh);
+				// }
+
+				// curve(node.mesh);
+
+				// position
+				mesh.position.set(0, 0.1, -2.5);
+				// mesh.scale.set(0.00001, 0.00001, 1);
+				// mesh.userData.scale = new THREE.Vector2(1,1);
+				mesh.visible = self.visible;
+
+				self.mesh = mesh;
+
+				if (self.visible) {
+					self.show();
+				}
+
+				self.d23 = d23;
+
+				resolve();
+			});
 
 
-			// get location in the HUD for where title should fit.
-			//var hudd23 = VRManager.ui.hud.d23;
-			//var hudRect = hudd23.getNode('#site-location').rectangle;
-			//var y = hudRect.y + (titleMesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
+		// d23.onload = function() {
+		// 	var mesh = new THREE.Group();
 
-			// loading indicator
-			//var loading = VRManager.ui.loading.mesh;
-			//loading.position.set(0, 0, -500);
+		// 	// title
+		// 	var titleMesh = d23.getMesh('#site-title');
+		// 	mesh.add( titleMesh );
 
-			// position
-			mesh.position.set(0, 0, -550);
-			mesh.scale.set(0.00001, 0.00001, 1);
-			mesh.userData.scale = new THREE.Vector2(1,1);
-			mesh.visible = self.visible;
+		// 	// currently loaded site mesh
+		// 	var siteMesh = self.makeSiteMesh();
+		// 	self.siteMesh = siteMesh;
+		// 	mesh.add( siteMesh );
 
-			self.mesh = mesh;
 
-			if (self.visible) {
-				self.show();
-			}
+		// 	// get location in the HUD for where title should fit.
+		// 	//var hudd23 = VRManager.ui.hud.d23;
+		// 	//var hudRect = hudd23.getNode('#site-location').rectangle;
+		// 	//var y = hudRect.y + (titleMesh.userData.item.rectangle.height / 2) - hudd23.centerOffsetY;
 
-			resolve();
-		};
+		// 	// loading indicator
+		// 	//var loading = VRManager.ui.loading.mesh;
+		// 	//loading.position.set(0, 0, -500);
+
+		// 	// position
+		// 	mesh.position.set(0, 0, -550);
+		// 	mesh.scale.set(0.00001, 0.00001, 1);
+		// 	mesh.userData.scale = new THREE.Vector2(1,1);
+		// 	mesh.visible = self.visible;
+
+		// 	self.mesh = mesh;
+
+		// 	if (self.visible) {
+		// 		self.show();
+		// 	}
+
+		// 	resolve();
+		// };
 	});
 
 	return this;
@@ -52,21 +89,21 @@ function VRTitle() {
 
 
 VRTitle.prototype.update = function() {
-	if (this.visible) {
-		this.siteMesh.rotation.y+=0.01;
-	}
+	// if (this.visible) {
+	// 	this.siteMesh.rotation.y+=0.01;
+	// }
 }
 
 /*
 mesh that represents the currently loaded site.
 This could be used as the 'favicon'
 */
-VRTitle.prototype.makeSiteMesh = function() {
-	var geometry = new THREE.IcosahedronGeometry( 70, 1 );
-  var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true, transparent: true, opacity: 1, side: THREE.DoubleSide } );
-  var mesh = new THREE.Mesh( geometry, material );
-  return mesh;
-}
+// VRTitle.prototype.makeSiteMesh = function() {
+// 	var geometry = new THREE.IcosahedronGeometry( 70, 1 );
+//   var material = new THREE.MeshBasicMaterial( { color: 0x00ffff, wireframe: true, transparent: true, opacity: 1, side: THREE.DoubleSide } );
+//   var mesh = new THREE.Mesh( geometry, material );
+//   return mesh;
+// }
 
 
 VRTitle.prototype.show = function() {
@@ -75,29 +112,32 @@ VRTitle.prototype.show = function() {
 		self.visible = true;
 		self.mesh.visible = true;
 
-		self.animateIn(self.mesh);
+		//self.animateIn(self.mesh);
 	}
 }
 
 VRTitle.prototype.hide = function() {
 	self = this;
-	var animDone = self.animateOut(self.mesh);
+	// var animDone = self.animateOut(self.mesh);
 
-	animDone.then(function() {
-		self.visible = false;
-		self.mesh.visible = false;
-		self.setAuthor('');
-	});
+	// animDone.then(function() {
+	// 	self.visible = false;
+	// 	self.mesh.visible = false;
+	// 	self.setAuthor('');
+	// });
 
-	return animDone;
+	self.visible = false;
+	self.mesh.visible = false;
+
+	// return animDone;
 };
 
 VRTitle.prototype.setAuthor = function(value) {
-	this.d23.setText('.authors', value);
+	// this.d23.setText('.authors', value);
 };
 
 VRTitle.prototype.setTitle = function(value) {
-	this.d23.setText('.title h1', value);
+	// this.d23.setText('.title h1', value);
 }
 
 VRTitle.prototype.animateOut = function(mesh) {
