@@ -38,9 +38,11 @@ function VRUi(container) {
 			self.scene.add(self.background());
 
 			// title
+			self.bend(self.title.mesh, 2.5, true)
 			self.scene.add(self.title.mesh);
 
 			// add hud layout to scene
+			self.bend(self.hud.layout, 2, false)
 			self.scene.add(self.hud.layout);
 
 			// loading progress
@@ -51,66 +53,64 @@ function VRUi(container) {
 
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
-			function bendVertices( mesh, amount, parent ) {
-				var vertices = mesh.geometry.vertices;
-
-				if (!parent) {
-					parent = mesh;
-				}
-
-				for (var i = 0; i < vertices.length; i++) {
-					var vertex = vertices[i];
-
-					// apply bend calculations on vertexes from world coordinates
-					parent.updateMatrixWorld();
-
-					var worldVertex = parent.localToWorld(vertex);
-
-					var worldX = Math.sin( worldVertex.x / amount) * amount;
-					var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
-					var worldY = worldVertex.y 	;
-
-					// convert world coordinates back into local object coordinates.
-					var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
-					vertex.x = localVertex.x;
-					vertex.z = localVertex.z;
-					vertex.y = localVertex.y;
-				};
-
-				mesh.geometry.computeBoundingSphere();
-				mesh.geometry.verticesNeedUpdate = true;
-			}
-
-			function bend( group, amount, multiMaterialObject ) {
-				for ( var i = 0; i < group.children.length; i ++ ) {
-					var element = group.children[ i ];
-
-					if (element.geometry.vertices) {
-						if (multiMaterialObject) {
-							bendVertices( element, amount, group);
-						} else {
-							bendVertices( element, amount);
-						}
-					}
-
-					// if (element.userData.position) {
-					// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-					// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-					// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
-					// }
-				}
-			}
-
-			bend(self.hud.layout, 2, false)
-
-			bend(self.title.mesh, 2.5, true)
-
 			// Once all this is loaded, kick off start from VR
 			// self.start();
 		});
 
 	return this;
 };
+
+
+VRUi.prototype.bend = function( group, amount, multiMaterialObject ) {
+	function bendVertices( mesh, amount, parent ) {
+		var vertices = mesh.geometry.vertices;
+
+		if (!parent) {
+			parent = mesh;
+		}
+
+		for (var i = 0; i < vertices.length; i++) {
+			var vertex = vertices[i];
+
+			// apply bend calculations on vertexes from world coordinates
+			parent.updateMatrixWorld();
+
+			var worldVertex = parent.localToWorld(vertex);
+
+			var worldX = Math.sin( worldVertex.x / amount) * amount;
+			var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
+			var worldY = worldVertex.y 	;
+
+			// convert world coordinates back into local object coordinates.
+			var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
+			vertex.x = localVertex.x;
+			vertex.z = localVertex.z;
+			vertex.y = localVertex.y;
+		};
+
+		mesh.geometry.computeBoundingSphere();
+		mesh.geometry.verticesNeedUpdate = true;
+	}
+
+
+	for ( var i = 0; i < group.children.length; i ++ ) {
+		var element = group.children[ i ];
+
+		if (element.geometry.vertices) {
+			if (multiMaterialObject) {
+				bendVertices( element, amount, group);
+			} else {
+				bendVertices( element, amount);
+			}
+		}
+
+		// if (element.userData.position) {
+		// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
+		// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
+		// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
+		// }
+	}
+}
 
 VRUi.prototype.background = function() {
 	/*
@@ -151,6 +151,8 @@ VRUi.prototype.load = function(url, opts) {
 
 			self.cursor.disable();
 
+			self.background.visible = false;
+
 			self.transition.fadeOut()
 				.then(function() {
 
@@ -178,8 +180,6 @@ VRUi.prototype.load = function(url, opts) {
 
 					function onTabReady() {
 						self.loading.hide();
-
-						self.background.visible = false;
 
 						self.transition.fadeIn();
 
@@ -365,12 +365,7 @@ VRUi.prototype.initKeyboardControls = function() {
  	var self = this;
 
   function onkey(event) {
-
-    // if (!(event.metaKey || event.altKey || event.ctrlKey)) {
-    //   event.preventDefault();
-    // }
-
-    //console.log(event.keyCode)
+   	//console.log(event.keyCode)
 
     switch (event.keyCode) {
       case 70: // f

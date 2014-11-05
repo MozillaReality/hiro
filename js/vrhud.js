@@ -50,33 +50,6 @@ function VRHud() {
 		self.makeLayout.call(self, meshNodes);
 	});
 
-
-		// var d23Loaded = d23.loaded
-		// 	.then( function(meshNodes) {
-		// 		self.makeLayout.call(self, meshNodes);
-
-		// 		resolve();
-		// 	});
-
-		// d23.onLoadComplete = function() {
-		//  	self.d23 = this;
-
-		// 	self.setBackground();
-
-		// 	self.makeHomeButtonMesh();
-
-			// self.makeLayout().then(function() {
-			// 	resolve();
-			// });
-
-		// 	self.makeLayout().then(function() {
-		// 		// var date = new Date;
-		// 		// self.d23.setText('.clock-time', date.getHours() + ':' + date.getMinutes());
-		// 		self.setInitial();
-		// 		resolve();
-		// 	});
-		//};
-
 	return this;
 };
 
@@ -258,52 +231,4 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 		resolve();
 	});
-	// var self = this;
-
-	// return new Promise( function(resolve, reject) {
-	// 	var layout = self.layout;
-	// 	var items = self.d23.getAllDisplayItems();
-
-	// 	self.hudItems = self.hudItems.concat(self.hudItems, items);
-
-	// 	for (var i = 0; i < items.length; i++) {
-	// 		var item = items[i];
-	// 		item.sound = new VRSound(['/sounds/click.mp3'],  275, 1);
-	// 		var mesh = self.d23.makeMesh(item);
-
-	// 		// make interactable if item has userData.url
-	// 		if (item.userData && item.userData.url) {
-	// 			mesh.addEventListener('mouseover', function(e) {
-	// 				var material = e.target.material;
-	// 				if (material) {
-	// 					material.color.set( 0x1796da );
-	// 					material.needsUpdate = true;
-	// 				}
-	// 			});
-
-	// 			mesh.addEventListener('mouseout', function(e) {
-	// 				var material = e.target.material;
-	// 				if (material) {
-	// 					material.color.set( 0xffffff );
-	// 					material.needsUpdate = true;
-	// 				}
-	// 			});
-
-	// 			mesh.addEventListener('click', function(e) {
-	// 				var item = e.target.userData.item;
-	// 				item.sound.play();
-	// 				VRManager.ui.load(item.userData.url, {
-	// 					author: item.userData.author,
-	// 					title: item.userData.title
-	// 				});
-	// 			});
-	// 		};
-
-	// 		layout.add( mesh );
-	// 	};
-
-
-
-	// 	resolve();
-	// });
 }
