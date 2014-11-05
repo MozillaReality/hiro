@@ -7,7 +7,7 @@ function VRTitle() {
 
 	this.ready = new Promise(function(resolve, reject) {
 
-		var d23 = new DOM2three.load('../d23/title');
+		var d23 = new DOM2three.load('d23/title');
 
 		d23.loaded
 			.then( function() {

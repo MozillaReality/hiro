@@ -27,7 +27,7 @@ function VRHud() {
 		})
 	};
 
-	var jsonLoaded = loadJson('../json/favorites.json')
+	var jsonLoaded = loadJson('json/favorites.json')
 		.then( function(response) {
 			return JSON.parse(response)
 		}, function(err) {
@@ -37,7 +37,7 @@ function VRHud() {
 			return parsed;
 		})
 
-	var d23 = new DOM2three.load('../d23/hud', {
+	var d23 = new DOM2three.load('d23/hud', {
 		makeMeshes: true
 	});
 	this.d23 = d23;
