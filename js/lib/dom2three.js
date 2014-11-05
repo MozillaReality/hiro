@@ -191,7 +191,8 @@ var DOM2three = (function() {
 				return false;
 			}
 
-			var geometry = new THREE.PlaneBufferGeometry( 1, 1, 5, 5 );
+			// var geometry = new THREE.PlaneBufferGeometry( 1, 1, 5, 5 );
+			var geometry = new THREE.PlaneGeometry( 1, 1, 10, 0 );
 
 			var rectangle = node.rectangle;
 
@@ -216,7 +217,10 @@ var DOM2three = (function() {
 			// create base texture material
 			var material = new THREE.MeshBasicMaterial({
 				map : texture,
-				transparent: true
+				transparent: true,
+				// depthTest: false,
+				// depthWrite: true
+				alphaTest: 0.1
 			});
 
 			materials.push(material);

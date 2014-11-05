@@ -29,7 +29,7 @@ function VRTitle() {
 				// curve(node.mesh);
 
 				// position
-				mesh.position.set(0, 0.1, -2.5);
+				mesh.position.set(0, 0.2, -2.5);
 				// mesh.scale.set(0.00001, 0.00001, 1);
 				// mesh.userData.scale = new THREE.Vector2(1,1);
 				mesh.visible = self.visible;

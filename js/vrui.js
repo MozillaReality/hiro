@@ -31,6 +31,12 @@ function VRUi(container) {
 
 	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
 		.then(function() {
+			// hud background
+			self.scene.add(self.background());
+
+			// title
+			self.scene.add(self.title.mesh);
+
 			// add hud layout to scene
 			self.scene.add(self.hud.layout);
 
@@ -44,8 +50,6 @@ function VRUi(container) {
 			self.scene.add(self.cursor.layout);
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
-			// title
-			self.scene.add(self.title.mesh);
 
 			// Once all this is loaded, kick off start from VR
 			// self.start();
@@ -53,6 +57,26 @@ function VRUi(container) {
 
 	return this;
 };
+
+VRUi.prototype.background = function() {
+	/*
+	create a sphere that wraps the user.   This should sit in-between the
+	HUD and the loaded content
+	*/
+	var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1, true );
+	var material = new THREE.MeshBasicMaterial({
+		color: 0x000000,
+		side: THREE.BackSide,
+		opacity: 0.5
+	});
+	var cylinder = new THREE.Mesh( geometry, material );
+	cylinder.visible = false;
+
+	this.background = cylinder;
+
+	return cylinder;
+}
+
 
 // temporary wireframe lines for context alignment
 VRUi.prototype.gridlines = function() {
@@ -120,12 +144,14 @@ VRUi.prototype.load = function(url, opts) {
 
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible) {
+		this.background.visible = true;
 		this.hud.show();
 		this.title.show();
 		this.cursor.enable();
 		console.log('showing HUD');
 		VRManager.currentDemo.blur();
 	} else {
+		this.background.visible = false;
 		this.hud.hide();
 		this.title.hide();
 		this.cursor.disable();
@@ -145,7 +171,8 @@ VRUi.modes = VRUi.prototype.modes = {
 };
 
 VRUi.prototype.initRenderer = function() {
-	this.renderer = new THREE.WebGLRenderer( { alpha: true } );
+	this.renderer = new THREE.WebGLRenderer({ alpha: true });
+	this.renderer.sortObjects = false;
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );

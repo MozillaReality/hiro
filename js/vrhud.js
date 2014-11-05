@@ -17,8 +17,6 @@ function VRHud() {
 
 		d23.loaded
 			.then( function(meshNodes) {
-				self.setBackground();
-
 				self.makeLayout.call(self, meshNodes);
 
 				resolve();
@@ -47,49 +45,37 @@ function VRHud() {
 	return this;
 };
 
-VRHud.prototype.makeHomeButtonMesh = function() {
-	var geometry = new THREE.IcosahedronGeometry( 30, 1 );
-  var material = new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 1, side: THREE.DoubleSide } );
-  var mesh = new THREE.Mesh( geometry, material );
-  mesh.position.y = -150;
-  mesh.position.z = -600;
+// VRHud.prototype.makeHomeButtonMesh = function() {
+// 	var geometry = new THREE.IcosahedronGeometry( 30, 1 );
+//   var material = new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 1, side: THREE.DoubleSide } );
+//   var mesh = new THREE.Mesh( geometry, material );
+//   mesh.position.y = -150;
+//   mesh.position.z = -600;
 
-  mesh.addEventListener('mouseover', function(e) {
-		var material = e.target.material;
-		if (material) {
-			material.color.set( 0xffff00 );
-			material.needsUpdate = true;
-		}
-	});
+//   mesh.addEventListener('mouseover', function(e) {
+// 		var material = e.target.material;
+// 		if (material) {
+// 			material.color.set( 0xffff00 );
+// 			material.needsUpdate = true;
+// 		}
+// 	});
 
-	mesh.addEventListener('mouseout', function(e) {
-		var material = e.target.material;
-		if (material) {
-			material.color.set( 0x00ffff );
-			material.needsUpdate = true;
-		}
-	});
+// 	mesh.addEventListener('mouseout', function(e) {
+// 		var material = e.target.material;
+// 		if (material) {
+// 			material.color.set( 0x00ffff );
+// 			material.needsUpdate = true;
+// 		}
+// 	});
 
-	mesh.addEventListener('click', function(e) {
-		VRManager.ui.goHome();
-	});
+// 	mesh.addEventListener('click', function(e) {
+// 		VRManager.ui.goHome();
+// 	});
 
-	this.homeButtonMesh = mesh;
+// 	this.homeButtonMesh = mesh;
 
-  this.layout.add(mesh);
-}
-
-VRHud.prototype.setBackground = function() {
-	/*
-	create a sphere that wraps the user.   This should sit in-between the
-	HUD and the loaded content
-	*/
-	var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1, true );
-	var material = new THREE.MeshBasicMaterial( {color: 0x000000, side: THREE.BackSide, transparent: true, opacity: 0.5 } );
-	var cylinder = new THREE.Mesh( geometry, material );
-	cylinder.renderDepth = 1;
-	this.layout.add( cylinder );
-}
+//   this.layout.add(mesh);
+// }
 
 VRHud.prototype.setInitial = function() {
 	var items = this.hudItems;
@@ -192,19 +178,50 @@ VRHud.prototype.makeLayout = function(nodes) {
 			layout.add( mesh );
 		});
 
+		function bendVertices( mesh, amount ) {
+			var vertices = mesh.geometry.vertices;
+
+			for (var i = 0; i < vertices.length; i++) {
+				var vertex = vertices[i];
+
+				// apply bend calculations on vertexes from world coordinates
+				mesh.updateMatrixWorld();
+
+				var worldVertex = mesh.localToWorld(vertex);
+
+				var worldX = Math.sin( worldVertex.x / amount) * amount;
+				var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
+				var worldY = worldVertex.y 	;
+
+				// convert world coordinates back into local object coordinates.
+				var localVertex = mesh.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
+				vertex.x = localVertex.x;
+				vertex.z = localVertex.z;
+				vertex.y = localVertex.y;
+			};
+
+			mesh.geometry.computeBoundingSphere();
+			mesh.geometry.verticesNeedUpdate = true;
+		}
+
 		function bend( group, amount ) {
 			var vector = new THREE.Vector3();
 			for ( var i = 0; i < group.children.length; i ++ ) {
 				var element = group.children[ i ];
 
-				if (element.userData.position) {
-					element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-					element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-					element.lookAt( vector.set( 0, element.position.y, 0 ) );
+				if (element.geometry.vertices) {
+					bendVertices( element, amount);
 				}
+
+				// if (element.userData.position) {
+				// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
+				// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
+				// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
+				// }
 			}
 		}
 
+		//layout.position.set(0,0,-2);
 		bend(layout, 2);
 
 		resolve();
