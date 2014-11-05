@@ -262,6 +262,7 @@ VRCursor.prototype.updatePositionCentered = function(headQuat) {
   var pivotQuat = new THREE.Quaternion();
   pivotQuat.multiply(headQuat);
   cursorPivot.setRotationFromQuaternion(pivotQuat);
+  cursorPivot.position.copy( this.camera.position )
 };
 
 // VRCursor.prototype.updatePositionInFOV = function(headQuat) {
