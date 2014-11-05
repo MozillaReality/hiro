@@ -11,11 +11,20 @@ function VRTitle() {
 
 		d23.loaded
 			.then( function() {
-				var mesh = new THREE.Group();
+				//var mesh = new THREE.Group();
 
 				// current site frame
 				var node = d23.getNodeById('current', true);
-				mesh.add(node.mesh);
+				var mesh = node.mesh;
+
+
+				d23.setText('current-title', 'TITLE OF SITE');
+
+				d23.setText('current-url', 'MOZVR.COM/TEST-URL');
+
+				d23.setText('current-credits', 'MR. DOOB, JOSH CARPENTER');
+
+				//mesh.add(node.mesh);
 
 				// loaded site globe geo
 				// var siteMesh = self.makeSiteMesh();
@@ -26,10 +35,12 @@ function VRTitle() {
 				// 	console.log(mesh);
 				// }
 
-				// curve(node.mesh);
+
+				//console.log(mesh);
+				//bend(mesh, 2);
 
 				// position
-				mesh.position.set(0, 0.2, -2.5);
+				//mesh.position.set(0, 0.2, -2.5);
 				// mesh.scale.set(0.00001, 0.00001, 1);
 				// mesh.userData.scale = new THREE.Vector2(1,1);
 				mesh.visible = self.visible;
@@ -118,6 +129,14 @@ VRTitle.prototype.show = function() {
 
 VRTitle.prototype.hide = function() {
 	self = this;
+
+	return new Promise(function(resolve) {
+		self.visible = false;
+		self.mesh.visible = false;
+
+		resolve();
+	});
+
 	// var animDone = self.animateOut(self.mesh);
 
 	// animDone.then(function() {
@@ -126,19 +145,22 @@ VRTitle.prototype.hide = function() {
 	// 	self.setAuthor('');
 	// });
 
-	self.visible = false;
-	self.mesh.visible = false;
 
 	// return animDone;
 };
 
-VRTitle.prototype.setAuthor = function(value) {
-	// this.d23.setText('.authors', value);
+VRTitle.prototype.setCredits = function(value) {
+	this.d23.setText('current-credits', value);
 };
 
 VRTitle.prototype.setTitle = function(value) {
-	// this.d23.setText('.title h1', value);
-}
+	this.d23.setText('current-title', value);
+};
+
+VRTitle.prototype.setUrl = function(value) {
+	this.d23.setText('current-url', value);
+};
+
 
 VRTitle.prototype.animateOut = function(mesh) {
 	return new Promise(function(resolve, reject) {

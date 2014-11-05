@@ -42,12 +42,12 @@ function VRCursor(mode) {
 
       // cursor mesh
       self.cursor = new THREE.Mesh(
-        new THREE.SphereGeometry( 0.5, 5, 5 ),
+        new THREE.SphereGeometry( 0.05, 5, 5 ),
         new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, side: THREE.DoubleSide } )
       );
 
       // set the depth of cursor
-      self.cursor.position.z = -28;
+      self.cursor.position.z = -2;
 
       self.cursorPivot.add(self.cursor);
 

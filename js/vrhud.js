@@ -10,17 +10,53 @@ function VRHud() {
 	this.homeButtonMesh = null;
 	this.d23 = null;
 
-	this.ready = new Promise( function(resolve, reject) {
-		var d23 = new DOM2three.load('../d23/hud', {
-			makeMeshes: true
-		});
+	function loadJson(url) {
+		return new Promise( function(resolve, reject) {
+			var xhr = new XMLHttpRequest();
 
-		d23.loaded
-			.then( function(meshNodes) {
-				self.makeLayout.call(self, meshNodes);
+			xhr.onload = function() {
+				resolve(xhr.response);
+			}
 
-				resolve();
-			});
+			xhr.onerror = function() {
+				reject(new Error('Some kind of network error, XHR failed.'))
+			}
+
+			xhr.open('GET', url);
+			xhr.send();
+		})
+	};
+
+	var jsonLoaded = loadJson('../json/favorites.json')
+		.then( function(response) {
+			return JSON.parse(response)
+		}, function(err) {
+			reject(new Error('Error parsing JSON ' + err));
+		})
+		.then ( function(parsed) {
+			return parsed;
+		})
+
+	var d23 = new DOM2three.load('../d23/hud', {
+		makeMeshes: true
+	});
+	this.d23 = d23;
+
+	this.ready = Promise.all([d23.loaded, jsonLoaded]).then(function(result) {
+		var meshNodes = result[0];
+		var favorites = result[1].favorites;
+
+		self.attachEvents.call(self, favorites);
+		self.makeLayout.call(self, meshNodes);
+	});
+
+
+		// var d23Loaded = d23.loaded
+		// 	.then( function(meshNodes) {
+		// 		self.makeLayout.call(self, meshNodes);
+
+		// 		resolve();
+		// 	});
 
 		// d23.onLoadComplete = function() {
 		//  	self.d23 = this;
@@ -40,7 +76,6 @@ function VRHud() {
 		// 		resolve();
 		// 	});
 		//};
-	});
 
 	return this;
 };
@@ -165,6 +200,47 @@ VRHud.prototype.animateScaleIn = function(items) {
 	})
 };
 
+VRHud.prototype.attachEvents = function(favorites) {
+	var d23 = this.d23;
+	favorites.forEach(function(favorite) {
+		var node = d23.getNodeById(favorite.id);
+
+		if (!node) {
+			console.error('No node with id ' + favorite.id);
+			return false;
+		}
+
+		var mesh = node.mesh;
+
+		mesh.addEventListener('mouseover', function(e) {
+			var material = e.target.material;
+			if (material) {
+				material.color.set(0x1796da);
+				material.needsUpdate = true;
+			}
+		});
+
+		mesh.addEventListener('mouseout', function(e) {
+			var material = e.target.material;
+			if (material) {
+				material.color.set(0xffffff);
+				material.needsUpdate = true;
+			}
+		});
+
+		(function(n, f) {
+			var mesh = n.mesh;
+			mesh.addEventListener('click', function(e) {
+				VRManager.ui.load(f.url, {
+					author: f.credits,
+					title: f.title
+				});
+			})
+		})(node, favorite);
+
+
+	});
+}
 
 VRHud.prototype.makeLayout = function(nodes) {
 	var self = this;
@@ -178,51 +254,7 @@ VRHud.prototype.makeLayout = function(nodes) {
 			layout.add( mesh );
 		});
 
-		function bendVertices( mesh, amount ) {
-			var vertices = mesh.geometry.vertices;
-
-			for (var i = 0; i < vertices.length; i++) {
-				var vertex = vertices[i];
-
-				// apply bend calculations on vertexes from world coordinates
-				mesh.updateMatrixWorld();
-
-				var worldVertex = mesh.localToWorld(vertex);
-
-				var worldX = Math.sin( worldVertex.x / amount) * amount;
-				var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
-				var worldY = worldVertex.y 	;
-
-				// convert world coordinates back into local object coordinates.
-				var localVertex = mesh.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
-				vertex.x = localVertex.x;
-				vertex.z = localVertex.z;
-				vertex.y = localVertex.y;
-			};
-
-			mesh.geometry.computeBoundingSphere();
-			mesh.geometry.verticesNeedUpdate = true;
-		}
-
-		function bend( group, amount ) {
-			var vector = new THREE.Vector3();
-			for ( var i = 0; i < group.children.length; i ++ ) {
-				var element = group.children[ i ];
-
-				if (element.geometry.vertices) {
-					bendVertices( element, amount);
-				}
-
-				// if (element.userData.position) {
-				// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-				// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-				// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
-				// }
-			}
-		}
-
-		//layout.position.set(0,0,-2);
-		bend(layout, 2);
+		layout.position.set(0, -0.15, 0);
 
 		resolve();
 	});

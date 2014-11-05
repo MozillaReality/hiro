@@ -31,6 +31,9 @@ function VRUi(container) {
 
 	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
 		.then(function() {
+			// add transition mesh to scene
+			self.scene.add(self.transition.object);
+
 			// hud background
 			self.scene.add(self.background());
 
@@ -40,16 +43,67 @@ function VRUi(container) {
 			// add hud layout to scene
 			self.scene.add(self.hud.layout);
 
-			// add transition mesh to scene
-			self.scene.add(self.transition.object);
-
 			// loading progress
 			self.scene.add(self.loading.mesh);
 
 			// add cursor to scene
 			self.scene.add(self.cursor.layout);
+
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
+			function bendVertices( mesh, amount, parent ) {
+				var vertices = mesh.geometry.vertices;
+
+				if (!parent) {
+					parent = mesh;
+				}
+
+				for (var i = 0; i < vertices.length; i++) {
+					var vertex = vertices[i];
+
+					// apply bend calculations on vertexes from world coordinates
+					parent.updateMatrixWorld();
+
+					var worldVertex = parent.localToWorld(vertex);
+
+					var worldX = Math.sin( worldVertex.x / amount) * amount;
+					var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
+					var worldY = worldVertex.y 	;
+
+					// convert world coordinates back into local object coordinates.
+					var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
+					vertex.x = localVertex.x;
+					vertex.z = localVertex.z;
+					vertex.y = localVertex.y;
+				};
+
+				mesh.geometry.computeBoundingSphere();
+				mesh.geometry.verticesNeedUpdate = true;
+			}
+
+			function bend( group, amount, multiMaterialObject ) {
+				for ( var i = 0; i < group.children.length; i ++ ) {
+					var element = group.children[ i ];
+
+					if (element.geometry.vertices) {
+						if (multiMaterialObject) {
+							bendVertices( element, amount, group);
+						} else {
+							bendVertices( element, amount);
+						}
+					}
+
+					// if (element.userData.position) {
+					// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
+					// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
+					// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
+					// }
+				}
+			}
+
+			bend(self.hud.layout, 2, false)
+
+			bend(self.title.mesh, 2.5, true)
 
 			// Once all this is loaded, kick off start from VR
 			// self.start();
@@ -67,6 +121,7 @@ VRUi.prototype.background = function() {
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
 		side: THREE.BackSide,
+		transparent: true,
 		opacity: 0.5
 	});
 	var cylinder = new THREE.Mesh( geometry, material );
@@ -99,12 +154,14 @@ VRUi.prototype.load = function(url, opts) {
 			self.transition.fadeOut()
 				.then(function() {
 
-					if (opts.title || opts.authors) {
+					if (opts.title || opts.credits) {
 						self.title.setTitle(opts.title);
-						self.title.setAuthor(opts.author);
+						self.title.setCredits(opts.credits);
+						self.title.setUrl(url);
 					} else {
 						self.title.setTitle('');
-						self.title.setAuthor(url);
+						self.title.setCredits('');
+						self.title.setUrl(url);
 					}
 
 					self.title.show();
@@ -122,6 +179,8 @@ VRUi.prototype.load = function(url, opts) {
 					function onTabReady() {
 						self.loading.hide();
 
+						self.background.visible = false;
+
 						self.transition.fadeIn();
 
 						// hide title after set amount of time
@@ -129,7 +188,8 @@ VRUi.prototype.load = function(url, opts) {
 							if (!self.hud.visible) {
 								self.title.hide().then(function() {
 									// console.log('hiding container');
-									// self.container.style.display = 'none';
+
+									self.container.style.display = 'none';
 								})
 							}
 						}, 3000);
@@ -145,6 +205,7 @@ VRUi.prototype.load = function(url, opts) {
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible) {
 		this.background.visible = true;
+		this.container.style.display = 'block';
 		this.hud.show();
 		this.title.show();
 		this.cursor.enable();
@@ -239,8 +300,8 @@ VRUi.prototype.goHome = function(noTransition) {
 	var home = this.home;
 
 	var opts = {
-		title: 'HOME',
-		author: '',
+		title: 'Home',
+		credits: 'mozvr.com',
 		hideLoading: true
 	}
 
@@ -249,11 +310,10 @@ VRUi.prototype.goHome = function(noTransition) {
 	if (noTransition) {
 		// skip transitions and titles, load content directly.
 		this.title.setTitle(opts.title);
-		this.title.setAuthor(opts.author);
-
+		this.title.setCredits(opts.author);
+		this.title.setUrl(this.homeUrl);
 		VRManager.load(this.homeUrl);
 	} else {
-
 		this.load(this.homeUrl, opts);
 	}
 }

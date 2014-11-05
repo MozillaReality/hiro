@@ -40,17 +40,20 @@ var DOM2three = (function() {
 
 					var style = window.getComputedStyle(node, null);
 
-					var cssText = style.fontVariant + ' ' +
+					var textStyle = style.fontVariant + ' ' +
 						style.fontWeight + ' ' +
 						style.fontSize + ' ' +
 						style.fontFamily;
 						// color
 						// alignment
+						// Formal syntax: [ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’> ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ] | caption | icon | menu | message-box | small-caption | status-bar
 
 					// clear text from node so that it doesn't rasterize to texture.
 					node.innerHTML = '&nbsp;';
 
-					nodeData.cssText = cssText;
+					nodeData.font = textStyle;
+
+					nodeData.color = style.color;
 
 					if (!node.dataset.hostmesh) {
 						console.error('Must specify a host mesh which text node will be part of.', node);
@@ -163,21 +166,26 @@ var DOM2three = (function() {
 				canvas.height = hostNode.rectangle.height;
 
 				var context = canvas.getContext('2d');
+				context.font = textNode.font;
+				context.fillStyle = textNode.color;
 
-				context.font = textNode.cssText;
+				var x = rectangle.x - hostNode.rectangle.x;
+				var y = rectangle.y - hostNode.rectangle.y + rectangle.height;
 
-				var x = hostNode.rectangle.x - rectangle.x;
-				var y = hostNode.rectangle.y - rectangle.y + hostNode.rectangle.height;
+				textNode.fontPosition = new THREE.Vector2(x, y);
 
-				context.fillText('Test TEXT', x, y);
+				// context.fillText(textNode.id + ' TEST abcjyz', x, y);
 
 				var texture = new THREE.Texture(canvas);
 				texture.needsUpdate = true;
 
 				var material = new THREE.MeshBasicMaterial({
 					map: texture,
-					transparent: true
+					transparent: true,
+					alphaTest: 0.3
 				});
+
+				textNode.texture = texture;
 
 				materials.push(material);
 			});
@@ -185,13 +193,12 @@ var DOM2three = (function() {
 			return materials;
 		};
 
-
 		function makeMesh(node) {
 			if (node.textNode) {
 				return false;
 			}
 
-			// var geometry = new THREE.PlaneBufferGeometry( 1, 1, 5, 5 );
+			//var geometry = new THREE.PlaneBufferGeometry( 1, 1, 10, 5 );
 			var geometry = new THREE.PlaneGeometry( 1, 1, 10, 0 );
 
 			var rectangle = node.rectangle;
@@ -218,14 +225,17 @@ var DOM2three = (function() {
 			var material = new THREE.MeshBasicMaterial({
 				map : texture,
 				transparent: true,
+				alphaTest: 0.1
+				// wireframe: true,
+				// color: Math.random()*0xffffff,
 				// depthTest: false,
 				// depthWrite: true
-				alphaTest: 0.1
+
 			});
 
 			materials.push(material);
 
-			// add canvas text materials if we have them
+			// create canvas text materials
 			var textNodes = getTextnodes(node.id);
 
 			if (textNodes.length > 0) {
@@ -233,6 +243,8 @@ var DOM2three = (function() {
 				canvasMaterials = createCanvasMaterials(textNodes, node);
 				materials = materials.concat(canvasMaterials);
 			}
+
+			materials.reverse();
 
 			// make mesh
 			var mesh;
@@ -284,6 +296,24 @@ var DOM2three = (function() {
 				}
 			}
 			return false;
+		};
+
+		this.setText = function(id, text) {
+			var node = self.getNodeById(id);
+
+			if (!node) {
+				console.error('no node found with the id ' + id);
+				return false;
+			}
+
+			var canvas = node.texture.image;
+			var context = canvas.getContext('2d');
+
+			context.clearRect(0, 0, canvas.width, canvas.height);
+
+			context.fillText(text, node.fontPosition.x, node.fontPosition.y);
+
+			node.texture.needsUpdate = true;
 		};
 
 		this.loaded = Promise.all([jsonLoaded, textureLoaded])

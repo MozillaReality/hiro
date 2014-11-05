@@ -1,0 +1,46 @@
+{
+  "favorites": [
+    {
+      "id": "next",
+      "title": "VR & The Web: Next Steps",
+      "credits": "Josh Carpenter\nVladimir Vukicevic",
+      "url": "http://mozvr.com/blog/vrweb"
+    },
+    {
+      "id": "Sechelt",
+      "title": "Sechelt",
+      "credits": "Josh Carpenter\nRicardo Cabello",
+      "url": "http://mozvr.github.io/sechelt"
+    },
+    {
+      "id": "polar",
+      "title": "Polar Sea",
+      "credits": "Deep Inc.\nELEVR",
+      "url": "http://mozvr.github.io/sechelt"
+    },
+    {
+      "id": "diving",
+      "title": "Information Diving",
+      "credits": "Tony Parisi, Eric Levin, Josh Carpenter",
+      "url": "http://mozvr.github.io/infodive/index2.html"
+    },
+    {
+      "id": "pano",
+      "title": "Panorama",
+      "credits": "Josh Carpenter",
+      "url": "http://mozvr.github.io/panorama-viewer"
+    },
+    {
+      "id": "leap",
+      "title": "Leap Motion",
+      "credits": "Leap Motion",
+      "url": "http://mozvr.github.io/sechelt"
+    },
+    {
+      "id": "elevr4",
+      "title": "ELEVR: Talk chat show EP.4",
+      "credits": "ELEVR",
+      "url": "http://mozvr.github.io/elevr4"
+    }
+  ]
+}
