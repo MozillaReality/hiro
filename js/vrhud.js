@@ -38,7 +38,8 @@ function VRHud() {
 		})
 
 	var d23 = new DOM2three.load('d23/hud', {
-		makeMeshes: true
+		makeMeshes: true,
+		pixelScale: 0.003
 	});
 	this.d23 = d23;
 
@@ -111,32 +112,30 @@ VRHud.prototype.show = function() {
 				var mesh = node.mesh;
 
 
-				mesh.scale.set(mesh.userData.scale.z * 0.75, mesh.userData.scale.z * 0.75, mesh.userData.scale.z);
+				mesh.position.set(mesh.userData.position.x, mesh.userData.position.y - 1, mesh.userData.position.z + 1);
+
+				var tween = new TWEEN.Tween( mesh.position )
+					.to({ x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.delay( i * 80 )
+					.start();
+
+				mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
 
 				var tween = new TWEEN.Tween( mesh.scale )
 					.to({ x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z}, 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
-					.delay( i * 50 )
+					.delay( i * 80 )
 					.start();
 
 				mesh.material.opacity = 0;
 
 				var tween = new TWEEN.Tween( mesh.material )
-					.to({ opacity: 1}, 500 )
+					.to({ opacity: 1}, 300 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
 			}
-
-			// if (VRManager.ui.isHome) {
-			// 	self.homeButtonMesh.visible = false;
-			// } else {
-			// 	self.homeButtonMesh.visible = true;
-			// }
-
-			// self.animateScaleIn(self.hudItems).then(function() {
-			// 	resolve();
-			// });
 
 			self.layout.visible = true;
 			self.visible = true;
@@ -150,15 +149,6 @@ VRHud.prototype.hide = function() {
 	var self = this;
 	return new Promise( function(resolve, reject) {
 		if (self.visible) {
-			// self.homeButtonMesh.visible = false;
-
-			// self.animateScaleOut(self.hudItems).then(function() {
-			// 	self.layout.visible = false;
-			// 	self.visible = false;
-			// 	resolve();
-			// });
-
-
 			var nodes = self.d23.getNodesByClass('fav');
 
 			nodes.reverse();
@@ -183,36 +173,6 @@ VRHud.prototype.hide = function() {
 			}
 		}
 	});
-};
-
-VRHud.prototype.animateScaleOut = function(items) {
-	return new Promise( function(resolve, reject) {
-		for (var i = 0; i < items.length; i++) {
-			var mesh = items[i].mesh;
-			var tween = new TWEEN.Tween( mesh.scale )
-				.to({ x: 0.00001, y: 0.00001 }, 500 )
-				.easing(TWEEN.Easing.Exponential.Out)
-				.onComplete(function() {
-					resolve();
-				})
-				.start();
-		}
-	});
-};
-
-VRHud.prototype.animateScaleIn = function(items) {
-	return new Promise( function(resolve, reject) {
-		for (var i = 0; i < items.length; i++) {
-			var mesh = items[i].mesh;
-			var tween = new TWEEN.Tween( mesh.scale )
-				.to(mesh.userData.scale, 500)
-				.easing(TWEEN.Easing.Quintic.Out)
-				.onComplete(function() {
-					resolve();
-				})
-				.start();
-		}
-	})
 };
 
 VRHud.prototype.attachEvents = function(favorites) {
@@ -272,13 +232,6 @@ VRHud.prototype.makeLayout = function(nodes) {
 			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
 
 			mesh.userData.scale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
-
-			// set initial positions
-			// var containsClass = node.classList['0'] == 'fav';
-			// if (containsClass) {
-			// }
-			//if (node.)
-
 
 			layout.add( mesh );
 		});

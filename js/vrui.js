@@ -122,7 +122,6 @@ VRUi.prototype.background = function() {
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
 		side: THREE.BackSide,
-		transparent: true,
 		opacity: 0.5
 	});
 

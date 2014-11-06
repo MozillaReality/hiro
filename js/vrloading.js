@@ -3,7 +3,7 @@ function VRLoading() {
 	self.visible = false;
 
 	var mesh = new THREE.Group();
-	mesh.position.z = -500;
+	mesh.position.z = -1;
 
 	var particles = [];
 	var particleCount = 10;
@@ -24,8 +24,8 @@ function VRLoading() {
 };
 
 VRLoading.prototype.makeParticle = function() {
-	var geometry = new THREE.SphereGeometry(5, 3, 2);
-	geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -80 ) );
+	var geometry = new THREE.SphereGeometry(0.02, 3, 2);
+	geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -1 ) );
 
 	var material = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.DoubleSide } );
 

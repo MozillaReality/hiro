@@ -109,6 +109,9 @@ var DOM2three = (function() {
 		// if set to true, create meshes for all nodes.
 		self.makeMeshes = self.opts.makeMeshes || false;
 
+		// sets pixel to three.js scene scale
+		self.pixelScale = self.opts.pixelScale || 1;
+
 		if (!path) {
 			console.error('must specify path to dom2three data');
 			return false;
@@ -180,8 +183,7 @@ var DOM2three = (function() {
 
 				var material = new THREE.MeshBasicMaterial({
 					map: texture,
-					transparent: true,
-					alphaTest: 0.1
+					transparent: true
 				});
 
 				textNode.texture = texture;
@@ -209,8 +211,8 @@ var DOM2three = (function() {
 			texture.offset.y = 1 - ((rectangle.y + rectangle.height) / texture.image.height);
 			texture.needsUpdate = true;
 
-			// adjusts the pixel to three.js units ratio.
-			var scale = 0.0035;
+			// pixel to three.js units scale.
+			var scale = self.pixelScale;
 
 			var centerOffsetX = texture.image.width / 2;
 			var centerOffsetY = texture.image.height / 2;
@@ -223,13 +225,7 @@ var DOM2three = (function() {
 			// create base texture material
 			var material = new THREE.MeshBasicMaterial({
 				map : texture,
-				transparent: true,
-				alphaTest: 0.1
-				// wireframe: true,
-				// color: Math.random()*0xffffff,
-				// depthTest: false,
-				// depthWrite: true
-
+				transparent: true
 			});
 
 			materials.push(material);
