@@ -273,7 +273,7 @@ var DOM2three = (function() {
 				})
 			.then( function(parsed) {
 					return parsed;
-				})
+				});
 
 		var textureLoaded = loadTexture(path + '/index.png')
 			.then( function(texture) {
@@ -281,7 +281,21 @@ var DOM2three = (function() {
 				})
 			.catch( function(err) {
 					console.error(err);
-				})
+				});
+
+		this.getNodesByClass = function(className) {
+			var nodes = this.nodes;
+			var collection = [];
+			for (var i = 0; i < nodes.length; i++) {
+				var node = nodes[i];
+
+				if (node.classList && node.classList[0] == className) {
+					collection.push(node);
+				}
+			}
+
+			return collection;
+		};
 
 		this.getNodeById = function(id, createMesh) {
 			var nodes = this.nodes;

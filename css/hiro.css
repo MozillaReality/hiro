@@ -20,10 +20,6 @@ body {
 
 /* containing element that will fullscreen will be called on */
 #container {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-
 }
 
 /* hide OS cursor in full-screen mode. */

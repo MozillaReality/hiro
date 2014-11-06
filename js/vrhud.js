@@ -98,10 +98,35 @@ function VRHud() {
 
 VRHud.prototype.show = function() {
 	var self = this;
+
 	return new Promise( function(resolve, reject) {
 		if (!self.visible) {
 			self.layout.visible = true;
 			self.visible = true;
+
+			var nodes = self.d23.getNodesByClass('fav');
+
+			for (var i = 0; i < nodes.length; i++) {
+				var node = nodes[i];
+				var mesh = node.mesh;
+
+
+				mesh.scale.set(mesh.userData.scale.z * 0.75, mesh.userData.scale.z * 0.75, mesh.userData.scale.z);
+
+				var tween = new TWEEN.Tween( mesh.scale )
+					.to({ x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z}, 500 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.delay( i * 50 )
+					.start();
+
+				mesh.material.opacity = 0;
+
+				var tween = new TWEEN.Tween( mesh.material )
+					.to({ opacity: 1}, 500 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.delay( i * 80 )
+					.start();
+			}
 
 			// if (VRManager.ui.isHome) {
 			// 	self.homeButtonMesh.visible = false;
@@ -133,12 +158,29 @@ VRHud.prototype.hide = function() {
 			// 	resolve();
 			// });
 
-			self.layout.visible = false;
-			self.visible = false;
 
-			resolve();
-		} else {
-			resolve();
+			var nodes = self.d23.getNodesByClass('fav');
+
+			nodes.reverse();
+
+			for (var i = 0; i < nodes.length; i++) {
+				var node = nodes[i];
+				var mesh = node.mesh;
+
+				mesh.material.opacity = 1;
+
+				var tween = new TWEEN.Tween( mesh.material )
+					.to({ opacity: 0 }, 500 )
+					.easing(TWEEN.Easing.Exponential.Out)
+					.delay( i * 80 )
+					.onComplete(function() {
+						self.layout.visible = false;
+						self.visible = false;
+						resolve();
+					})
+					.start();
+
+			}
 		}
 	});
 };
@@ -220,13 +262,23 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 	var layout = self.layout;
 
+	var favorites = [];
+	this.favorites = favorites;
+
 	return new Promise( function(resolve, reject) {
 		nodes.forEach( function(node) {
 			var mesh = node.mesh;
 			// persist the current position so we can use it later.
 			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
 
-			console.log(mesh);
+			mesh.userData.scale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+
+			// set initial positions
+			// var containsClass = node.classList['0'] == 'fav';
+			// if (containsClass) {
+			// }
+			//if (node.)
+
 
 			layout.add( mesh );
 		});

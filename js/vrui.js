@@ -118,19 +118,49 @@ VRUi.prototype.background = function() {
 	HUD and the loaded content
 	*/
 	var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1, true );
+
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
 		side: THREE.BackSide,
 		transparent: true,
 		opacity: 0.5
 	});
+
 	var cylinder = new THREE.Mesh( geometry, material );
 	cylinder.visible = false;
+	cylinder.scale.set(1, 0.0001, 1);
 
 	this.background = cylinder;
 
 	return cylinder;
 }
+
+VRUi.prototype.backgroundHide = function() {
+	var background = this.background;
+
+	var tween = new TWEEN.Tween( background.scale )
+		.to({ x: 1, y: 0.0001, z: 1 }, 500 )
+		.easing(TWEEN.Easing.Exponential.Out)
+		.onComplete(function() {
+			background.visible = false;
+		})
+		.start();
+};
+
+VRUi.prototype.backgroundShow = function() {
+	var background = this.background;
+	background.visible = true;
+
+	var tween = new TWEEN.Tween( background.scale )
+		.to({ x: 1, y: 1, z: 1 }, 500 )
+		.easing(TWEEN.Easing.Exponential.Out)
+		.onComplete(function() {
+
+		})
+		.start();
+};
+
+
 
 
 // temporary wireframe lines for context alignment
@@ -151,7 +181,7 @@ VRUi.prototype.load = function(url, opts) {
 
 			self.cursor.disable();
 
-			self.background.visible = false;
+			self.backgroundHide();
 
 			self.transition.fadeOut()
 				.then(function() {
@@ -187,9 +217,7 @@ VRUi.prototype.load = function(url, opts) {
 						setTimeout(function() {
 							if (!self.hud.visible) {
 								self.title.hide().then(function() {
-									// console.log('hiding container');
-
-									self.container.style.display = 'none';
+									// self.container.style.display = 'none';
 								})
 							}
 						}, 3000);
@@ -205,14 +233,14 @@ VRUi.prototype.load = function(url, opts) {
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible) {
 		this.background.visible = true;
-		this.container.style.display = 'block';
+		this.backgroundShow();
 		this.hud.show();
 		this.title.show();
 		this.cursor.enable();
 		console.log('showing HUD');
 		VRManager.currentDemo.blur();
 	} else {
-		this.background.visible = false;
+		this.backgroundHide();
 		this.hud.hide();
 		this.title.hide();
 		this.cursor.disable();
