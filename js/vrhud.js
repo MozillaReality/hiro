@@ -85,16 +85,16 @@ function VRHud() {
 //   this.layout.add(mesh);
 // }
 
-VRHud.prototype.setInitial = function() {
-	var items = this.hudItems;
-	if (!this.visible) {
-		// set scale of items to near 0 so that transitions playback properly from start.
-		for (var i = 0; i < items.length; i++) {
-			var mesh = items[i].mesh;
-			mesh.scale.set(0.00001, 0.00001, 1);
-		}
-	}
-};
+// VRHud.prototype.setInitial = function() {
+// 	var items = this.hudItems;
+// 	if (!this.visible) {
+// 		// set scale of items to near 0 so that transitions playback properly from start.
+// 		for (var i = 0; i < items.length; i++) {
+// 			var mesh = items[i].mesh;
+// 			mesh.scale.set(0.00001, 0.00001, 1);
+// 		}
+// 	}
+// };
 
 VRHud.prototype.show = function() {
 	var self = this;
@@ -223,6 +223,10 @@ VRHud.prototype.makeLayout = function(nodes) {
 	return new Promise( function(resolve, reject) {
 		nodes.forEach( function(node) {
 			var mesh = node.mesh;
+			// persist the current position so we can use it later.
+			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
+
+			console.log(mesh);
 
 			layout.add( mesh );
 		});
