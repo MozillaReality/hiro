@@ -59,8 +59,6 @@ VRTab.prototype.listenFor = function (type, handler) {
 
       console.log('message received: ' + e.data.type);
       handler(e.data);
-    } else {
-      console.log('not handled message: '+ e.data.type, e.data);
     }
   }
   self.handlers.push(handle);

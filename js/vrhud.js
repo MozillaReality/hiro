@@ -169,8 +169,10 @@ VRHud.prototype.hide = function() {
 						resolve();
 					})
 					.start();
-
 			}
+		} else {
+			// already hidden, so resolve.
+			resolve();
 		}
 	});
 };

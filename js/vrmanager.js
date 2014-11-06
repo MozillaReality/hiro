@@ -60,7 +60,6 @@ window.VRManager = (function() {
       }
       switch (msg.type) {
         case 'load':
-          // self.load(msg.data);
           self.ui.load(msg.data);
           break;
         case 'ready':
@@ -146,6 +145,7 @@ window.VRManager = (function() {
       // We'll do this elsewhere eventually
       newTab.start();
     });
+
     newTab.load();
   };
 
