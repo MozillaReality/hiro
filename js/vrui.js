@@ -216,7 +216,7 @@ VRUi.prototype.load = function(url, opts) {
 						setTimeout(function() {
 							if (!self.hud.visible) {
 								self.title.hide().then(function() {
-									self.container.style.display = 'none';
+									// self.container.style.display = 'none';
 								})
 							}
 						}, 3000);
