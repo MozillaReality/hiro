@@ -142,6 +142,383 @@
 
 
 
+
+
+
+
+		/*====================== Figure ======================*/
+
+		/* Fragment function */
+
+		function fragment( geometry, material ) {
+
+	    var group = new THREE.Group();
+
+	    for ( var i = 0; i < geometry.faces.length; i ++ ) {
+
+	      var face = geometry.faces[ i ];
+
+	      var vertexA = geometry.vertices[ face.a ].clone();
+	      var vertexB = geometry.vertices[ face.b ].clone();
+	      var vertexC = geometry.vertices[ face.c ].clone();
+
+	      var geometry2 = new THREE.Geometry();
+	      geometry2.vertices.push( vertexA, vertexB, vertexC );
+	      geometry2.faces.push( new THREE.Face3( 0, 1, 2 ) );
+
+	      var mesh = new THREE.Mesh( geometry2, material );
+	      mesh.position.sub( geometry2.center() );
+	      group.add( mesh );
+
+	    }
+	    return group;
+	  }
+
+
+	  function makeFigure() {
+
+			var figure = new THREE.Object3D();
+
+			var loader = new THREE.ObjectLoader();
+			loader.load( 'models/figure.json', function( object ){
+				
+
+				//scale down the model
+				var geometry = object.geometry;
+				geometry.verticesNeedUpdate = true;
+				geometry.applyMatrix( new THREE.Matrix4().makeScale( 0.02, 0.02, 0.02 ) );
+				
+				//could just import this as the mesh, instead of feeding the geometry and material into new mesh. Six of one, half dozen of the other.
+				var mesh = new THREE.Mesh( 
+					geometry, 
+					new THREE.MeshBasicMaterial( { color: 0xcccccc, transparent: true, opacity: 0.75 } )
+				);
+
+				figure.add( mesh );
+
+			});
+
+			return figure;
+
+		};
+
+
+	  function makeHUD() {
+
+	  	var hud = new THREE.Object3D();
+	  	var hudRadius = 0.08;
+		  var hudHeight = 0.04;
+		 
+		 	// make display
+		  var geometry = new THREE.CylinderGeometry( hudRadius, hudRadius, hudHeight, 46, 1, true );
+		  var material = new THREE.MeshBasicMaterial( { color: 0x666666, transparent: true, opacity: 0.1, side: THREE.DoubleSide } );
+		  var ui = new THREE.Mesh( geometry, material );
+		  hud.add( ui );
+
+		  // make top and bottom circles
+		  var material = new THREE.LineBasicMaterial( { color: 0x999999, linewidth: 1 } );
+		  var geometry = new THREE.CircleGeometry( hudRadius, 46 );
+		  geometry.vertices.shift(); // remove center vertex
+		  
+		  var line = new THREE.Line( geometry, material );
+		  line.position.set( 0, 0 - hudHeight / 2, 0 );
+		  line.rotation.set( Math.PI / 2, 0, 0 )
+		  hud.add( line );
+		  
+		  var line = new THREE.Line( geometry, material );
+		  line.position.set( 0, hudHeight / 2, 0 );
+		  line.rotation.set( Math.PI / 2, 0, 0 )
+		  hud.add( line );
+
+		  return hud;
+
+	  }
+
+	  function makePortal(){
+
+	  	var material = new THREE.LineBasicMaterial( { color: 0xb3b3b3, transparent: true, linewidth: 1 } );
+		  var geometry = new THREE.CircleGeometry( 0.08, 46 );
+		  geometry.vertices.shift(); // remove center vertex
+		  
+		  var line = new THREE.Line( geometry, material );
+		  line.rotation.set( Math.PI / 2, 0, 0 )
+
+		  return line;
+
+	  }
+
+
+	  function makeGlobe() {
+
+			//THREE.SphereGeometry( radius, segmentsWidth, segmentsHeight, 		phiStart, phiLength, thetaStart, thetaLength );
+			//var geometry = new THREE.IcosahedronGeometry( 0.25, 2 );
+			var geometry = new THREE.SphereGeometry( 0.25, 8, 12, Math.PI, Math.PI, 0, Math.PI );
+			var material = new THREE.MeshBasicMaterial( { color: 0xcccccc, transparent: true, wireframe: true, opacity: 1, side: THREE.BackSide } );
+
+			var globe = fragment( geometry, material ) // fragment geometry
+
+			globe.children.sort( function ( a, b ) { //sort the pieces
+
+				//return b.position.z - a.position.z;
+				//return a.position.x - b.position.x;    // sort x
+				return b.position.y - a.position.y;   // sort y
+
+			} );
+			
+			return globe;
+
+	  }
+
+
+	  function makeBackground() {
+
+			//THREE.SphereGeometry( radius, segmentsWidth, segmentsHeight, 		phiStart, phiLength, thetaStart, thetaLength );
+			var geometry = new THREE.IcosahedronGeometry( 3, 2 );
+			//var geometry = new THREE.SphereGeometry( 3, 8, 12, Math.PI, Math.PI, 0, Math.PI );
+			var material = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, wireframe: false, opacity: 1, side: THREE.BackSide } );
+
+			var globe = fragment( geometry, material ) // fragment geometry
+
+			globe.children.sort( function ( a, b ) { //sort the pieces
+
+				//return b.position.z - a.position.z;
+				//return a.position.x - b.position.x;    // sort x
+				return b.position.y - a.position.y;   // sort y
+
+			} );
+			
+			return globe;
+
+	  }
+
+
+		function makeDarkBG() {
+
+			var geometry = new THREE.SphereGeometry( 0.8, 16, 16 );
+			var material = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, opacity: 0, side: THREE.BackSide } );
+			var mesh = new THREE.Mesh( geometry, material );
+			
+			return mesh ;
+
+		}
+
+		function makeOutline() {
+
+			var material = new THREE.LineBasicMaterial( { color: 0x666666, transparent: true, opacity: 0, linewidth: 3 } );
+		  var geometry = new THREE.CircleGeometry( 0.25, 46 );
+		  geometry.vertices.shift(); // remove center vertex
+		  var line = new THREE.Line( geometry, material );
+
+		  return line;
+		}
+
+
+		function makeMask() {
+
+			var mask = new THREE.Mesh(
+	  		new THREE.BoxGeometry( 0.4, 0.4, 0.4 ),
+	  		new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, transparent: true, opacity: 1 } )
+	  	);
+
+	  	return mask;
+
+		}
+
+
+	  function makeTutorial() {
+
+	  	var tutorial = new THREE.Object3D();
+	  	scene.add( tutorial );
+	  	var diagram = new THREE.Object3D();
+	  	
+	  	var hud = makeHUD();
+	  	var figure = makeFigure();
+	  	var portal = makePortal();
+	  	var globe = makeGlobe();
+	  	var bg = makeDarkBG();
+	  	var background = makeBackground();
+	  	var mask = makeMask();
+	  	var outline = makeOutline();
+
+	  	figure.add( hud );
+	  	diagram.add( globe );
+	  	diagram.add( figure );
+	  	diagram.add( portal );
+	  	diagram.add( outline );
+	  	tutorial.add( diagram );
+	  	diagram.add( mask );
+	  	//tutorial.add( bg );
+	  	tutorial.add( background );
+
+	  	//set initial states
+
+			diagram.position.set( 0, 0, -1 );
+			hud.visible = true;
+			hud.position.set( 0, 0.33, 0 );
+			globe.visible = false;
+			figure.visible = false;
+			figure.position.set( 0, -0.6, 0 );
+			portal.visible = false;
+			portal.position.set( 0, -0.195, 0 );
+			portal.scale.set( 0.01, 0.01, 0.01 );
+			mask.position.set( 0, -0.4, 0 );
+			outline.position.set( 0, 0, 0.005 );
+
+	  	//animate in
+
+	  	function openTutorial() {
+
+	  		//open portal
+
+	  		portal.visible = true;
+	  		new TWEEN.Tween( portal.scale )
+	  			.to( { x:1, y:1, z:1 }, 700 )
+	  			.easing( TWEEN.Easing.Quadratic.Out )
+	  			.onComplete( function(){
+
+			  		new TWEEN.Tween( portal.material )
+			  			.to( { opacity:0 }, 700 )
+			  			.delay( 2000 )
+			  			.start();
+
+	  			} )
+	  			.start();
+
+				// reveal figure
+
+				figure.visible = true;
+				figure.rotation.set( 0, 0 - Math.PI, 0 );
+
+				new TWEEN.Tween( figure.position )
+					.to( { y: -0.18 }, 2500 )
+					.delay( 200 )
+					.easing( TWEEN.Easing.Quadratic.InOut )
+					.start();
+
+    		new TWEEN.Tween( figure.rotation )
+					.to( { y: 0 }, 2500 )
+					.delay( 200 )
+		   		.easing( TWEEN.Easing.Quadratic.InOut )
+		   		.onComplete( function(){
+		   			mask.visible = false;
+		   		} )
+					.start();
+
+				new TWEEN.Tween( mask.position )
+					.to( { y: -0.45 }, 1000 )
+					.delay( 900 )
+					.start();
+
+				// reveal outline
+
+				//outline.material.opacity = 0;
+			  new TWEEN.Tween( outline.material )
+			  	.to( { opacity: 1 }, 500 )
+			  	.delay( 1500 )
+			  	.start();
+
+				// reveal globe
+
+				globe.visible = true;
+				for ( var i = 0; i < globe.children.length; i ++ ) {
+
+				  var object = globe.children[i];
+				  var delay = 2200 + i * 10;
+
+				  // var destY = object.position.y;
+				  // object.position.setY( destY + 0.1 );
+				  // new TWEEN.Tween( object.position )
+				  //   .to( { y: destY  }, 1000 )
+				  //   .delay( delay )
+				  //  	.easing( TWEEN.Easing.Cubic.Out )
+				  //   .start();
+				  
+				  object.scale.set( 0.01, 0.01, 0.01 )
+				  new TWEEN.Tween( object.scale )
+				    .to( { x:1, y:1, z:1 }, 500 )
+				    .delay( delay )
+				    .start();
+
+			  }
+
+				// reveal hud
+
+				hud.visible = true;
+		  	hud.scale.set( 0.01, 0.01, 0.01 );
+				new TWEEN.Tween( hud.scale )
+					.to( { y:1 }, 2000 )
+					.delay( 3000 )
+		   		.easing( TWEEN.Easing.Cubic.Out )
+					.start();
+
+				new TWEEN.Tween( hud.scale )
+					.to( { x:1, z:1 }, 1000 )
+					.delay( 3000 )
+		   		.easing( TWEEN.Easing.Cubic.Out )
+		   		.onComplete( function(){
+
+		   			animateOutBackground()
+
+		   		} )
+					.start();
+
+
+				// background
+
+			  function animateOutBackground() {
+
+			  	/*
+			  	new TWEEN.Tween( diagram.scale )
+			  		.to( { x:0.01, y:0.01, z:0.01 }, 2000 )
+			  		.onComplete( function(){
+
+			  			diagram.visible = false;
+
+			  		} )
+			  		//.start();
+					*/
+
+					for ( var i = 0; i < background.children.length; i ++ ) {
+
+					  var object = background.children[i];
+					  var delay = 200 + i * 7;
+
+					  var destZ = object.position.z;
+					  object.position.setZ( destZ + 0.2 );
+
+					  /*
+					  new TWEEN.Tween( object.position )
+					    .to( { z: destZ  }, 1000 )
+					    .delay( delay )
+					   	//.easing( TWEEN.Easing.Cubic.Out )
+					    .start();
+					  */
+					  
+					  new TWEEN.Tween( object.scale )
+					    .to( { x:0.01, y:0.01, z:0.01 }, 3000 )
+					    .delay( delay )
+					    //.easing( TWEEN.Easing.Cubic.Out )
+					    .start();
+				  }
+				}
+
+	  	}
+
+	  	var timeoutID = window.setTimeout( openTutorial, 500 );
+
+	  }	
+
+
+
+
+
+
+
+
+
+
+
+
 		/*====================== Make scene ======================*/
 
 		function makeMockupCylinder(){
@@ -169,22 +546,16 @@
 
 		function makeSky() {
 
-			/* Old */
-			/*
 			var geometry = new THREE.SphereGeometry( 1000 , 60, 40 );
 			geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
-			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
+			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ), depthTest: true } );
 			var sky = new THREE.Mesh( geometry, material );
 			scene.add( sky );
-			*/
+			
 		}
 
-		function makeScene() {
+		function makeSechelt() {
 
-			// variables and setup
-
-			//camera.position.set( 0, -userHeight, 0 );
-			camera.position.set( 0, 0, 0 );
 			var loader = new THREE.ObjectLoader();
 
 			// sky
@@ -234,41 +605,6 @@
 
 			scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
 
-			// frame
-
-			var frame;
-
-			loader.load( 'models/frame-3.json', function ( object ) {
-
-				frame = object;
-				frame.position.set( 0, userHeight, -200 );
-				frame.traverse( function( obj ){
-					if ( obj.hasOwnProperty( "material" ) ){
-						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-					}
-				});
-				scene.add( frame );
-
-			});
-
-			// cover story
-
-			var wherever;
-
-			loader.load( 'models/wherever.json', function ( object ) {
-
-				wherever = object;
-				wherever.scale.set( 0.18, 0.18, 0.18 );
-				wherever.position.set( 0, 60 + userHeight, -200 );
-				wherever.traverse( function( obj ){
-					if ( obj.hasOwnProperty( "material" ) ){
-						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-					}
-				});
-				scene.add( wherever );
-
-			});
-
 			// water
 
 			var geometry = new THREE.PlaneBufferGeometry( 100000, 100000 );
@@ -299,6 +635,51 @@
 				scene.add( object );
 
 			} );
+
+		}
+
+		function makeLayout() {
+
+			// variables and setup
+
+			//camera.position.set( 0, -userHeight, 0 );
+			camera.position.set( 0, 0, 0 );
+			
+			// frame
+
+			var frame;
+
+			var loader = new THREE.ObjectLoader();
+			loader.load( 'models/frame-3.json', function ( object ) {
+
+				frame = object;
+				frame.position.set( 0, userHeight, -200 );
+				frame.traverse( function( obj ){
+					if ( obj.hasOwnProperty( "material" ) ){
+						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+					}
+				});
+				scene.add( frame );
+
+			});
+
+			// cover story
+
+			var wherever;
+
+			loader.load( 'models/wherever.json', function ( object ) {
+
+				wherever = object;
+				wherever.scale.set( 0.18, 0.18, 0.18 );
+				wherever.position.set( 0, 60 + userHeight, -200 );
+				wherever.traverse( function( obj ){
+					if ( obj.hasOwnProperty( "material" ) ){
+						obj.material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+					}
+				});
+				scene.add( wherever );
+
+			});
 
 		}
 
@@ -476,26 +857,26 @@
 				leap: {
 					tex: 'images/txt-leap.png',
 					url: 'http://mozvr.github.io/sechelt',
-					position: { x:-3.25, y:2+userHeight, z:-4 },
-					rotation: { x:0, y:0.6, z:0 }
+					position: { x:-3.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 				interview: {
 					tex: 'images/txt-interview.png',
 					url: 'http://mozvr.github.io/polarsea/',
-					position: { x:-3.25, y:3.25+userHeight, z:-4 },
-					rotation: { x:0, y:0.6, z:0 }
+					position: { x:-1.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 				panorama: {
 					tex: 'images/txt-panorama.png',
 					url: 'http://mozvr.github.io/sechelt',
-					position: { x:3.25, y:2+userHeight, z:-4 },
-					rotation: { x:0, y:-0.6, z:0 }
+					position: { x:1.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 				futureofthevrweb: {
 					tex: 'images/txt-futureofthevrweb.png',
 					url: 'http://mozvr.github.io/polarsea/',
-					position: { x:3.25, y:3.25+userHeight, z:-4 },
-					rotation: { x:0, y:-0.6, z:0 }
+					position: { x:3.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 			}
 
@@ -608,7 +989,7 @@
 			loader.load( icons.sechelt.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x - 2.25,
+				var x = iconBasePos.x - 3.5,
 					y = iconBasePos.y + 0,
 					z = iconBasePos.z - 1.5;
 
@@ -633,9 +1014,9 @@
 			loader.load( icons.polar.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 0.5,
+				var x = iconBasePos.x + 0,
 					y = iconBasePos.y + 0,
-					z = iconBasePos.z - 0;
+					z = iconBasePos.z - 1.5;
 
 				// create parent holder object
 				var holder = makeIconHolder( icons.polar.url );
@@ -658,9 +1039,9 @@
 			loader.load( icons.dive.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 2,
+				var x = iconBasePos.x + 3.5,
 					y = iconBasePos.y + 0,
-					z = iconBasePos.z - 3.25;
+					z = iconBasePos.z - 1.5;
 
 				// create parent holder object
 				var holder = makeIconHolder( icons.sechelt.url );
@@ -825,15 +1206,13 @@
 		}
 
 		init();
-
 		//makeMockupCylinder();
-
-		makeScene();
-
-		populateLinks();
-
-		populateIcons();
-
+		makeTutorial();
+		//makeLayout();
+		//makeSechelt();
+		//populateLinks();
+		//populateIcons();
+		makeSky();
 		animate();
 
 	</script>

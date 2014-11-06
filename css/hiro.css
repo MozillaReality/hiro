@@ -54,7 +54,7 @@ body {
   width: 100%;
   height: 4.5rem;
   bottom: 0px;
-  background-color: rgba( 0, 0, 0, 0.4);
+  background-color: rgba( 40, 40, 40, 1);
 }
 
 #navigation > div {
@@ -67,7 +67,29 @@ body {
   background-size: 85%;
   width: 155px;
   height: 100%;
+  left: 44%;
+  position: absolute;
   font-size: 0px;
+}
+
+#viewing {
+  text-transform: uppercase;
+  color: rgba( 255, 255, 255, 0.7 );
+  font-size: 0.8rem;
+  padding-right: 1rem;
+}
+
+#links a {
+  color: rgba( 255, 255, 255, 0.8 );
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.9em;
+  padding: 0.5em;
+}
+
+#links a:hover {
+  color: rgba( 255, 255, 255, 1 );
+  background: rgba( 194, 25, 131, 0.25 );
 }
 
 .flat-list {
@@ -82,7 +104,6 @@ body {
   display: table-cell;
   vertical-align: middle;
 }
-
 
 .button-wire-small {
   color: rgba( 255, 255, 255, 1 );
@@ -105,25 +126,6 @@ body {
 .button-wire-small:hover {
   border: 1px solid transparent;
   background: rgba( 0,0,0, 0.25 );
-}
-
-#viewing {
-  text-transform: uppercase;
-  color: rgba( 255, 255, 255, 0.8 );
-  font-size: 0.8rem;
-  padding-right: 1rem;
-}
-
-#links a {
-  color: rgba( 255, 255, 255, 0.8 );
-  text-decoration: none;
-  font-weight: 400;
-  padding: 0.5em;
-}
-
-#links a:hover {
-  color: rgba( 255, 255, 255, 1 );
-  background: rgba( 194, 25, 131, 0.25 );
 }
 
 .status {
