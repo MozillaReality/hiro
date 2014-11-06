@@ -115,6 +115,7 @@ window.VRClient = (function() {
   };
 
   VRClient.prototype.load = function (url) {
+    console.log('vrclient load'+url);
     this.sendMessage('load', url);
   };
 

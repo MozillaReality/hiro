@@ -71,7 +71,7 @@
 				cursor.enable();
 			});
 
-			setRenderMode(VRClient.renderModes.normal);
+			setRenderMode(VRClient.renderModes.mono);
 
 			effect.setSize( window.innerWidth, window.innerHeight );
 
@@ -80,7 +80,7 @@
 
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
-				if (mode == modes.normal) {
+				if (mode == modes.mono) {
 					console.log('Mono mode');
 					controls = new THREE.VRControls( camera );
 					effect = renderer;
@@ -102,7 +102,10 @@
 					cursor.setMode('centered');
 					cursor.show();
 				}
+
+				effect.setSize( window.innerWidth, window.innerHeight );
 			}
+
 			// handle render mode changes from VR client and set appropriate renderer and control for mode.
 			VRClient.onRenderModeChange = setRenderMode;
 
@@ -129,8 +132,6 @@
 			// Announce to Javris that everything is ready to go and we can reveal content.
 			VRClient.ready();
 		}
-
-
 
 
 
@@ -529,7 +530,6 @@
 			)
 
 			holder.addEventListener('click', function() {
-				console.log('clicked holder');
 				VRClient.load( url );
 				console.log( url );
 			});

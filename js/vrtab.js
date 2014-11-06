@@ -50,7 +50,7 @@ VRTab.prototype.listenFor = function (type, handler) {
     because of cross domain security, we cannot reliably access the iframe href.
     */
 
-    //var href = self.iframe.contentWindow.location.href;
+    // var href = self.iframe.contentWindow.location.href;
     // if (e.source.location.href === href &&
     //     e.data.type === type) {
 
@@ -59,6 +59,8 @@ VRTab.prototype.listenFor = function (type, handler) {
 
       console.log('message received: ' + e.data.type);
       handler(e.data);
+    } else {
+      console.log('not handled message: '+ e.data.type, e.data);
     }
   }
   self.handlers.push(handle);

@@ -44,6 +44,9 @@ window.VRClient = (function() {
       if (!msg.type) {
         return;
       }
+
+      //console.log('message received ', msg.type, msg.data);
+
       switch (msg.type) {
         case 'start':
           self.startDemo();
