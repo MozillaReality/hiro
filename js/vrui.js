@@ -11,7 +11,7 @@ VRUi
 function VRUi(container) {
 	var self = this;
 
-	this.homeUrl = 'content/construct/index.html';
+	this.homeUrl = 'content/landing/index.html';
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
