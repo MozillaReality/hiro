@@ -225,7 +225,8 @@ var DOM2three = (function() {
 			// create base texture material
 			var material = new THREE.MeshBasicMaterial({
 				map : texture,
-				transparent: true
+				transparent: true,
+				alphaTest: 0.1
 			});
 
 			materials.push(material);

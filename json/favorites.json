@@ -34,13 +34,13 @@
       "id": "leap",
       "title": "Leap Motion",
       "credits": "Leap Motion",
-      "url": "content/construct/index.html"
+      "url": "http://pehrlich.github.io/VRCollage"
     },
     {
       "id": "elevr4",
       "title": "ELEVR: Talk chat show EP.4",
       "credits": "ELEVR",
-      "url": "http://mozvr.github.io/elevr4"
+      "url": "content/construct/index.html"
     }
   ]
 }

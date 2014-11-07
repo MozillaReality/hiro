@@ -54,48 +54,6 @@ function VRHud() {
 	return this;
 };
 
-// VRHud.prototype.makeHomeButtonMesh = function() {
-// 	var geometry = new THREE.IcosahedronGeometry( 30, 1 );
-//   var material = new THREE.MeshBasicMaterial( { color: 0xffffff, opacity: 1, side: THREE.DoubleSide } );
-//   var mesh = new THREE.Mesh( geometry, material );
-//   mesh.position.y = -150;
-//   mesh.position.z = -600;
-
-//   mesh.addEventListener('mouseover', function(e) {
-// 		var material = e.target.material;
-// 		if (material) {
-// 			material.color.set( 0xffff00 );
-// 			material.needsUpdate = true;
-// 		}
-// 	});
-
-// 	mesh.addEventListener('mouseout', function(e) {
-// 		var material = e.target.material;
-// 		if (material) {
-// 			material.color.set( 0x00ffff );
-// 			material.needsUpdate = true;
-// 		}
-// 	});
-
-// 	mesh.addEventListener('click', function(e) {
-// 		VRManager.ui.goHome();
-// 	});
-
-// 	this.homeButtonMesh = mesh;
-
-//   this.layout.add(mesh);
-// }
-
-// VRHud.prototype.setInitial = function() {
-// 	var items = this.hudItems;
-// 	if (!this.visible) {
-// 		// set scale of items to near 0 so that transitions playback properly from start.
-// 		for (var i = 0; i < items.length; i++) {
-// 			var mesh = items[i].mesh;
-// 			mesh.scale.set(0.00001, 0.00001, 1);
-// 		}
-// 	}
-// };
 
 VRHud.prototype.show = function() {
 	var self = this;
@@ -190,19 +148,64 @@ VRHud.prototype.attachEvents = function(favorites) {
 		var mesh = node.mesh;
 
 		mesh.addEventListener('mouseover', function(e) {
-			var material = e.target.material;
-			if (material) {
-				material.color.set(0x1796da);
-				material.needsUpdate = true;
+			var mesh = e.target;
+
+			for (var i = 0; i < favorites.length; i++) {
+				var m = d23.getNodeById(favorites[i].id).mesh;
+
+				if (m == mesh) {
+					// var tween = new TWEEN.Tween( m.position )
+					// 	.to({ z: m.userData.position.z + 0.1 }, 500 )
+					// 	.easing(TWEEN.Easing.Exponential.Out)
+					// 	.start();
+				} else {
+					var material = m.material;
+					var tween = new TWEEN.Tween( material.color )
+						.to({ r: 0.8, g: 0.8, b: 0.8 }, 500 )
+						.easing(TWEEN.Easing.Exponential.Out)
+						.start();
+				}
+
 			}
+			//mesh.position.z -= 0.5;
+			// var tween = new TWEEN.Tween( mesh.material )
+			// 	.to({ opacity: 0 }, 500 )
+			// 	.easing(TWEEN.Easing.Exponential.Out)
+			// 	.delay( i * 80 )
+			// 	.onComplete(function() {
+			// 		self.layout.visible = false;
+			// 		self.visible = false;
+			// 		resolve();
+			// 	})
+			// 	.start();
+
+			// var material = e.target.material;
+			// if (material) {
+			// 	material.color.set(0x1796da);
+			// 	material.needsUpdate = true;
+			// }
 		});
 
 		mesh.addEventListener('mouseout', function(e) {
-			var material = e.target.material;
-			if (material) {
-				material.color.set(0xffffff);
-				material.needsUpdate = true;
+			var mesh = e.target;
+			for (var i = 0; i < favorites.length; i++) {
+				var m = d23.getNodeById(favorites[i].id).mesh;
+
+				if (m == mesh) {
+					// var tween = new TWEEN.Tween( m.position )
+					// 	.to({ z: m.userData.position.z }, 500 )
+					// 	.easing(TWEEN.Easing.Exponential.Out)
+					// 	.start();
+				} else {
+					var material = m.material;
+					var tween = new TWEEN.Tween( material.color )
+						.to({ r: 1, g: 1, b: 1 }, 500 )
+						.easing(TWEEN.Easing.Exponential.Out)
+						.start();
+				}
+
 			}
+
 		});
 
 		(function(n, f) {

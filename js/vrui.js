@@ -117,7 +117,8 @@ VRUi.prototype.background = function() {
 	create a sphere that wraps the user.   This should sit in-between the
 	HUD and the loaded content
 	*/
-	var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1, true );
+	//var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1 );
+	var geometry = new THREE.SphereGeometry( 3 );
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
@@ -125,20 +126,19 @@ VRUi.prototype.background = function() {
 		opacity: 0.5
 	});
 
-	var cylinder = new THREE.Mesh( geometry, material );
-	cylinder.visible = false;
-	cylinder.scale.set(1, 0.0001, 1);
+	var background = new THREE.Mesh( geometry, material );
+	background.visible = false;
 
-	this.background = cylinder;
+	this.background = background;
 
-	return cylinder;
+	return background;
 }
 
 VRUi.prototype.backgroundHide = function() {
 	var background = this.background;
 
-	var tween = new TWEEN.Tween( background.scale )
-		.to({ x: 1, y: 0.0001, z: 1 }, 500 )
+	var tween = new TWEEN.Tween( background.material )
+		.to({ opacity: 0 }, 500 )
 		.easing(TWEEN.Easing.Exponential.Out)
 		.onComplete(function() {
 			background.visible = false;
@@ -150,8 +150,8 @@ VRUi.prototype.backgroundShow = function() {
 	var background = this.background;
 	background.visible = true;
 
-	var tween = new TWEEN.Tween( background.scale )
-		.to({ x: 1, y: 1, z: 1 }, 500 )
+	var tween = new TWEEN.Tween( background.material )
+		.to({ opacity: 0.6 }, 800 )
 		.easing(TWEEN.Easing.Exponential.Out)
 		.onComplete(function() {
 
@@ -339,6 +339,7 @@ VRUi.prototype.goHome = function(noTransition) {
 		this.title.setTitle(opts.title);
 		this.title.setCredits(opts.author);
 		this.title.setUrl(this.homeUrl);
+		self.cursor.disable();
 		VRManager.load(this.homeUrl);
 	} else {
 		this.load(this.homeUrl, opts);
