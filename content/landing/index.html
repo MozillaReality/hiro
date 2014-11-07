@@ -75,7 +75,7 @@
 				cursor.enable();
 			});
 
-			setRenderMode(VRClient.renderModes.normal);
+			setRenderMode(VRClient.renderModes.mono);
 
 			effect.setSize( window.innerWidth, window.innerHeight );
 
@@ -83,9 +83,10 @@
 
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
-				if (mode == modes.normal) {
+				if (mode == modes.mono) {
 					console.log('Mono mode');
-					controls = new THREE.VRControls( camera );
+					//controls = new THREE.VRControls( camera );
+					controls = null;
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
@@ -167,15 +168,15 @@
 
 			var loader = new THREE.ObjectLoader();
 			loader.load( 'models/figure.json', function( object ){
-				
+
 				//scale down the model
 				var geometry = object.geometry;
 				geometry.verticesNeedUpdate = true;
 				geometry.applyMatrix( new THREE.Matrix4().makeScale( 0.02, 0.02, 0.02 ) );
-				
+
 				//could just import this as the mesh, instead of feeding the geometry and material into new mesh. Six of one, half dozen of the other.
-				var mesh = new THREE.Mesh( 
-					geometry, 
+				var mesh = new THREE.Mesh(
+					geometry,
 					new THREE.MeshBasicMaterial( { color: 0xcccccc, transparent: true, opacity: 0.75 } )
 				);
 
@@ -193,7 +194,7 @@
 	  	var hud = new THREE.Object3D();
 	  	var hudRadius = 0.08;
 		  var hudHeight = 0.04;
-		 
+
 		 	// make display
 		  var geometry = new THREE.CylinderGeometry( hudRadius, hudRadius, hudHeight, 46, 1, true );
 		  var material = new THREE.MeshBasicMaterial( { color: 0x666666, transparent: true, opacity: 0.3, depthTest: false, side: THREE.DoubleSide } );
@@ -204,12 +205,12 @@
 		  var material = new THREE.LineBasicMaterial( { color: 0x999999, transparent: true, opacity: 0.5, linewidth: 1 } );
 		  var geometry = new THREE.CircleGeometry( hudRadius, 46 );
 		  geometry.vertices.shift(); // remove center vertex
-		  
+
 		  var line = new THREE.Line( geometry, material );
 		  line.position.set( 0, 0 - hudHeight / 2, 0 );
 		  line.rotation.set( Math.PI / 2, 0, 0 )
 		  hud.add( line );
-		  
+
 		  var line = new THREE.Line( geometry, material );
 		  line.position.set( 0, hudHeight / 2, 0 );
 		  line.rotation.set( Math.PI / 2, 0, 0 )
@@ -224,7 +225,7 @@
 	  	var material = new THREE.LineBasicMaterial( { color: 0xb3b3b3, transparent: true, linewidth: 1 } );
 		  var geometry = new THREE.CircleGeometry( 0.08, 46 );
 		  geometry.vertices.shift(); // remove center vertex
-		  
+
 		  var line = new THREE.Line( geometry, material );
 		  line.rotation.set( Math.PI / 2, 0, 0 )
 
@@ -249,7 +250,7 @@
 				return b.position.y - a.position.y;   // sort y
 
 			} );
-			
+
 			return globe;
 
 	  }
@@ -282,7 +283,7 @@
 				return b.position.y - a.position.y;   // sort y
 
 			} );
-			
+
 			return globe;
 
 	  }
@@ -290,17 +291,17 @@
 	  function makeBackground2(){
 
 	  	var background = new THREE.Object3D();
-			
+
 			var loader = new THREE.ObjectLoader();
 			loader.load( 'models/rings.json', function ( object ) {
-				
+
 				background.add( object );
 
 				var material = new THREE.MeshBasicMaterial( { color: 0x999999, transparent: true, opacity: 1, wireframe:true, side: THREE.DoubleSide } );
 				var rings = object.children[0].children
 
 				for ( i = 0; i < rings.length; i++ ){
-						
+
 					var r = rings[i].children[0];
 					r.material = material;
 				}
@@ -390,15 +391,15 @@
 		function makeColorizationOverlay() {
 
 			var geometry = new THREE.SphereGeometry( 0.2, 16, 16 );
-			var material = new THREE.MeshBasicMaterial( { 
-				transparent: true, 
-				opacity: 1, 
-				map: THREE.ImageUtils.loadTexture( 'images/bg2.png' ), 
-				blending: THREE.MultiplyBlending, 
+			var material = new THREE.MeshBasicMaterial( {
+				transparent: true,
+				opacity: 1,
+				map: THREE.ImageUtils.loadTexture( 'images/bg2.png' ),
+				blending: THREE.MultiplyBlending,
 				side: THREE.DoubleSide
 			});
 			var mesh = new THREE.Mesh( geometry, material );
-			
+
 			scene.add( mesh );
 
 		}
@@ -419,7 +420,7 @@
 	  	var tutorial = new THREE.Object3D();
 	  	var diagram = new THREE.Object3D();
 	 		scene.add( tutorial );
-	  
+
 	  	var background1 = makeBackground1();
 	  	var background2 = makeBackground2();
 	  	var globeCore = makeGlobeCore();
@@ -544,7 +545,7 @@
 				  //   .delay( delay )
 				  //  	.easing( TWEEN.Easing.Cubic.Out )
 				  //   .start();
-				  
+
 				  object.scale.set( 0.01, 0.01, 0.01 )
 				  new TWEEN.Tween( object.scale )
 				    .to( { x:1, y:1, z:1 }, 500 )
@@ -586,7 +587,7 @@
 					rings.reverse();
 
 					for ( i = 0; i < rings.length; i++ ){
-						
+
 						var r = rings[i].children[0];
 						var delay = i * 100;
 
@@ -606,7 +607,7 @@
 								.delay( delay )
 								.easing( TWEEN.Easing.Quadratic.InOut )
 								.start();
-						
+
 							r.scale.set( 0.6, 0.6, 0.01 );
 							new TWEEN.Tween( r.scale )
 								.to ( { x:1, y:1, z:1 }, 2000 )
@@ -628,7 +629,7 @@
 						.delay( 200 )
 	   				.easing( TWEEN.Easing.Quadratic.InOut )
 						.start();
-					
+
 				}
 
 				//deprecated
@@ -660,7 +661,7 @@
 					   	//.easing( TWEEN.Easing.Cubic.Out )
 					    .start();
 					  */
-					  
+
 					  new TWEEN.Tween( object.scale )
 					    .to( { x:0.01, y:0.01, z:0.01 }, 3000 )
 					    .delay( delay )
@@ -669,7 +670,7 @@
 				  }
 				}
 	  	}
-	  }	
+	  }
 
 
 
