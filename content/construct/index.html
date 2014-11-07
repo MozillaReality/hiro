@@ -33,6 +33,10 @@
 	<script src="../../js/vrcursor.js"></script>
 
 	<script>
+
+
+		/*====================== Initialize ======================*/
+
 		var parameters = ( function () {
 			var parameters = {};
 			var parts = window.location.search.substr( 1 ).split( '&' );
@@ -42,6 +46,7 @@
 			}
 			return parameters;
 		} )();
+
 
 		var camera, scene, renderer;
 		var controls, effect, vrEffect;
@@ -53,6 +58,7 @@
 
 
 		function init() {
+
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.autoClear = false;
 			renderer.setClearColor( 0x000000 );
@@ -76,7 +82,6 @@
 			effect.setSize( window.innerWidth, window.innerHeight );
 
 			window.addEventListener( 'resize', onWindowResize, false );
-
 
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
@@ -126,7 +131,6 @@
 
 			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
 			light.position.set( 100, 110, 150 );
-
 			scene.add( light );
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
@@ -137,108 +141,28 @@
 
 
 
-
-
-
-
-
-
-		/*====================== Make scene ======================*/
-
-		function makeMockupCylinder(){
-
-			var radius = 10;
-			var circumference = radius * 2 * 3.14;
-			var height = circumference / 4;
-
-			var holder = new THREE.Object3D();
-
-			var mockup = new THREE.Mesh(
-				new THREE.CylinderGeometry( radius, radius, height, 60, 1, true ),
-				new THREE.MeshBasicMaterial( {
-					transparent: true,
-					//side: THREE.DoubleSide,
-					map: THREE.ImageUtils.loadTexture( 'images/content-10.png' )
-				} )
-			);
-
-			mockup.geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
-			mockup.position.set( 0, 0, 0 )
-			scene.add( mockup );
-
-		}
-
 		function makeSky() {
 
-			/* Old */
-			/*
 			var geometry = new THREE.SphereGeometry( 1000 , 60, 40 );
 			geometry.applyMatrix( new THREE.Matrix4().makeScale( -1, 1, 1 ) );
 			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( 'images/bg.jpg' ) } );
 			var sky = new THREE.Mesh( geometry, material );
 			scene.add( sky );
-			*/
+
 		}
 
-		function makeScene() {
+		function makeLayout() {
 
 			// variables and setup
 
 			//camera.position.set( 0, -userHeight, 0 );
 			camera.position.set( 0, 0, 0 );
-			var loader = new THREE.ObjectLoader();
-
-			// sky
-
-			var geometry = new THREE.SphereGeometry( 1000, 64, 32 );
-
-			var vertices = geometry.vertices;
-			var faces = geometry.faces;
-
-			var colorTop = new THREE.Color( 0xdc72aa );
-			var colorMiddle = new THREE.Color( 0xfbdfd3 );
-			var colorBottom = new THREE.Color( 0xd7b8b2 );
-
-			for ( var i = 0, l = faces.length; i < l; i ++ ) {
-
-				var face = faces[ i ];
-
-				var vertex1 = vertices[ face.a ];
-				var vertex2 = vertices[ face.b ];
-				var vertex3 = vertices[ face.c ];
-
-				var color1 = colorMiddle.clone();
-				color1.lerp( vertex1.y > 0 ? colorTop : colorBottom, Math.abs( vertex1.y ) / 1000 );
-
-				var color2 = colorMiddle.clone();
-				color2.lerp( vertex2.y > 0 ? colorTop : colorBottom, Math.abs( vertex2.y ) / 1000 );
-
-				var color3 = colorMiddle.clone();
-				color3.lerp( vertex3.y > 0 ? colorTop : colorBottom, Math.abs( vertex3.y ) / 1000 );
-
-				face.vertexColors.push( color1, color2, color3 );
-
-			}
-
-			var material = new THREE.MeshBasicMaterial( {
-				vertexColors: THREE.VertexColors,
-				side: THREE.BackSide,
-				depthWrite: false,
-				depthTest: false,
-				fog: false
-			} );
-
-			sky = new THREE.Mesh( geometry, material );
-			scene.add( sky );
-
-			// fog
-
-			scene.fog = new THREE.Fog( 0xcacfde, 0, 1000 );
 
 			// frame
 
 			var frame;
 
+			var loader = new THREE.ObjectLoader();
 			loader.load( 'models/frame-3.json', function ( object ) {
 
 				frame = object;
@@ -270,40 +194,7 @@
 
 			});
 
-			// water
-
-			var geometry = new THREE.PlaneBufferGeometry( 100000, 100000 );
-			var material = new THREE.MeshBasicMaterial( {
-				color: colorMiddle,
-				opacity: 0.75,
-				transparent: true
-			} );
-			water = new THREE.Mesh( geometry, material );
-			water.position.y = userHeight;
-			water.rotation.x = - Math.PI / 2;
-			water.renderDepth = 2;
-			scene.add( water );
-
-			//scene
-
-			loader.load( 'models/sechelt-1.json', function ( object ) {
-
-				var landscape = object.getObjectByName( 'lanscape' );
-
-				var reflection = new THREE.Mesh( landscape.geometry, landscape.material.clone() );
-				reflection.material.side = THREE.BackSide;
-				reflection.position.y = 6.7 - userHeight;
-				reflection.scale.y = -1;
-				landscape.parent.add( reflection );
-				landscape.parent.position.y = -4 + userHeight;
-
-				scene.add( object );
-
-			} );
-
 		}
-
-
 
 
 
@@ -477,26 +368,26 @@
 				leap: {
 					tex: 'images/txt-leap.png',
 					url: 'http://mozvr.github.io/sechelt',
-					position: { x:-3.25, y:2+userHeight, z:-4 },
-					rotation: { x:0, y:0.6, z:0 }
+					position: { x:-3.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 				interview: {
 					tex: 'images/txt-interview.png',
 					url: 'http://mozvr.github.io/polarsea/',
-					position: { x:-3.25, y:3.25+userHeight, z:-4 },
-					rotation: { x:0, y:0.6, z:0 }
+					position: { x:-1.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 				panorama: {
 					tex: 'images/txt-panorama.png',
 					url: 'http://mozvr.github.io/sechelt',
-					position: { x:3.25, y:2+userHeight, z:-4 },
-					rotation: { x:0, y:-0.6, z:0 }
+					position: { x:1.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 				futureofthevrweb: {
 					tex: 'images/txt-futureofthevrweb.png',
 					url: 'http://mozvr.github.io/polarsea/',
-					position: { x:3.25, y:3.25+userHeight, z:-4 },
-					rotation: { x:0, y:-0.6, z:0 }
+					position: { x:3.25, y:2+userHeight, z:-5 },
+					rotation: { x:0, y:0, z:0 }
 				},
 			}
 
@@ -506,11 +397,6 @@
 			scene.add( makeLink( links.futureofthevrweb.tex, links.futureofthevrweb.url, links.futureofthevrweb.position, links.futureofthevrweb.rotation ) );
 
 		}
-
-
-
-
-
 
 
 
@@ -607,7 +493,7 @@
 			loader.load( icons.sechelt.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x - 2.25,
+				var x = iconBasePos.x - 3.5,
 					y = iconBasePos.y + 0,
 					z = iconBasePos.z - 1.5;
 
@@ -632,9 +518,9 @@
 			loader.load( icons.polar.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 0.5,
+				var x = iconBasePos.x + 0,
 					y = iconBasePos.y + 0,
-					z = iconBasePos.z - 0;
+					z = iconBasePos.z - 1.5;
 
 				// create parent holder object
 				var holder = makeIconHolder( icons.polar.url );
@@ -657,9 +543,9 @@
 			loader.load( icons.dive.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 2,
+				var x = iconBasePos.x + 3.5,
 					y = iconBasePos.y + 0,
-					z = iconBasePos.z - 3.25;
+					z = iconBasePos.z - 1.5;
 
 				// create parent holder object
 				var holder = makeIconHolder( icons.sechelt.url );
@@ -823,16 +709,14 @@
 			effect.render( scene, camera );
 		}
 
+
 		init();
-
 		//makeMockupCylinder();
-
-		makeScene();
-
+		makeSky();
+		makeLayout();
+		//makeSechelt();
 		populateLinks();
-
 		populateIcons();
-
 		animate();
 
 	</script>

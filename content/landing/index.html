@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>HIRO Intro</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html, body {
+  			height: 100%;
+  			width: 100%;
+  			padding: 0;
+  			margin: 0;
+  			overflow: hidden;
+			}
+
+			canvas {
+				width: 100%;
+			  height: 100%;
+			}
+		</style>
+	</head>
+	<body>
+	</body>
+	<script src="../../js/vendor/three.min.js"></script>
+	<script src="../../js/vendor/tween.min.js"></script>
+	<script src="../../js/vendor/VRControls.js"></script>
+	<script src="../../js/vendor/VREffect.js"></script>
+	<script src="../../js/vendor/DeviceOrientationControls.js"></script>
+	<script src="../../js/vendor/StereoEffect.js"></script>
+
+	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
+	<script src="../../js/vrclient.js"></script>
+	<script src="../../js/vrcursor.js"></script>
+
+	<script>
+
+
+		var parameters = ( function () {
+			var parameters = {};
+			var parts = window.location.search.substr( 1 ).split( '&' );
+			for ( var i = 0; i < parts.length; i ++ ) {
+				var parameter = parts[ i ].split( '=' );
+				parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+			}
+			return parameters;
+		} )();
+
+
+		var camera, scene, renderer;
+		var controls, effect, vrEffect;
+		var geometry, material, cube;
+		var cursor;
+		var icons;
+		var iconsArray = [];
+		var userHeight = -1.65;
+
+
+		function init() {
+
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.autoClear = false;
+			renderer.setClearColor( 0xffffff );
+
+			document.body.appendChild( renderer.domElement );
+
+			scene = new THREE.Scene();
+
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+
+			cursor = new VRCursor();
+
+			cursor.ready.then(function() {
+				scene.add(cursor.layout);
+				cursor.init(renderer.domElement, camera, scene);
+				cursor.enable();
+			});
+
+			setRenderMode(VRClient.renderModes.mono);
+
+			effect.setSize( window.innerWidth, window.innerHeight );
+
+			window.addEventListener( 'resize', onWindowResize, false );
+
+			function setRenderMode(mode) {
+				var modes = VRClient.renderModes;
+				if (mode == modes.mono) {
+					console.log('Mono mode');
+					//controls = new THREE.VRControls( camera );
+					controls = null;
+					effect = renderer;
+					cursor.setMode('mono');
+					cursor.hide();
+
+				} else if (mode == modes.stereo) {
+					console.log('Stereo mode');
+					// controls = new THREE.DeviceOrientationControls( camera );
+					controls = null;
+					effect = new THREE.StereoEffect( renderer );
+					//cursor.setMode('centered');
+					cursor.disable();
+
+				} else if (mode == modes.vr) {
+					console.log('VR mode');
+					controls = new THREE.VRControls( camera );
+					effect = new THREE.VREffect( renderer );
+					cursor.setMode('centered');
+					cursor.show();
+				}
+			}
+			// handle render mode changes from VR client and set appropriate renderer and control for mode.
+			VRClient.onRenderModeChange = setRenderMode;
+
+			VRClient.onZeroSensor = function() {
+				console.log('sensor zero');
+				controls.zeroSensor();
+			}
+
+			VRClient.onBlur = function() {
+				console.log('content blurred');
+				cursor.disable();
+			}
+
+			VRClient.onFocus = function() {
+				console.log('content focused');
+				cursor.enable();
+			}
+
+			// Announce to Javris that everything is ready to go and we can reveal content.
+			VRClient.ready();
+		}
+
+
+
+
+
+
+		/*====================== Intro elements ======================*/
+
+
+		function fragment( geometry, material ) {
+
+	    var group = new THREE.Group();
+
+	    for ( var i = 0; i < geometry.faces.length; i ++ ) {
+
+	      var face = geometry.faces[ i ];
+
+	      var vertexA = geometry.vertices[ face.a ].clone();
+	      var vertexB = geometry.vertices[ face.b ].clone();
+	      var vertexC = geometry.vertices[ face.c ].clone();
+
+	      var geometry2 = new THREE.Geometry();
+	      geometry2.vertices.push( vertexA, vertexB, vertexC );
+	      geometry2.faces.push( new THREE.Face3( 0, 1, 2 ) );
+
+	      var mesh = new THREE.Mesh( geometry2, material );
+	      mesh.position.sub( geometry2.center() );
+	      group.add( mesh );
+
+	    }
+	    return group;
+	  }
+
+
+	  function makeFigure() {
+
+			var figure = new THREE.Object3D();
+
+			var loader = new THREE.ObjectLoader();
+			loader.load( 'models/figure.json', function( object ){
+
+				//scale down the model
+				var geometry = object.geometry;
+				geometry.verticesNeedUpdate = true;
+				geometry.applyMatrix( new THREE.Matrix4().makeScale( 0.02, 0.02, 0.02 ) );
+
+				//could just import this as the mesh, instead of feeding the geometry and material into new mesh. Six of one, half dozen of the other.
+				var mesh = new THREE.Mesh(
+					geometry,
+					new THREE.MeshBasicMaterial( { color: 0xcccccc, transparent: true, opacity: 0.75 } )
+				);
+
+				figure.add( mesh );
+
+			});
+
+			return figure;
+
+		};
+
+
+	  function makeHUD() {
+
+	  	var hud = new THREE.Object3D();
+	  	var hudRadius = 0.08;
+		  var hudHeight = 0.04;
+
+		 	// make display
+		  var geometry = new THREE.CylinderGeometry( hudRadius, hudRadius, hudHeight, 46, 1, true );
+		  var material = new THREE.MeshBasicMaterial( { color: 0x666666, transparent: true, opacity: 0.3, depthTest: false, side: THREE.DoubleSide } );
+		  var ui = new THREE.Mesh( geometry, material );
+		  hud.add( ui );
+
+		  // make top and bottom circles
+		  var material = new THREE.LineBasicMaterial( { color: 0x999999, transparent: true, opacity: 0.5, linewidth: 1 } );
+		  var geometry = new THREE.CircleGeometry( hudRadius, 46 );
+		  geometry.vertices.shift(); // remove center vertex
+
+		  var line = new THREE.Line( geometry, material );
+		  line.position.set( 0, 0 - hudHeight / 2, 0 );
+		  line.rotation.set( Math.PI / 2, 0, 0 )
+		  hud.add( line );
+
+		  var line = new THREE.Line( geometry, material );
+		  line.position.set( 0, hudHeight / 2, 0 );
+		  line.rotation.set( Math.PI / 2, 0, 0 )
+		  hud.add( line );
+
+		  return hud;
+
+	  }
+
+	  function makePortal(){
+
+	  	var material = new THREE.LineBasicMaterial( { color: 0xb3b3b3, transparent: true, linewidth: 1 } );
+		  var geometry = new THREE.CircleGeometry( 0.08, 46 );
+		  geometry.vertices.shift(); // remove center vertex
+
+		  var line = new THREE.Line( geometry, material );
+		  line.rotation.set( Math.PI / 2, 0, 0 )
+
+		  return line;
+
+	  }
+
+
+	  function makeGlobe() {
+
+			//THREE.SphereGeometry( radius, segmentsWidth, segmentsHeight, 		phiStart, phiLength, thetaStart, thetaLength );
+			var geometry = new THREE.IcosahedronGeometry( 0.25, 2 );
+			//var geometry = new THREE.SphereGeometry( 0.25, 8, 12, Math.PI, Math.PI, 0, Math.PI );
+			var material = new THREE.MeshBasicMaterial( { color: 0xcccccc, wireframe: true, transparent: true, opacity: 1, side: THREE.DoubleSide } );
+
+			var globe = fragment( geometry, material ) // fragment geometry
+
+			globe.children.sort( function ( a, b ) { //sort the pieces
+
+				//return b.position.z - a.position.z;
+				//return a.position.x - b.position.x;    // sort x
+				return b.position.y - a.position.y;   // sort y
+
+			} );
+
+			return globe;
+
+	  }
+
+
+	  function makeGlobeCore() {
+
+	  	var mesh = new THREE.Mesh(
+				new THREE.SphereGeometry( 0.247, 16, 16, Math.PI, Math.PI, 0, Math.PI ),
+				new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, opacity: 0.8, side: THREE.DoubleSide } )
+			);
+
+	  	return mesh;
+	  }
+
+
+	  function makeBackground1() {
+
+			//THREE.SphereGeometry( radius, segmentsWidth, segmentsHeight, 		phiStart, phiLength, thetaStart, thetaLength );
+			var geometry = new THREE.IcosahedronGeometry( 110, 2 );
+			//var geometry = new THREE.SphereGeometry( 3, 8, 12, Math.PI, Math.PI, 0, Math.PI );
+			var material = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, wireframe: false, opacity: 1, side: THREE.BackSide } );
+
+			var globe = fragment( geometry, material ) // fragment geometry
+
+			globe.children.sort( function ( a, b ) { //sort the pieces
+
+				//return b.position.z - a.position.z;
+				//return a.position.x - b.position.x;    // sort x
+				return b.position.y - a.position.y;   // sort y
+
+			} );
+
+			return globe;
+
+	  }
+
+	  function makeBackground2(){
+
+	  	var background = new THREE.Object3D();
+
+			var loader = new THREE.ObjectLoader();
+			loader.load( 'models/rings.json', function ( object ) {
+
+				background.add( object );
+
+				var material = new THREE.MeshBasicMaterial( { color: 0x999999, transparent: true, opacity: 1, wireframe:true, side: THREE.DoubleSide } );
+				var rings = object.children[0].children
+
+				for ( i = 0; i < rings.length; i++ ){
+
+					var r = rings[i].children[0];
+					r.material = material;
+				}
+
+			});
+
+
+			return background;
+
+	  }
+
+
+		function makeOutline() {
+
+			var material = new THREE.LineBasicMaterial( { color: 0x666666, transparent: true, opacity: 1, linewidth: 7 } );
+		  var geometry = new THREE.CircleGeometry( 0.25, 46 );
+		  geometry.vertices.shift(); // remove center vertex
+		  var line = new THREE.Line( geometry, material );
+
+		  return line;
+		}
+
+
+		function makeMask() {
+
+			var mask = new THREE.Mesh(
+	  		new THREE.BoxGeometry( 0.4, 0.4, 0.4 ),
+	  		new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, transparent: true, opacity: 1 } )
+	  	);
+
+	  	return mask;
+
+		}
+
+		function makeTags() {
+
+			var holder = new THREE.Object3D();
+			var scale = 0.5;
+
+			var tags = [
+				{
+					"img": "tag-hmd.png",
+					"pos": { "x": -0.38, "y": -0.2, "z": 0 }
+				},
+				{
+					"img": "tag-f.png",
+					"pos": { "x": -0.2, "y": 0.3, "z": 0.1 }
+				},
+				{
+					"img": "tag-esc.png",
+					"pos": { "x": -0.4, "y": 0.1, "z": 0.05 }
+				},
+				{
+					"img": "tag-browser.png",
+					"pos": { "x": 0.48, "y": 0, "z": -0.05 }
+				},
+				{
+					"img": "tag-space.png",
+					"pos": { "x": 0.36, "y": 0.2, "z": 0.1 }
+				},
+
+				{
+					"img": "tag-click.png",
+					"pos": { "x": 0.32, "y": -0.24, "z": 0.05 }
+				}
+			];
+
+			for ( var i = 0; i < tags.length; i++ ){
+
+				var img = tags[i].img;
+				var pos = tags[i].pos;
+				var texture = new THREE.ImageUtils.loadTexture( "images/" + img );
+				var material = new THREE.SpriteMaterial( { map: texture, transparent: true, opacity: 0.7, depthTest: false, depth: false } );
+				var tag = new THREE.Sprite( material );
+				tag.position.set( pos.x, pos.y, pos.z );
+				tag.scale.set( scale, scale, scale );
+
+				holder.add( tag )
+
+			}
+
+	  	return holder;
+
+		}
+
+
+		function makeColorizationOverlay() {
+
+			var geometry = new THREE.SphereGeometry( 0.2, 16, 16 );
+			var material = new THREE.MeshBasicMaterial( {
+				transparent: true,
+				opacity: 1,
+				map: THREE.ImageUtils.loadTexture( 'images/bg2.png' ),
+				blending: THREE.MultiplyBlending,
+				side: THREE.DoubleSide
+			});
+			var mesh = new THREE.Mesh( geometry, material );
+
+			scene.add( mesh );
+
+		}
+
+
+
+
+
+
+		/*====================== Intro sequence ======================*/
+
+	  function setupIntro() {
+
+	  	//setup
+
+	  	scene.fog = new THREE.Fog( 0xffffff, 30, 110 );
+
+	  	var tutorial = new THREE.Object3D();
+	  	var diagram = new THREE.Object3D();
+	 		scene.add( tutorial );
+
+	  	var background1 = makeBackground1();
+	  	var background2 = makeBackground2();
+	  	var globeCore = makeGlobeCore();
+	  	var globe = makeGlobe();
+	  	var mask = makeMask();
+	  	var portal = makePortal();
+	  	var figure = makeFigure();
+	  	var hud = makeHUD();
+	  	var outline = makeOutline();
+	  	var tags = makeTags();
+	  	makeColorizationOverlay();
+
+	  	tutorial.add( background1 );
+	  	tutorial.add( background2 );
+	  	diagram.add( globeCore );
+	  	diagram.add( globe );
+	  	diagram.add( mask );
+	  	diagram.add( portal );
+	  	diagram.add( figure );
+	  	figure.add( hud );
+	  	tutorial.add( diagram );
+	  	diagram.add( outline );
+	  	diagram.add( tags );
+
+	  	//set initial states
+
+			diagram.position.set( 0, 0, -2 );
+			diagram.scale.set( 2, 2, 2 );
+			hud.visible = true;
+			hud.position.set( 0, 0.33, 0 );
+			globe.visible = false;
+			figure.visible = false;
+			figure.position.set( 0, -0.6, 0 );
+			portal.visible = false;
+			portal.position.set( 0, -0.195, 0 );
+			portal.scale.set( 0.01, 0.01, 0.01 );
+			mask.position.set( 0, -0.4, 0 );
+			diagram.rotation.set( 0.9, 0, 0 )
+			outline.position.set( 0, 0, 0.05 );
+			background2.visible = false;
+
+	  	//animate in
+
+	  	var timeoutID = window.setTimeout( playIntro, 500 );
+
+	  	function playIntro() {
+
+	  		// diagram
+
+				new TWEEN.Tween( diagram.rotation )
+					.to( { x: 0 }, 8000 )
+					.easing( TWEEN.Easing.Quadratic.Out )
+					.start()
+
+				// show tags
+
+				new TWEEN.Tween( tags.rotation )
+					.to( { y: 0.2 }, 8000 )
+					.easing( TWEEN.Easing.Quadratic.Out )
+					//.start()
+
+	  		//open portal
+
+	  		portal.visible = true;
+	  		new TWEEN.Tween( portal.scale )
+	  			.to( { x:1, y:1, z:1 }, 700 )
+	  			.easing( TWEEN.Easing.Quadratic.Out )
+	  			.onComplete( function(){
+
+			  		new TWEEN.Tween( portal.material )
+			  			.to( { opacity:0 }, 700 )
+			  			.delay( 2000 )
+			  			.start();
+
+	  			} )
+	  			.start();
+
+				// reveal figure
+
+				figure.visible = true;
+				figure.rotation.set( 0, 0 - Math.PI, 0 );
+
+				new TWEEN.Tween( figure.position )
+					.to( { y: -0.18 }, 2500 )
+					.delay( 200 )
+					.easing( TWEEN.Easing.Quadratic.InOut )
+					.start();
+
+    		new TWEEN.Tween( figure.rotation )
+					.to( { y: 0 }, 2500 )
+					.delay( 200 )
+		   		.easing( TWEEN.Easing.Quadratic.InOut )
+		   		.onComplete( function(){
+		   			mask.visible = false;
+		   		} )
+					.start();
+
+				new TWEEN.Tween( mask.position )
+					.to( { y: -0.45 }, 1000 )
+					.delay( 900 )
+					.start();
+
+				// reveal outline
+
+			  new TWEEN.Tween( outline.material )
+			  	.to( { opacity: 1 }, 500 )
+			  	.delay( 1500 )
+			  	.start();
+
+				// reveal globe
+
+				globe.visible = true;
+				for ( var i = 0; i < globe.children.length; i ++ ) {
+
+				  var object = globe.children[i];
+				  var delay = 2200 + i * 10;
+
+				  // var destY = object.position.y;
+				  // object.position.setY( destY + 0.1 );
+				  // new TWEEN.Tween( object.position )
+				  //   .to( { y: destY  }, 1000 )
+				  //   .delay( delay )
+				  //  	.easing( TWEEN.Easing.Cubic.Out )
+				  //   .start();
+
+				  object.scale.set( 0.01, 0.01, 0.01 )
+				  new TWEEN.Tween( object.scale )
+				    .to( { x:1, y:1, z:1 }, 500 )
+				    .delay( delay )
+				    .start();
+
+			  }
+
+				// reveal hud
+
+				hud.visible = true;
+		  	hud.scale.set( 0.01, 0.01, 0.01 );
+				new TWEEN.Tween( hud.scale )
+					.to( { y:1 }, 2000 )
+					.delay( 3000 )
+		   		.easing( TWEEN.Easing.Cubic.Out )
+					.start();
+
+				new TWEEN.Tween( hud.scale )
+					.to( { x:1, z:1 }, 1000 )
+					.delay( 3000 )
+		   		.easing( TWEEN.Easing.Cubic.Out )
+		   		.onComplete( function(){
+
+		   			//animateBackground2()
+
+		   		} )
+					.start();
+
+				var temp = window.setTimeout( animateBackground2, 1000 );
+
+				// background
+
+				function animateBackground2() {
+
+					background2.visible = true;
+					var material = new THREE.MeshBasicMaterial( { color: 0xffffff, transparent: true, opacity: 1, wireframe:true, side: THREE.DoubleSide } );
+					var rings = background2.children[0].children[0].children
+					rings.reverse();
+
+					for ( i = 0; i < rings.length; i++ ){
+
+						var r = rings[i].children[0];
+						var delay = i * 100;
+
+						if ( i < 0 ){
+
+							r.scale.set( 0.01, 0.01, 0.01 );
+							new TWEEN.Tween( r.scale )
+								.to ( { x:1, y:1, z:1 }, 2000 )
+								.delay( delay )
+								.start();
+
+						} else {
+
+							r.position.set( 0, 0, i * -20 );
+							new TWEEN.Tween( r.position )
+								.to( { x:0, y:0, z:0 }, 6000 )
+								.delay( delay )
+								.easing( TWEEN.Easing.Quadratic.InOut )
+								.start();
+
+							r.scale.set( 0.6, 0.6, 0.01 );
+							new TWEEN.Tween( r.scale )
+								.to ( { x:1, y:1, z:1 }, 2000 )
+								.delay( delay )
+								.easing( TWEEN.Easing.Quadratic.Out )
+								.start();
+
+							r.rotation.set( 0, 0, -1.57 );
+							new TWEEN.Tween( r.rotation )
+								.to ( { x:0, y:0, z:0 }, 6000 )
+								.delay( delay )
+			   				.easing( TWEEN.Easing.Quadratic.InOut )
+								.start();
+						}
+					}
+
+					new TWEEN.Tween( background2.rotation )
+						.to ( { x:0, y:0, z:1.57 }, 12000 )
+						.delay( 200 )
+	   				.easing( TWEEN.Easing.Quadratic.InOut )
+						.start();
+
+				}
+
+				//deprecated
+			  function animateBackground1() {
+
+			  	/*
+			  	new TWEEN.Tween( diagram.scale )
+			  		.to( { x:0.01, y:0.01, z:0.01 }, 2000 )
+			  		.onComplete( function(){
+
+			  			diagram.visible = false;
+
+			  		} )
+			  		//.start();
+					*/
+
+					for ( var i = 0; i < background.children.length; i ++ ) {
+
+					  var object = background.children[i];
+					  var delay = 200 + i * 7;
+
+					  var destZ = object.position.z;
+					  object.position.setZ( destZ + 0.2 );
+
+					  /*
+					  new TWEEN.Tween( object.position )
+					    .to( { z: destZ  }, 1000 )
+					    .delay( delay )
+					   	//.easing( TWEEN.Easing.Cubic.Out )
+					    .start();
+					  */
+
+					  new TWEEN.Tween( object.scale )
+					    .to( { x:0.01, y:0.01, z:0.01 }, 3000 )
+					    .delay( delay )
+					    //.easing( TWEEN.Easing.Cubic.Out )
+					    .start();
+				  }
+				}
+	  	}
+	  }
+
+
+
+
+
+		function onWindowResize() {
+			var innerWidth = window.innerWidth;
+			var innweHeight =  window.innerHeight;
+			camera.aspect = innerWidth / innweHeight;
+			camera.updateProjectionMatrix();
+
+			effect.setSize( innerWidth, innweHeight );
+		}
+
+		function animate() {
+			requestAnimationFrame( animate );
+			render();
+			TWEEN.update();
+		}
+
+		function render() {
+			if (controls) {
+				controls.update();
+			}
+
+			cursor.update();
+
+			effect.render( scene, camera );
+		}
+
+
+		init();
+		setupIntro();
+		animate();
+
+
+	</script>
+</html>

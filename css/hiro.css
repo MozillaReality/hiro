@@ -48,6 +48,57 @@ body {
   height: 100%;
 }
 
+#intro {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  font-size: 1rem;
+  line-height: 3.2rem;
+}
+
+#intro span {
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  background: rgba( 0, 0, 0, 0.2 );
+  color: rgba( 0, 0, 0, 0.75 );
+}
+
+#splash {
+  font-size: 5rem;
+  width: 200rem;
+  position: absolute;
+  top: 40%;
+  left: 2rem;
+  /*color: rgba( 50, 50, 50, 1 );*/
+  color: rgba(194,25,131,.75);
+  text-shadow: -0.06em 0.06em 0px rgba( 34, 202, 240, .75 );
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 4rem;
+}
+
+/* navigation */
+#launch {
+  position: absolute;
+  width: 12rem;
+  margin: -6.5rem;
+  border: 0.45rem solid rgba( 40, 40, 40, 1);
+  padding: 0.5rem 0.2rem;
+  top: 85%;
+  left: 50%;
+  color: rgba( 40, 40, 40, 1);
+  box-shadow: 0px -16px 0px -8px rgba(50, 50, 50, 0.15);
+  background-color: rgba( 0, 0, 0, 0 );
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+#launch:hover {
+  cursor: pointer;
+}
+
 /* navigation */
 #navigation {
   position: absolute;
@@ -55,7 +106,7 @@ body {
   height: 4.5rem;
   bottom: 0px;
   left: 0px;
-  background-color: rgba( 0, 0, 0, 0.4);
+  background-color: rgba( 40, 40, 40, 1);
 }
 
 #navigation > div {
@@ -64,11 +115,32 @@ body {
 }
 
 #logo {
-  background: url('../landing/images/mozvr-logo-1.svg') center center no-repeat;
+  background: url('../landing/images/mozvr-logo-2.svg') center center no-repeat;
   background-size: 85%;
   width: 155px;
   height: 100%;
   font-size: 0px;
+}
+
+#viewing {
+  text-transform: uppercase;
+  color: rgba( 255, 255, 255, 0.7 );
+  font-size: 0.8rem;
+  padding-right: 1rem;
+}
+
+#links a {
+  color: rgba( 255, 255, 255, 0.8 );
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.9em;
+  padding: 0.5rem 0.7rem;
+  margin: 0 0.25rem 0 0;
+}
+
+#links a:hover {
+  color: rgba( 255, 255, 255, 1 );
+  background: rgba( 194, 25, 131, 0.25 );
 }
 
 .flat-list {
@@ -83,7 +155,6 @@ body {
   display: table-cell;
   vertical-align: middle;
 }
-
 
 .button-wire-small {
   color: rgba( 255, 255, 255, 1 );
@@ -106,25 +177,6 @@ body {
 .button-wire-small:hover {
   border: 1px solid transparent;
   background: rgba( 0,0,0, 0.25 );
-}
-
-#viewing {
-  text-transform: uppercase;
-  color: rgba( 255, 255, 255, 0.8 );
-  font-size: 0.8rem;
-  padding-right: 1rem;
-}
-
-#links a {
-  color: rgba( 255, 255, 255, 0.8 );
-  text-decoration: none;
-  font-weight: 400;
-  padding: 0.5em;
-}
-
-#links a:hover {
-  color: rgba( 255, 255, 255, 1 );
-  background: rgba( 194, 25, 131, 0.25 );
 }
 
 .status {
