@@ -85,12 +85,7 @@
 				var modes = VRClient.renderModes;
 				if (mode == modes.mono) {
 					console.log('Mono mode');
-<<<<<<< HEAD
-					controls = new THREE.VRControls( camera );
-=======
-					// controls = new THREE.VRControls( camera );
 					controls = null;
->>>>>>> upstream/master
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
@@ -112,11 +107,7 @@
 
 					vrbutton.visible = true;
 				}
-<<<<<<< HEAD
-				 
-=======
 
->>>>>>> upstream/master
 				effect.setSize( window.innerWidth, window.innerHeight );
 			}
 			
@@ -285,11 +276,7 @@
 			//THREE.SphereGeometry( radius, segmentsWidth, segmentsHeight, 		phiStart, phiLength, thetaStart, thetaLength );
 			var geometry = new THREE.IcosahedronGeometry( 110, 2 );
 			//var geometry = new THREE.SphereGeometry( 3, 8, 12, Math.PI, Math.PI, 0, Math.PI );
-<<<<<<< HEAD
 			var material = new THREE.MeshBasicMaterial( { color: 0xf0f0f0, wireframe: false, opacity: 1, side: THREE.BackSide } );
-=======
-			var material = new THREE.MeshBasicMaterial( { color: 0xf0f0f0, transparent: true, wireframe: false, opacity: 1, side: THREE.BackSide } );
->>>>>>> upstream/master
 
 			var globe = fragment( geometry, material ) // fragment geometry
 
