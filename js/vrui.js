@@ -11,7 +11,8 @@ VRUi
 function VRUi(container) {
 	var self = this;
 
-	this.homeUrl = 'content/landing/index.html';
+	this.homeUrl = 'content/construct';
+	this.landingUrl = 'content/landing';
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -201,6 +202,8 @@ VRUi.prototype.load = function(url, opts) {
 
 					self.isHome = (url == self.homeUrl ? true : false );
 
+					console.log('*** home?' + self.isHome, self.homeUrl);
+
 					VRManager.load(url);
 
 					if (!hideLoading) {
@@ -230,7 +233,7 @@ VRUi.prototype.load = function(url, opts) {
 
 
 VRUi.prototype.toggleHud = function() {
-	if (!this.hud.visible) {
+	if (!this.hud.visible && this.hud.enabled) {
 		this.background.visible = true;
 		this.backgroundShow();
 		this.hud.show();
@@ -238,13 +241,15 @@ VRUi.prototype.toggleHud = function() {
 		this.cursor.enable();
 		console.log('showing HUD');
 		VRManager.currentDemo.blur();
-	} else {
+	} else if (this.hud.visible && this.hud.enabled) {
 		this.backgroundHide();
 		this.hud.hide();
 		this.title.hide();
 		this.cursor.disable();
 		console.log('hiding HUD');
 		VRManager.currentDemo.focus();
+	} else {
+		this.hud.hide();
 	}
 };
 
@@ -315,13 +320,25 @@ VRUi.prototype.start = function(mode) {
 		//self.toggleHud();
 
 		// start to home
-		self.goHome(true);
+		// self.goHome(true);
+
+		self.goLanding(true);
 
 		// kick off animation loop
 		self.animate();
 	});
 };
 
+VRUi.prototype.goLanding = function(noTransition) {
+	var self = this;
+
+	if (noTransition) {
+		self.cursor.disable();
+		VRManager.load(this.landingUrl);
+	} else {
+		this.load(this.landingUrl);
+	}
+}
 VRUi.prototype.goHome = function(noTransition) {
 	var self = this;
 	var home = this.home;

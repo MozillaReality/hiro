@@ -214,9 +214,11 @@ window.VRManager = (function() {
     this.ui.setRenderMode(this.ui.modes.mono);
 
     // tell content that we have changed render modes.
-    if (this.currentDemo) {
-      this.currentDemo.setRenderMode(this.ui.mode);
-    }
+    // if (this.currentDemo) {
+    //   this.currentDemo.setRenderMode(this.ui.mode);
+    // }
+
+    this.ui.goLanding(true);
   };
 
   VRManager.prototype.zeroSensor = function () {

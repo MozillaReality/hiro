@@ -9,6 +9,7 @@ function VRHud() {
 	this.layout.visible = this.visible;
 	this.homeButtonMesh = null;
 	this.d23 = null;
+	this.enabled = false;
 
 	function loadJson(url) {
 		return new Promise( function(resolve, reject) {
@@ -54,6 +55,13 @@ function VRHud() {
 	return this;
 };
 
+VRHud.prototype.disable = function() {
+	this.enabled = false;
+};
+
+VRHud.prototype.enable = function() {
+	this.enabled = true;
+};
 
 VRHud.prototype.show = function() {
 	var self = this;
