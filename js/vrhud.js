@@ -56,6 +56,7 @@ function VRHud() {
 };
 
 VRHud.prototype.disable = function() {
+	this.hide();
 	this.enabled = false;
 };
 

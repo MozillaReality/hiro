@@ -202,7 +202,9 @@ VRUi.prototype.load = function(url, opts) {
 
 					self.isHome = (url == self.homeUrl ? true : false );
 
-					console.log('*** home?' + self.isHome, self.homeUrl);
+					if (self.isHome) {
+						self.hud.enable();
+					}
 
 					VRManager.load(url);
 
@@ -315,30 +317,24 @@ VRUi.prototype.setRenderMode = function(mode) {
 VRUi.prototype.start = function(mode) {
 	var self = this;
 
+
+
 	this.ready.then(function() {
+
 		// start hud
 		//self.toggleHud();
 
 		// start to home
 		// self.goHome(true);
 
-		self.goLanding(true);
+		VRManager.load(self.landingUrl);
 
 		// kick off animation loop
 		self.animate();
 	});
 };
 
-VRUi.prototype.goLanding = function(noTransition) {
-	var self = this;
 
-	if (noTransition) {
-		self.cursor.disable();
-		VRManager.load(this.landingUrl);
-	} else {
-		this.load(this.landingUrl);
-	}
-}
 VRUi.prototype.goHome = function(noTransition) {
 	var self = this;
 	var home = this.home;
@@ -366,12 +362,14 @@ VRUi.prototype.goHome = function(noTransition) {
 VRUi.prototype.reset = function() {
 	var self = this;
 	self.currentUrl = null;
+	self.backgroundHide();
 	self.title.hide();
 	self.cursor.disable();
 	self.hud.hide()
 		.then(function() {
 			self.start();
 		});
+	self.hud.disable();
 };
 
 VRUi.prototype.animate = function() {

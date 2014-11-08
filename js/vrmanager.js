@@ -218,7 +218,7 @@ window.VRManager = (function() {
     //   this.currentDemo.setRenderMode(this.ui.mode);
     // }
 
-    this.ui.goLanding(true);
+    this.ui.reset();
   };
 
   VRManager.prototype.zeroSensor = function () {
