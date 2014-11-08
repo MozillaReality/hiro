@@ -32,11 +32,12 @@ function VRUi(container) {
 
 	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
 		.then(function() {
-			// add transition mesh to scene
-			self.scene.add(self.transition.object);
 
 			// hud background
 			self.scene.add(self.background());
+
+			// add transition mesh to scene
+			self.scene.add(self.transition.object);
 
 			// title
 			self.bend(self.title.mesh, 2.5, true)
@@ -84,19 +85,21 @@ VRUi.prototype.load = function(url, opts) {
 
 	this.hud.hide()
 		.then(function() {
-
 			self.cursor.disable();
-
-			self.backgroundHide();
 
 			self.transition.fadeOut()
 				.then(function() {
+
+					self.backgroundShow();
+
 					// title
 					self.title.setTitle(title);
 					self.title.setUrl(titleUrl);
 					self.title.setCredits(titleCredits);
 
-					if (!noTitle) {
+					if (noTitle) {
+						self.backgroundHide();
+					} else {
 						self.title.show();
 					}
 
@@ -115,6 +118,10 @@ VRUi.prototype.load = function(url, opts) {
 					}
 
 					function onTabReady() {
+						var holdTitleTime = 3000;
+
+						self.backgroundHide(holdTitleTime);
+
 						self.loading.hide();
 
 						self.transition.fadeIn();
@@ -122,11 +129,9 @@ VRUi.prototype.load = function(url, opts) {
 						// hide title after set amount of time
 						setTimeout(function() {
 							if (!self.hud.visible) {
-								self.title.hide().then(function() {
-									// self.container.style.display = 'none';
-								})
+								self.title.hide();
 							}
-						}, 3000);
+						}, holdTitleTime);
 					}
 
 					VRManager.readyCallback = onTabReady;
@@ -138,6 +143,7 @@ VRUi.prototype.load = function(url, opts) {
 
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible && this.hud.enabled) {
+		// hide
 		this.background.visible = true;
 		this.backgroundShow();
 		this.hud.show();
@@ -145,13 +151,17 @@ VRUi.prototype.toggleHud = function() {
 		this.cursor.enable();
 		console.log('showing HUD');
 		VRManager.currentDemo.blur();
+
+
 	} else if (this.hud.visible && this.hud.enabled) {
-		this.backgroundHide();
+		// show
+		this.backgroundHide(1000);
 		this.hud.hide();
 		this.title.hide(1000);
 		this.cursor.disable();
 		console.log('hiding HUD');
 		VRManager.currentDemo.focus();
+
 	} else {
 		this.hud.hide();
 	}
@@ -276,7 +286,7 @@ VRUi.prototype.background = function() {
 	HUD and the loaded content
 	*/
 	//var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1 );
-	var geometry = new THREE.SphereGeometry( 3 );
+	var geometry = new THREE.SphereGeometry( 800 );
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
@@ -292,7 +302,7 @@ VRUi.prototype.background = function() {
 	return background;
 }
 
-VRUi.prototype.backgroundHide = function() {
+VRUi.prototype.backgroundHide = function(delay) {
 	var background = this.background;
 
 	var tween = new TWEEN.Tween( background.material )
@@ -301,7 +311,12 @@ VRUi.prototype.backgroundHide = function() {
 		.onComplete(function() {
 			background.visible = false;
 		})
-		.start();
+
+	if (delay) {
+		tween.delay(delay);
+	}
+
+	tween.start();
 };
 
 VRUi.prototype.backgroundShow = function() {

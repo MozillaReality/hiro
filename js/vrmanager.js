@@ -254,7 +254,16 @@ window.t = (function() {
     this.ui = VRManager.ui;
   }
 
+  t.prototype.ui = function() {
+    return this.ui;
+  }
 
+  t.prototype.transition = function() {
+    var self = this;
+    this.ui.transition.fadeOut().then(function() {
+      self.ui.transition.fadeIn();
+    })
+  }
   t.prototype.loading = function() {
     this.ui.transition.fadeOut();
     this.ui.loading.show();
@@ -263,6 +272,9 @@ window.t = (function() {
   t.prototype.title = function() {
     this.ui.backgroundShow();
     this.ui.title.show();
+  }
+  t.prototype.enableHud = function() {
+    this.ui.hud.enable();
   }
 
   return new t();
