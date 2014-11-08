@@ -80,8 +80,15 @@ window.VRClient = (function() {
     }
   };
 
-  VRClient.prototype.load = function (url) {
-    this.sendMessage('load', url);
+  VRClient.prototype.load = function (url, opts) {
+    if (!opts) {
+      opts = {}
+    }
+
+    this.sendMessage('load', {
+      url: url,
+      opts: opts
+    });
   };
 
   // Takes value 0..1 to represent demo load progress. Optional.

@@ -60,7 +60,7 @@ window.VRManager = (function() {
       }
       switch (msg.type) {
         case 'load':
-          self.ui.load(msg.data);
+          self.ui.load(msg.data.url, msg.data.opts);
           break;
         case 'ready':
           if (self.readyCallback) {
@@ -87,7 +87,9 @@ window.VRManager = (function() {
         document.webkitFullscreenElement;
 
       if (fullscreenElement == null) {
-        self.exitVR();
+        // launch:
+        // this needs to be turned back on so we can reset the user back to the 2d landing page.
+        // self.exitVR();
       }
     };
 
@@ -159,12 +161,17 @@ window.VRManager = (function() {
       // start fullscreen on the container element.
       var fs = self.container;
 
-      if (fs.requestFullscreen) {
-        fs.requestFullscreen({ vrDisplay: self.hmdDevice });
-      } else if (fs.mozRequestFullScreen) {
-        fs.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
-      } else if (fs.webkitRequestFullscreen) {
-        fs.webkitRequestFullscreen({ vrDisplay: self.hmdDevice });
+      // debug: true launches into HMD distortion mode.
+      var launchFullScreen = true;
+
+      if (launchFullScreen) {
+        if (fs.requestFullscreen) {
+          fs.requestFullscreen({ vrDisplay: self.hmdDevice });
+        } else if (fs.mozRequestFullScreen) {
+          fs.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
+        } else if (fs.webkitRequestFullscreen) {
+          fs.webkitRequestFullscreen({ vrDisplay: self.hmdDevice });
+        }
       }
 
       // reserve pointer lock for the cursor.
@@ -237,6 +244,26 @@ window.VRManager = (function() {
     });
   };
 
+
   return new VRManager('#container');
 
+})();
+
+window.t = (function() {
+  function t() {
+    this.ui = VRManager.ui;
+  }
+
+
+  t.prototype.loading = function() {
+    this.ui.transition.fadeOut();
+    this.ui.loading.show();
+  }
+
+  t.prototype.title = function() {
+    this.ui.backgroundShow();
+    this.ui.title.show();
+  }
+
+  return new t();
 })();

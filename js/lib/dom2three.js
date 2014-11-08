@@ -308,7 +308,12 @@ var DOM2three = (function() {
 			return false;
 		};
 
-		this.setText = function(id, text) {
+		this.setText = function(id, text, opts) {
+			var opts = opts || {};
+
+			var offsetX = opts.offsetX || 0;
+			var offsetY = opts.offsetY || 0;
+
 			var node = self.getNodeById(id);
 
 			if (!node) {
@@ -321,7 +326,10 @@ var DOM2three = (function() {
 
 			context.clearRect(0, 0, canvas.width, canvas.height);
 
-			context.fillText(text, node.fontPosition.x, node.fontPosition.y);
+			var x = node.fontPosition.x + offsetX;
+			var y = node.fontPosition.y + offsetY;
+
+			context.fillText(text, x, y);
 
 			node.texture.needsUpdate = true;
 		};

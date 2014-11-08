@@ -420,7 +420,13 @@
 			mesh.position.set(0,-0.3,-1);
 
 			mesh.addEventListener('click', function(e) {
-				VRClient.load('content/construct')
+				VRClient.load('content/construct', {
+					noTitle: true,
+					hideLoading: true,
+					title: 'Mozvr.com',
+					titleUrl: 'www.mozvr.com',
+					titleCredits: 'mozilla vr research'
+				})
 			});
 
 			mesh.addEventListener('mouseover', function(e) {
