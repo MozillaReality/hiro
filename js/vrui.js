@@ -11,6 +11,7 @@ VRUi
 function VRUi(container) {
 	var self = this;
 
+
 	this.homeUrl = 'content/construct';
 	this.landingUrl = 'content/landing';
 	this.container = container;
