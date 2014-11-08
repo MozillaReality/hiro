@@ -71,18 +71,34 @@ VRTitle.prototype.hide = function(delay) {
 };
 
 VRTitle.prototype.setCredits = function(value) {
-	this.d23.setText('current-credits', value);
+	this.d23.setText('current-credits', value.toUpperCase());
 };
 
 VRTitle.prototype.setTitle = function(value) {
-	this.d23.setText('current-title', value, {
+	this.d23.setText('current-title', value.toUpperCase(), {
 		offsetY: -14,
 		offsetX: 10
 	});
 };
 
 VRTitle.prototype.setUrl = function(value) {
-	this.d23.setText('current-url', value, {
+	var titleUrl = value.toUpperCase();
+
+	// strip uggly porotocal lines
+	var strip = ['HTTP://', 'HTTPS://'];
+
+	strip.forEach(function(str) {
+		titleUrl = titleUrl.replace(str, '');
+	});
+
+	// get rid of trailing slashes
+ 	if (titleUrl.substr(-1) == '/') {
+  	titleUrl = titleUrl.substr(0, titleUrl.length - 1);
+  };
+
+  console.log(' ***** '+titleUrl);
+
+	this.d23.setText('current-url', titleUrl, {
 		offsetY: -8,
 		offsetX: 10
 	});
