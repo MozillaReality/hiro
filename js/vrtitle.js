@@ -27,9 +27,9 @@ function VRTitle() {
 
 				self.d23 = d23;
 
-				self.setTitle('TITLE OF SITE');
-				self.setUrl('MOZVR.COM/TEST-URL');
-				self.setCredits('MR. DOOB, JOSH CARPENTER');
+				self.setTitle('Mozilla VR research');
+				self.setUrl('http://www.mozvr.com');
+				self.setCredits('Casey Yee\nJosh Carpenter');
 
 				resolve();
 			});
@@ -71,7 +71,13 @@ VRTitle.prototype.hide = function(delay) {
 };
 
 VRTitle.prototype.setCredits = function(value) {
-	this.d23.setText('current-credits', value.toUpperCase());
+	var credit = value.toUpperCase();
+
+	this.d23.setText('current-credits', credit, {
+		newLine: '\n',
+		lineHeight: 25,
+		verticalAlign: 'bottom'
+	});
 };
 
 VRTitle.prototype.setTitle = function(value) {
@@ -96,9 +102,7 @@ VRTitle.prototype.setUrl = function(value) {
   	titleUrl = titleUrl.substr(0, titleUrl.length - 1);
   };
 
-  console.log(' ***** '+titleUrl);
-
-	this.d23.setText('current-url', titleUrl, {
+  this.d23.setText('current-url', titleUrl, {
 		offsetY: -8,
 		offsetX: 10
 	});

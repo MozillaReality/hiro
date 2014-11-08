@@ -92,9 +92,9 @@ VRUi.prototype.load = function(url, opts) {
 			self.transition.fadeOut()
 				.then(function() {
 					// title
-					self.title.setTitle(title.toUpperCase());
-					self.title.setUrl(titleUrl.toUpperCase());
-					self.title.setCredits(titleCredits.toUpperCase());
+					self.title.setTitle(title);
+					self.title.setUrl(titleUrl);
+					self.title.setCredits(titleCredits);
 
 					if (!noTitle) {
 						self.title.show();

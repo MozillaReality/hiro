@@ -221,7 +221,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 			var mesh = n.mesh;
 			mesh.addEventListener('click', function(e) {
 				VRManager.ui.load(f.url, {
-					author: f.credits,
+					titleCredits: f.credits,
 					title: f.title
 				});
 			})
