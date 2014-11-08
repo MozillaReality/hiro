@@ -46,12 +46,15 @@ function VRCursor(mode) {
         new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, side: THREE.DoubleSide } )
       );
 
+      self.layout.visible = self.enabled;
+
       // set the depth of cursor
       self.cursor.position.z = -2;
 
       self.cursorPivot.add(self.cursor);
 
       self.layout.add(self.cursorPivot);
+
 
       resolve();
   });

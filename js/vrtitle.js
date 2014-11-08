@@ -17,12 +17,6 @@ function VRTitle() {
 				var node = d23.getNodeById('current', true);
 				var mesh = node.mesh;
 
-				d23.setText('current-title', 'TITLE OF SITE');
-
-				d23.setText('current-url', 'MOZVR.COM/TEST-URL');
-
-				d23.setText('current-credits', 'MR. DOOB, JOSH CARPENTER');
-
 				mesh.visible = self.visible;
 
 				self.mesh = mesh;
@@ -33,6 +27,10 @@ function VRTitle() {
 
 				self.d23 = d23;
 
+				self.setTitle('Mozilla VR research');
+				self.setUrl('http://www.mozvr.com');
+				self.setCredits('Casey Yee\nJosh Carpenter');
+
 				resolve();
 			});
 	});
@@ -41,75 +39,111 @@ function VRTitle() {
 }
 
 
-VRTitle.prototype.update = function() {
-
-}
-
-
-VRTitle.prototype.show = function() {
+VRTitle.prototype.show = function(delay) {
 	var self = this;
 	if (!self.visible) {
 		self.visible = true;
-		self.mesh.visible = true;
-		//self.animateIn(self.mesh);
+
+		function animate() {
+			self.mesh.visible = true;
+			self.animateIn(self.mesh);
+		}
+
+		if (delay) {
+			setTimeout(animate, delay)
+		} else {
+			animate();
+		}
 	}
 }
 
-VRTitle.prototype.hide = function() {
+VRTitle.prototype.hide = function(delay) {
 	self = this;
 
-	return new Promise(function(resolve) {
+	var	animDone = self.animateOut(self.mesh, delay);
+
+	animDone.then(function() {
 		self.visible = false;
 		self.mesh.visible = false;
-
-		resolve();
 	});
 
-	// var animDone = self.animateOut(self.mesh);
-
-	// animDone.then(function() {
-	// 	self.visible = false;
-	// 	self.mesh.visible = false;
-	// 	self.setAuthor('');
-	// });
-
-
-	// return animDone;
+	return animDone;
 };
 
 VRTitle.prototype.setCredits = function(value) {
-	this.d23.setText('current-credits', value);
+	var credit = value.toUpperCase();
+
+	this.d23.setText('current-credits', credit, {
+		newLine: '\n',
+		lineHeight: 25,
+		verticalAlign: 'bottom'
+	});
 };
 
 VRTitle.prototype.setTitle = function(value) {
-	this.d23.setText('current-title', value);
+	this.d23.setText('current-title', value.toUpperCase(), {
+		offsetY: -14,
+		offsetX: 10
+	});
 };
 
 VRTitle.prototype.setUrl = function(value) {
-	this.d23.setText('current-url', value);
+	var titleUrl = value.toUpperCase();
+
+	// strip uggly porotocal lines
+	var strip = ['HTTP://', 'HTTPS://'];
+
+	strip.forEach(function(str) {
+		titleUrl = titleUrl.replace(str, '');
+	});
+
+	// get rid of trailing slashes
+ 	if (titleUrl.substr(-1) == '/') {
+  	titleUrl = titleUrl.substr(0, titleUrl.length - 1);
+  };
+
+  this.d23.setText('current-url', titleUrl, {
+		offsetY: -8,
+		offsetX: 10
+	});
 };
 
-
-VRTitle.prototype.animateOut = function(mesh) {
+VRTitle.prototype.animateOut = function(mesh, delay) {
 	return new Promise(function(resolve, reject) {
-		var tween = new TWEEN.Tween( mesh.scale )
-			.to({ x: 0.00001, y: 0.00001 }, 500 )
-			.easing(TWEEN.Easing.Exponential.Out)
-			.onComplete(function() {
-				resolve();
-			})
-			.start();
+		for (var i = 0; i < mesh.children.length; i++) {
+			var m = mesh.children[i];
+
+			var tween = new TWEEN.Tween( m.material )
+				.to({ opacity: 0 }, 500 )
+				.easing(TWEEN.Easing.Exponential.Out)
+				.onComplete(function() {
+					resolve();
+				})
+
+			if (delay) {
+				tween.delay(delay);
+			}
+
+			tween.start();
+		}
+
 	});
 };
 
 VRTitle.prototype.animateIn = function(mesh) {
 	return new Promise(function(resolve, reject) {
-		var tween = new TWEEN.Tween( mesh.scale )
-			.to(mesh.userData.scale, 1000 )
-			.easing(TWEEN.Easing.Exponential.Out)
-			.onComplete(function() {
-				resolve();
-			})
-			.start();
+		for (var i = 0; i < mesh.children.length; i++) {
+			var m = mesh.children[i];
+			m.material.opacity = 0;
+			var tween = new TWEEN.Tween( m.material )
+				.to({ opacity: 1 }, 1000 )
+				.easing(TWEEN.Easing.Exponential.Out)
+				.onComplete(function() {
+					resolve();
+				})
+				.start();
+		}
+
+
 	});
 };

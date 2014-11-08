@@ -11,7 +11,9 @@ VRUi
 function VRUi(container) {
 	var self = this;
 
-	this.homeUrl = 'content/construct/index.html';
+
+	this.homeUrl = 'content/construct';
+	this.landingUrl = 'content/landing';
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -58,6 +60,160 @@ function VRUi(container) {
 		});
 
 	return this;
+};
+
+
+VRUi.prototype.load = function(url, opts) {
+	var self = this;
+
+	var opts = opts || {};
+
+	// hides loading progress animation
+	var hideLoading = opts.hideLoading || false;
+
+	// hides title frame
+	var noTitle = opts.noTitle || false;
+
+	// title frame title.
+	var title = opts.title || '';
+
+	// title frame url
+	var titleUrl = opts.titleUrl || url;
+
+	// title frame credits
+	var titleCredits = opts.titleCredits || '';
+
+	this.hud.hide()
+		.then(function() {
+
+			self.cursor.disable();
+
+			self.backgroundHide();
+
+			self.transition.fadeOut()
+				.then(function() {
+					// title
+					self.title.setTitle(title);
+					self.title.setUrl(titleUrl);
+					self.title.setCredits(titleCredits);
+
+					if (!noTitle) {
+						self.title.show();
+					}
+
+					self.currentUrl = url;
+
+					self.isHome = (url == self.homeUrl ? true : false );
+
+					if (self.isHome) {
+						self.hud.enable();
+					}
+
+					VRManager.load(url);
+
+					if (!hideLoading) {
+						self.loading.show();
+					}
+
+					function onTabReady() {
+						self.loading.hide();
+
+						self.transition.fadeIn();
+
+						// hide title after set amount of time
+						setTimeout(function() {
+							if (!self.hud.visible) {
+								self.title.hide().then(function() {
+									// self.container.style.display = 'none';
+								})
+							}
+						}, 3000);
+					}
+
+					VRManager.readyCallback = onTabReady;
+
+				});
+		});
+};
+
+
+VRUi.prototype.toggleHud = function() {
+	if (!this.hud.visible && this.hud.enabled) {
+		this.background.visible = true;
+		this.backgroundShow();
+		this.hud.show();
+		this.title.show(1000);
+		this.cursor.enable();
+		console.log('showing HUD');
+		VRManager.currentDemo.blur();
+	} else if (this.hud.visible && this.hud.enabled) {
+		this.backgroundHide();
+		this.hud.hide();
+		this.title.hide(1000);
+		this.cursor.disable();
+		console.log('hiding HUD');
+		VRManager.currentDemo.focus();
+	} else {
+		this.hud.hide();
+	}
+};
+
+
+VRUi.prototype.start = function(mode) {
+	var self = this;
+
+	this.ready.then(function() {
+
+		// start hud
+		//self.toggleHud();
+
+		// start to home
+		// self.goHome(true);
+
+		VRManager.load(self.landingUrl);
+		// VRManager.load(self.homeUrl);
+
+		// kick off animation loop
+		self.animate();
+	});
+};
+
+
+VRUi.prototype.goHome = function(noTransition) {
+	var self = this;
+	var home = this.home;
+
+	var opts = {
+		title: 'Home',
+		credits: 'mozvr.com',
+		hideLoading: true
+	}
+
+	this.isHome = true;
+
+	if (noTransition) {
+		// skip transitions and titles, load content directly.
+		this.title.setTitle(opts.title);
+		this.title.setCredits(opts.author);
+		this.title.setUrl(this.homeUrl);
+		self.cursor.disable();
+		VRManager.load(this.homeUrl);
+	} else {
+		this.load(this.homeUrl, opts);
+	}
+}
+
+VRUi.prototype.reset = function() {
+	var self = this;
+	self.currentUrl = null;
+	self.backgroundHide();
+	self.title.hide();
+	self.cursor.disable();
+	self.hud.hide()
+		.then(function() {
+			self.start();
+		});
+	self.hud.disable();
 };
 
 
@@ -112,6 +268,9 @@ VRUi.prototype.bend = function( group, amount, multiMaterialObject ) {
 	}
 }
 
+/*
+todo: move backgrounds off to seperate module
+*/
 VRUi.prototype.background = function() {
 	/*
 	create a sphere that wraps the user.   This should sit in-between the
@@ -160,8 +319,6 @@ VRUi.prototype.backgroundShow = function() {
 };
 
 
-
-
 // temporary wireframe lines for context alignment
 VRUi.prototype.gridlines = function() {
 	var geometry = new THREE.BoxGeometry(1,1,1,5,5,5);
@@ -171,92 +328,6 @@ VRUi.prototype.gridlines = function() {
 	return cube;
 }
 
-VRUi.prototype.load = function(url, opts) {
-	var self = this;
-	var opts = opts || {};
-	var hideLoading = opts.hideLoading || false;
-	this.hud.hide()
-		.then(function() {
-
-			self.cursor.disable();
-
-			self.backgroundHide();
-
-			self.transition.fadeOut()
-				.then(function() {
-
-					if (opts.title || opts.credits) {
-						self.title.setTitle(opts.title);
-						self.title.setCredits(opts.credits);
-						self.title.setUrl(url);
-					} else {
-						self.title.setTitle('');
-						self.title.setCredits('');
-						self.title.setUrl(url);
-					}
-
-					self.title.show();
-
-					self.currentUrl = url;
-
-					self.isHome = (url == self.homeUrl ? true : false );
-
-					VRManager.load(url);
-
-					if (!hideLoading) {
-						self.loading.show();
-					}
-
-					function onTabReady() {
-						self.loading.hide();
-
-						self.transition.fadeIn();
-
-						// hide title after set amount of time
-						setTimeout(function() {
-							if (!self.hud.visible) {
-								self.title.hide().then(function() {
-									// self.container.style.display = 'none';
-								})
-							}
-						}, 3000);
-					}
-
-					VRManager.readyCallback = onTabReady;
-
-				});
-		});
-};
-
-
-VRUi.prototype.toggleHud = function() {
-	if (!this.hud.visible) {
-		this.background.visible = true;
-		this.backgroundShow();
-		this.hud.show();
-		this.title.show();
-		this.cursor.enable();
-		console.log('showing HUD');
-		VRManager.currentDemo.blur();
-	} else {
-		this.backgroundHide();
-		this.hud.hide();
-		this.title.hide();
-		this.cursor.disable();
-		console.log('hiding HUD');
-		VRManager.currentDemo.focus();
-	}
-};
-
-
-/*
-todo: need to normalize these settings with the same ones that are in cursor
-*/
-VRUi.modes = VRUi.prototype.modes = {
-  mono: 1,
-  stereo: 2,
-  vr: 3
-};
 
 VRUi.prototype.initRenderer = function() {
 	this.renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -274,6 +345,12 @@ VRUi.prototype.initRenderer = function() {
   this.initResizeHandler();
 };
 
+// todo: needs to be put somewhere else.  duplicated in vrcursor and vrclient.
+VRUi.modes = VRUi.prototype.modes = {
+  mono: 1,
+  stereo: 2,
+  vr: 3
+};
 
 VRUi.prototype.setRenderMode = function(mode) {
 	this.mode = mode;
@@ -306,57 +383,6 @@ VRUi.prototype.setRenderMode = function(mode) {
 
 
 
-
-VRUi.prototype.start = function(mode) {
-	var self = this;
-
-	this.ready.then(function() {
-		// start hud
-		//self.toggleHud();
-
-		// start to home
-		self.goHome(true);
-
-		// kick off animation loop
-		self.animate();
-	});
-};
-
-VRUi.prototype.goHome = function(noTransition) {
-	var self = this;
-	var home = this.home;
-
-	var opts = {
-		title: 'Home',
-		credits: 'mozvr.com',
-		hideLoading: true
-	}
-
-	this.isHome = true;
-
-	if (noTransition) {
-		// skip transitions and titles, load content directly.
-		this.title.setTitle(opts.title);
-		this.title.setCredits(opts.author);
-		this.title.setUrl(this.homeUrl);
-		self.cursor.disable();
-		VRManager.load(this.homeUrl);
-	} else {
-		this.load(this.homeUrl, opts);
-	}
-}
-
-VRUi.prototype.reset = function() {
-	var self = this;
-	self.currentUrl = null;
-	self.title.hide();
-	self.cursor.disable();
-	self.hud.hide()
-		.then(function() {
-			self.start();
-		});
-};
-
 VRUi.prototype.animate = function() {
 	var self = this;
 	var controls = self.controls;
@@ -375,8 +401,6 @@ VRUi.prototype.animate = function() {
 
 	self.loading.update();
 
-	self.title.update();
-
 	self.cursor.update(headQuat);
 
 	// run any animation tweens
@@ -388,7 +412,7 @@ VRUi.prototype.animate = function() {
 	requestAnimationFrame(this.animate.bind(this));
 }
 
-
+// todo: move off to main index.html?  perhaps dedicated controls module.
 VRUi.prototype.initKeyboardControls = function() {
  	var self = this;
 
@@ -413,6 +437,7 @@ VRUi.prototype.initKeyboardControls = function() {
 
   window.addEventListener("keydown", onkey, true);
 };
+
 
 VRUi.prototype.initResizeHandler = function() {
 	var effect = this.effect;

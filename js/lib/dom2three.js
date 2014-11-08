@@ -308,7 +308,22 @@ var DOM2three = (function() {
 			return false;
 		};
 
-		this.setText = function(id, text) {
+		this.setText = function(id, text, opts) {
+			var opts = opts || {};
+
+			// offset placement of text
+			var offsetX = opts.offsetX || 0;
+			var offsetY = opts.offsetY || 0;
+
+			// split new lines using
+			var newLine = opts.newLine || '\n';
+
+			// line height for multi-line
+			var lineHeight = opts.lineHeight || 0;
+
+			// vertical alignment
+			var verticalAlign = opts.verticalAlign || 'top';
+
 			var node = self.getNodeById(id);
 
 			if (!node) {
@@ -321,7 +336,24 @@ var DOM2three = (function() {
 
 			context.clearRect(0, 0, canvas.width, canvas.height);
 
-			context.fillText(text, node.fontPosition.x, node.fontPosition.y);
+			// handle multiline
+			var textLines = text.split(newLine);
+
+			for (var i = 0; i < textLines.length; i++) {
+				var line = textLines[i];
+
+				var x = node.fontPosition.x + offsetX;
+				var y = 0;
+
+				if (verticalAlign == 'top') {
+					y = node.fontPosition.y + offsetY + (i * lineHeight);
+				}  else if (verticalAlign == 'bottom') {
+					var bottomOffset = - ((textLines.length * lineHeight) - (i * lineHeight) - lineHeight);
+					y = node.fontPosition.y + offsetY + bottomOffset;
+				}
+
+				context.fillText(line, x, y);
+			}
 
 			node.texture.needsUpdate = true;
 		};

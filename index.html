@@ -123,6 +123,7 @@
         // download dialogue displays when no VR compatible browser is detected.
         var downloadDialogue = document.querySelector('#vrDownload');
         var statusDialogue = document.querySelector('#vrEnabled');
+        var enterVRButton = document.querySelector('#launch');
         var downloadButton = document.querySelector('#download');
         var dissmissButton = document.querySelector('#download-dismiss');
 
@@ -144,6 +145,10 @@
         downloadButton.addEventListener('click', toggleDownloadDialogue);
         dissmissButton.addEventListener('click', toggleDownloadDialogue);
 
+        // enter VR button
+        enterVRButton.addEventListener('click', function() {
+          VRManager.enableVR();
+        })
 
         // mode buttons
         var monoButton = document.querySelector('#mono');

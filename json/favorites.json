@@ -9,38 +9,38 @@
     {
       "id": "Sechelt",
       "title": "Sechelt",
-      "credits": "Josh Carpenter\nRicardo Cabello",
+      "credits": "Josh Carpenter\nRicardo Cabello\n—\nthree.js",
       "url": "http://mozvr.github.io/sechelt"
     },
     {
       "id": "polar",
       "title": "Polar Sea",
-      "credits": "Deep Inc.\nELEVR",
+      "credits": "Deep Inc.\nELEVR\n—\nWebGL",
       "url": "http://mozvr.github.io/polarsea/"
     },
     {
       "id": "diving",
       "title": "Information Diving",
-      "credits": "Tony Parisi, Eric Levin, Josh Carpenter",
+      "credits": "Tony Parisi\nEric Levin\nJosh Carpenter\n-\nWebGL",
       "url": "http://mozvr.github.io/infodive/index2.html"
     },
     {
       "id": "pano",
       "title": "Panorama",
-      "credits": "Josh Carpenter",
+      "credits": "Josh Carpenter\n-\nthree.js",
       "url": "http://mozvr.github.io/panorama-viewer"
     },
     {
       "id": "leap",
       "title": "Leap Motion",
-      "credits": "Leap Motion",
+      "credits": "Leap Motion\n-\nthree.js leap motion controller",
       "url": "http://pehrlich.github.io/VRCollage"
     },
     {
       "id": "elevr4",
       "title": "ELEVR: Talk chat show EP.4",
-      "credits": "ELEVR",
-      "url": "content/construct/index.html"
+      "credits": "ELEVR\n-\nWebGL",
+      "url": "http://mozvr.com/staging/content/elevr4"
     }
   ]
 }
