@@ -86,14 +86,12 @@
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
 				if (mode == modes.mono) {
-					console.log('Mono mode');
 					controls = new THREE.VRControls( camera );
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
 
 				} else if (mode == modes.stereo) {
-					console.log('Stereo mode');
 					// controls = new THREE.DeviceOrientationControls( camera );
 					controls = null;
 					effect = new THREE.StereoEffect( renderer );
@@ -101,7 +99,6 @@
 					cursor.disable();
 
 				} else if (mode == modes.vr) {
-					console.log('VR mode');
 					controls = new THREE.VRControls( camera );
 					effect = new THREE.VREffect( renderer );
 					cursor.setMode('centered');
@@ -115,17 +112,14 @@
 			VRClient.onRenderModeChange = setRenderMode;
 
 			VRClient.onZeroSensor = function() {
-				console.log('sensor zero');
 				controls.zeroSensor();
 			}
 
 			VRClient.onBlur = function() {
-				console.log('content blurred');
 				cursor.disable();
 			}
 
 			VRClient.onFocus = function() {
-				console.log('content focused');
 				cursor.enable();
 			}
 
@@ -242,10 +236,7 @@
 			//makeCoverStory();
 			//populateLinks();
 			//makeSechelt();
-
-
-
-
+			
 			var scale = 0.1; // pixel scale
 			var segmentsX = 20;
 			var segmentsY = 1;
@@ -278,7 +269,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					console.log( "GOOGOOGGO" );
+
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -333,7 +324,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					console.log( "GOOGOOGGO" );
+
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -389,7 +380,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					console.log( "GOOGOOGGO" );
+
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -513,223 +504,6 @@
 
 
 
-
-
-
-		/*====================== Make flat text links ======================*/
-
-		/*
-
-			function drawSquare( xVal, yVal ) {
-
-				var x1 = 0 - xVal / 2;
-				var x2 = 0 + xVal / 2;
-				var y1 = 0 - yVal / 2;
-				var y2 = 0 + yVal / 2;
-
-				//console.log( x1, y1, x2, y2 );
-
-			    var geometry = new THREE.Geometry();
-
-			    //set 4 points
-			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x1, y1, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x2, y1, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x2, y2, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
-
-				var square = new THREE.Line(
-					geometry,
-					new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } )
-				);
-
-			    return square;
-			}
-
-
-			function makeLinkHighlight( width, height, depth ){
-
-				var frame = new THREE.Object3D();
-
-				var front = drawSquare( width, height );
-				front.rotation.set( 0, 0, 0 );
-				front.position.set( 0, 0, depth / 2 );
-				frame.add( front );
-
-				var back = drawSquare( width, height );
-				back.rotation.set( 0, 0, 0 );
-				back.position.set( 0, 0, 0 - depth / 2 );
-				frame.add( back );
-
-				var top = drawSquare( width, depth );
-				top.rotation.set( Math.PI / 2, 0, 0 );
-				top.position.set( 0, height / 2, 0 );
-				frame.add( top );
-
-				var bottom = drawSquare( width, depth );
-				bottom.rotation.set( Math.PI / 2, 0, 0 );
-				bottom.position.set( 0, 0 - height / 2, 0 );
-				frame.add( bottom );
-
-				var left = drawSquare( depth, height );
-				left.rotation.set( 0, Math.PI / 2, 0 );
-				left.position.set( 0 - width / 2, 0, 0 );
-				frame.add( left );
-
-				var right = drawSquare( depth, height );
-				right.rotation.set( 0, Math.PI / 2, 0 );
-				right.position.set( width / 2, 0, 0 );
-				frame.add( right );
-
-				var cube = new THREE.Mesh(
-					new THREE.BoxGeometry( width, height, depth ),
-					new THREE.MeshBasicMaterial( { color: 0x22caf0, transparent: true, opacity: 0, depthWrite: false } )
-				)
-				cube.add( frame );
-
-				return cube;
-
-			}
-
-
-			var linkSound = document.createElement( 'audio' )
-			var source = document.createElement( 'source' )
-			source.src = 'sounds/click.mp3';
-			linkSound.volume = 0.05;
-			linkSound.appendChild( source );
-
-
-			function makeLink( img, url, position, rotation ) {
-
-				//var sound = soundLinkHover;
-				var pX = position.x;
-				var pY = position.y;
-				var pZ = position.z;
-				var rX = rotation.x;
-				var rY = rotation.y;
-				var rZ = rotation.z;
-
-				var texWidth, texHeight, texRatio;
-				var texture = THREE.ImageUtils.loadTexture( img, {}, function(){
-
-					texWidth = texture.image.naturalWidth;
-					texHeight = texture.image.naturalHeight;
-					texRatio = texHeight / texWidth;
-
-					geometry.verticesNeedUpdate = true;
-					geometry.applyMatrix( new THREE.Matrix4().makeScale( 1, texRatio, 1 ) );
-
-					highlight.scale.set( 1, texRatio, 1 )
-					link.scale.set( 1.75, 1.75, 1.75 );
-
-				} );
-
-				var geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
-				var material = new THREE.MeshBasicMaterial( {	transparent: true, map: texture } );
-				var link = new THREE.Mesh( geometry, material );
-				link.rotation.set( rX, rY, rZ )
-				link.position.set( pX, pY, pZ );
-
-				var highlight = makeLinkHighlight( 1.1, 1.1, 0.2 );
-
-				link.addEventListener( 'click', function() {
-
-					VRClient.load( url );
-					console.log( url );
-
-				});
-
-				link.addEventListener( 'mouseover', function( e ) {
-
-					linkSound.play();
-					var highlight = e.target.children[0];
-
-					highlight.traverse( function( obj ){
-						if ( obj.hasOwnProperty( "material" ) ){
-							obj.material.opacity = 0.25;
-						}
-					});
-
-					highlight.scale.setZ( 0.1 );
-					var t = new TWEEN.Tween( highlight.scale )
-						.to( { z:0.5 }, 150 )
-						.start();
-
-				});
-
-				link.addEventListener( 'mouseout', function( e ) {
-
-					var highlight = e.target.children[0]
-
-					highlight.traverse( function( obj ){
-						if ( obj.hasOwnProperty( "material" ) ){
-							obj.material.opacity = 0;
-						}
-					});
-
-				});
-
-				//link.rotation.set( 0.8, 0.8, 0 )
-
-				link.add( highlight );
-				return ( link );
-
-
-			}
-
-			function populateLinks() {
-
-				var links = {
-					leap: {
-						tex: 'images/txt-leap.png',
-						url: 'http://mozvr.github.io/sechelt',
-						position: { x:-3.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-					interview: {
-						tex: 'images/txt-interview.png',
-						url: 'http://mozvr.github.io/polarsea/',
-						position: { x:-1.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-					panorama: {
-						tex: 'images/txt-panorama.png',
-						url: 'http://mozvr.github.io/sechelt',
-						position: { x:1.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-					futureofthevrweb: {
-						tex: 'images/txt-futureofthevrweb.png',
-						url: 'http://mozvr.github.io/polarsea/',
-						position: { x:3.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-				}
-
-				scene.add( makeLink( links.leap.tex, links.leap.url, links.leap.position, links.leap.rotation ) );
-				scene.add( makeLink( links.interview.tex, links.interview.url, links.interview.position, links.interview.rotation ) );
-				scene.add( makeLink( links.panorama.tex, links.panorama.url, links.panorama.position, links.panorama.rotation ) );
-				scene.add( makeLink( links.futureofthevrweb.tex, links.futureofthevrweb.url, links.futureofthevrweb.position, links.futureofthevrweb.rotation ) );
-
-			}
-
-		*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/*====================== Bend stuff ======================*/
 
 	function bend( group, amount, multiMaterialObject ) {
@@ -767,7 +541,6 @@
 
 		for ( var i = 0; i < group.children.length; i ++ ) {
 
-			console.log( "tttttt" );
 
 			var element = group.children[ i ];
 
@@ -791,209 +564,6 @@
 
 
 
-
-
-
-
-
-		/*====================== Make curved text links ======================*/
-
-		/*
-
-			function drawSquare( xVal, yVal ) {
-
-				var x1 = 0 - xVal / 2;
-				var x2 = 0 + xVal / 2;
-				var y1 = 0 - yVal / 2;
-				var y2 = 0 + yVal / 2;
-
-				//console.log( x1, y1, x2, y2 );
-
-			    var geometry = new THREE.Geometry();
-
-			    //set 4 points
-			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x1, y1, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x2, y1, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x2, y2, 0 ) );
-			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
-
-				var square = new THREE.Line(
-					geometry,
-					new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } )
-				);
-
-			    return square;
-			}
-
-
-			function makeLinkHighlight( width, height, depth ){
-
-				var frame = new THREE.Object3D();
-
-				var front = drawSquare( width, height );
-				front.rotation.set( 0, 0, 0 );
-				front.position.set( 0, 0, depth / 2 );
-				frame.add( front );
-
-				var back = drawSquare( width, height );
-				back.rotation.set( 0, 0, 0 );
-				back.position.set( 0, 0, 0 - depth / 2 );
-				frame.add( back );
-
-				var top = drawSquare( width, depth );
-				top.rotation.set( Math.PI / 2, 0, 0 );
-				top.position.set( 0, height / 2, 0 );
-				frame.add( top );
-
-				var bottom = drawSquare( width, depth );
-				bottom.rotation.set( Math.PI / 2, 0, 0 );
-				bottom.position.set( 0, 0 - height / 2, 0 );
-				frame.add( bottom );
-
-				var left = drawSquare( depth, height );
-				left.rotation.set( 0, Math.PI / 2, 0 );
-				left.position.set( 0 - width / 2, 0, 0 );
-				frame.add( left );
-
-				var right = drawSquare( depth, height );
-				right.rotation.set( 0, Math.PI / 2, 0 );
-				right.position.set( width / 2, 0, 0 );
-				frame.add( right );
-
-				var cube = new THREE.Mesh(
-					new THREE.BoxGeometry( width, height, depth ),
-					new THREE.MeshBasicMaterial( { color: 0x22caf0, transparent: true, opacity: 0, depthWrite: false } )
-				)
-				cube.add( frame );
-
-				return cube;
-
-			}
-
-
-			var linkSound = document.createElement( 'audio' )
-			var source = document.createElement( 'source' )
-			source.src = 'sounds/click.mp3';
-			linkSound.volume = 0.05;
-			linkSound.appendChild( source );
-
-
-			function makeLink( img, url, position, rotation ) {
-
-				//var sound = soundLinkHover;
-				var pX = position.x;
-				var pY = position.y;
-				var pZ = position.z;
-				var rX = rotation.x;
-				var rY = rotation.y;
-				var rZ = rotation.z;
-
-				var texWidth, texHeight, texRatio;
-				var texture = THREE.ImageUtils.loadTexture( img, {}, function(){
-
-					texWidth = texture.image.naturalWidth;
-					texHeight = texture.image.naturalHeight;
-					texRatio = texHeight / texWidth;
-
-					geometry.verticesNeedUpdate = true;
-					geometry.applyMatrix( new THREE.Matrix4().makeScale( 1, texRatio, 1 ) );
-
-					highlight.scale.set( 1, texRatio, 1 )
-					link.scale.set( 1.75, 1.75, 1.75 );
-
-				} );
-
-				var geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
-				var material = new THREE.MeshBasicMaterial( {	transparent: true, map: texture } );
-				var link = new THREE.Mesh( geometry, material );
-				link.rotation.set( rX, rY, rZ )
-				link.position.set( pX, pY, pZ );
-
-				var highlight = makeLinkHighlight( 1.1, 1.1, 0.2 );
-
-				link.addEventListener( 'click', function() {
-
-					VRClient.load( url );
-					console.log( url );
-
-				});
-
-				link.addEventListener( 'mouseover', function( e ) {
-
-					linkSound.play();
-					var highlight = e.target.children[0];
-
-					highlight.traverse( function( obj ){
-						if ( obj.hasOwnProperty( "material" ) ){
-							obj.material.opacity = 0.25;
-						}
-					});
-
-					highlight.scale.setZ( 0.1 );
-					var t = new TWEEN.Tween( highlight.scale )
-						.to( { z:0.5 }, 150 )
-						.start();
-
-				});
-
-				link.addEventListener( 'mouseout', function( e ) {
-
-					var highlight = e.target.children[0]
-
-					highlight.traverse( function( obj ){
-						if ( obj.hasOwnProperty( "material" ) ){
-							obj.material.opacity = 0;
-						}
-					});
-
-				});
-
-				//link.rotation.set( 0.8, 0.8, 0 )
-
-				link.add( highlight );
-				return ( link );
-
-
-			}
-
-			function populateLinks() {
-
-				var links = {
-					leap: {
-						tex: 'images/txt-leap.png',
-						url: 'http://mozvr.github.io/sechelt',
-						position: { x:-3.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-					interview: {
-						tex: 'images/txt-interview.png',
-						url: 'http://mozvr.github.io/polarsea/',
-						position: { x:-1.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-					panorama: {
-						tex: 'images/txt-panorama.png',
-						url: 'http://mozvr.github.io/sechelt',
-						position: { x:1.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-					futureofthevrweb: {
-						tex: 'images/txt-futureofthevrweb.png',
-						url: 'http://mozvr.github.io/polarsea/',
-						position: { x:3.25, y:2+userHeight, z:-5 },
-						rotation: { x:0, y:0, z:0 }
-					},
-				}
-
-				scene.add( makeLink( links.leap.tex, links.leap.url, links.leap.position, links.leap.rotation ) );
-				scene.add( makeLink( links.interview.tex, links.interview.url, links.interview.position, links.interview.rotation ) );
-				scene.add( makeLink( links.panorama.tex, links.panorama.url, links.panorama.position, links.panorama.rotation ) );
-				scene.add( makeLink( links.futureofthevrweb.tex, links.futureofthevrweb.url, links.futureofthevrweb.position, links.futureofthevrweb.rotation ) );
-
-			}
-
-		*/
 
 
 
@@ -1024,21 +594,10 @@
 				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
 			)
 
-
-			/*
-			var geometry = new THREE.BoxGeometry( 150, 75, 0 );
-			var material = new THREE.MeshBasicMaterial( { colors: 0xffffff, transparent: true, map: THREE.ImageUtils.loadTexture( 'images/txt-futureofthevrweb.png' ) } );
-			var mesh = new THREE.Mesh( geometry, material );
-			var posY = 60;
-			mesh.position.set( 0, posY, 0 );
-			mesh.material.opacity = 0;
-			holder.add( mesh );
-			*/
-
 			var popup = new THREE.Object3D();
 			var mesh = new THREE.Mesh(
 				new THREE.PlaneGeometry( 30, 11, 20, 1 ), 
-				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/popup-infodive-1.png" ) } )
+				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/popup-infodive-1.png" ), side: THREE.DoubleSide } )
 			);
 			popup.add( mesh );
 			popup.rotation.set( 0, -80 * Math.PI / 180, 0 );
@@ -1198,7 +757,6 @@
 					y = iconBasePos.y + 0.2,
 					z = iconBasePos.z + 2.5;
 
-
 				// create parent holder object
 				var holder = makeIconHolder( icons.sechelt.url );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
@@ -1219,6 +777,244 @@
 			});
 
 		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		/*====================== Make curved text links ======================*/
+
+		/*
+
+			function drawSquare( xVal, yVal ) {
+
+				var x1 = 0 - xVal / 2;
+				var x2 = 0 + xVal / 2;
+				var y1 = 0 - yVal / 2;
+				var y2 = 0 + yVal / 2;
+
+
+			    var geometry = new THREE.Geometry();
+
+			    //set 4 points
+			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x1, y1, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x2, y1, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x2, y2, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
+
+				var square = new THREE.Line(
+					geometry,
+					new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } )
+				);
+
+			    return square;
+			}
+
+
+			function makeLinkHighlight( width, height, depth ){
+
+				var frame = new THREE.Object3D();
+
+				var front = drawSquare( width, height );
+				front.rotation.set( 0, 0, 0 );
+				front.position.set( 0, 0, depth / 2 );
+				frame.add( front );
+
+				var back = drawSquare( width, height );
+				back.rotation.set( 0, 0, 0 );
+				back.position.set( 0, 0, 0 - depth / 2 );
+				frame.add( back );
+
+				var top = drawSquare( width, depth );
+				top.rotation.set( Math.PI / 2, 0, 0 );
+				top.position.set( 0, height / 2, 0 );
+				frame.add( top );
+
+				var bottom = drawSquare( width, depth );
+				bottom.rotation.set( Math.PI / 2, 0, 0 );
+				bottom.position.set( 0, 0 - height / 2, 0 );
+				frame.add( bottom );
+
+				var left = drawSquare( depth, height );
+				left.rotation.set( 0, Math.PI / 2, 0 );
+				left.position.set( 0 - width / 2, 0, 0 );
+				frame.add( left );
+
+				var right = drawSquare( depth, height );
+				right.rotation.set( 0, Math.PI / 2, 0 );
+				right.position.set( width / 2, 0, 0 );
+				frame.add( right );
+
+				var cube = new THREE.Mesh(
+					new THREE.BoxGeometry( width, height, depth ),
+					new THREE.MeshBasicMaterial( { color: 0x22caf0, transparent: true, opacity: 0, depthWrite: false } )
+				)
+				cube.add( frame );
+
+				return cube;
+
+			}
+
+
+			var linkSound = document.createElement( 'audio' )
+			var source = document.createElement( 'source' )
+			source.src = 'sounds/click.mp3';
+			linkSound.volume = 0.05;
+			linkSound.appendChild( source );
+
+
+			function makeLink( img, url, position, rotation ) {
+
+				//var sound = soundLinkHover;
+				var pX = position.x;
+				var pY = position.y;
+				var pZ = position.z;
+				var rX = rotation.x;
+				var rY = rotation.y;
+				var rZ = rotation.z;
+
+				var texWidth, texHeight, texRatio;
+				var texture = THREE.ImageUtils.loadTexture( img, {}, function(){
+
+					texWidth = texture.image.naturalWidth;
+					texHeight = texture.image.naturalHeight;
+					texRatio = texHeight / texWidth;
+
+					geometry.verticesNeedUpdate = true;
+					geometry.applyMatrix( new THREE.Matrix4().makeScale( 1, texRatio, 1 ) );
+
+					highlight.scale.set( 1, texRatio, 1 )
+					link.scale.set( 1.75, 1.75, 1.75 );
+
+				} );
+
+				var geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
+				var material = new THREE.MeshBasicMaterial( {	transparent: true, map: texture } );
+				var link = new THREE.Mesh( geometry, material );
+				link.rotation.set( rX, rY, rZ )
+				link.position.set( pX, pY, pZ );
+
+				var highlight = makeLinkHighlight( 1.1, 1.1, 0.2 );
+
+				link.addEventListener( 'click', function() {
+
+					VRClient.load( url );
+
+				});
+
+				link.addEventListener( 'mouseover', function( e ) {
+
+					linkSound.play();
+					var highlight = e.target.children[0];
+
+					highlight.traverse( function( obj ){
+						if ( obj.hasOwnProperty( "material" ) ){
+							obj.material.opacity = 0.25;
+						}
+					});
+
+					highlight.scale.setZ( 0.1 );
+					var t = new TWEEN.Tween( highlight.scale )
+						.to( { z:0.5 }, 150 )
+						.start();
+
+				});
+
+				link.addEventListener( 'mouseout', function( e ) {
+
+					var highlight = e.target.children[0]
+
+					highlight.traverse( function( obj ){
+						if ( obj.hasOwnProperty( "material" ) ){
+							obj.material.opacity = 0;
+						}
+					});
+
+				});
+
+				//link.rotation.set( 0.8, 0.8, 0 )
+
+				link.add( highlight );
+				return ( link );
+
+
+			}
+
+			function populateLinks() {
+
+				var links = {
+					leap: {
+						tex: 'images/txt-leap.png',
+						url: 'http://mozvr.github.io/sechelt',
+						position: { x:-3.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+					interview: {
+						tex: 'images/txt-interview.png',
+						url: 'http://mozvr.github.io/polarsea/',
+						position: { x:-1.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+					panorama: {
+						tex: 'images/txt-panorama.png',
+						url: 'http://mozvr.github.io/sechelt',
+						position: { x:1.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+					futureofthevrweb: {
+						tex: 'images/txt-futureofthevrweb.png',
+						url: 'http://mozvr.github.io/polarsea/',
+						position: { x:3.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+				}
+
+				scene.add( makeLink( links.leap.tex, links.leap.url, links.leap.position, links.leap.rotation ) );
+				scene.add( makeLink( links.interview.tex, links.interview.url, links.interview.position, links.interview.rotation ) );
+				scene.add( makeLink( links.panorama.tex, links.panorama.url, links.panorama.position, links.panorama.rotation ) );
+				scene.add( makeLink( links.futureofthevrweb.tex, links.futureofthevrweb.url, links.futureofthevrweb.position, links.futureofthevrweb.rotation ) );
+
+			}
+
+		*/
+
+
+
+
+
+
+
+
 
 
 
@@ -1363,6 +1159,256 @@
 			return object;
 		}
 		*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		/*====================== Make flat text links ======================*/
+
+		/*
+
+			function drawSquare( xVal, yVal ) {
+
+				var x1 = 0 - xVal / 2;
+				var x2 = 0 + xVal / 2;
+				var y1 = 0 - yVal / 2;
+				var y2 = 0 + yVal / 2;
+
+
+			    var geometry = new THREE.Geometry();
+
+			    //set 4 points
+			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x1, y1, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x2, y1, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x2, y2, 0 ) );
+			    geometry.vertices.push( new THREE.Vector3( x1, y2, 0 ) );
+
+				var square = new THREE.Line(
+					geometry,
+					new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1, transparent: true, opacity: 0 } )
+				);
+
+			    return square;
+			}
+
+
+			function makeLinkHighlight( width, height, depth ){
+
+				var frame = new THREE.Object3D();
+
+				var front = drawSquare( width, height );
+				front.rotation.set( 0, 0, 0 );
+				front.position.set( 0, 0, depth / 2 );
+				frame.add( front );
+
+				var back = drawSquare( width, height );
+				back.rotation.set( 0, 0, 0 );
+				back.position.set( 0, 0, 0 - depth / 2 );
+				frame.add( back );
+
+				var top = drawSquare( width, depth );
+				top.rotation.set( Math.PI / 2, 0, 0 );
+				top.position.set( 0, height / 2, 0 );
+				frame.add( top );
+
+				var bottom = drawSquare( width, depth );
+				bottom.rotation.set( Math.PI / 2, 0, 0 );
+				bottom.position.set( 0, 0 - height / 2, 0 );
+				frame.add( bottom );
+
+				var left = drawSquare( depth, height );
+				left.rotation.set( 0, Math.PI / 2, 0 );
+				left.position.set( 0 - width / 2, 0, 0 );
+				frame.add( left );
+
+				var right = drawSquare( depth, height );
+				right.rotation.set( 0, Math.PI / 2, 0 );
+				right.position.set( width / 2, 0, 0 );
+				frame.add( right );
+
+				var cube = new THREE.Mesh(
+					new THREE.BoxGeometry( width, height, depth ),
+					new THREE.MeshBasicMaterial( { color: 0x22caf0, transparent: true, opacity: 0, depthWrite: false } )
+				)
+				cube.add( frame );
+
+				return cube;
+
+			}
+
+
+			var linkSound = document.createElement( 'audio' )
+			var source = document.createElement( 'source' )
+			source.src = 'sounds/click.mp3';
+			linkSound.volume = 0.05;
+			linkSound.appendChild( source );
+
+
+			function makeLink( img, url, position, rotation ) {
+
+				//var sound = soundLinkHover;
+				var pX = position.x;
+				var pY = position.y;
+				var pZ = position.z;
+				var rX = rotation.x;
+				var rY = rotation.y;
+				var rZ = rotation.z;
+
+				var texWidth, texHeight, texRatio;
+				var texture = THREE.ImageUtils.loadTexture( img, {}, function(){
+
+					texWidth = texture.image.naturalWidth;
+					texHeight = texture.image.naturalHeight;
+					texRatio = texHeight / texWidth;
+
+					geometry.verticesNeedUpdate = true;
+					geometry.applyMatrix( new THREE.Matrix4().makeScale( 1, texRatio, 1 ) );
+
+					highlight.scale.set( 1, texRatio, 1 )
+					link.scale.set( 1.75, 1.75, 1.75 );
+
+				} );
+
+				var geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
+				var material = new THREE.MeshBasicMaterial( {	transparent: true, map: texture } );
+				var link = new THREE.Mesh( geometry, material );
+				link.rotation.set( rX, rY, rZ )
+				link.position.set( pX, pY, pZ );
+
+				var highlight = makeLinkHighlight( 1.1, 1.1, 0.2 );
+
+				link.addEventListener( 'click', function() {
+
+					VRClient.load( url );
+
+				});
+
+				link.addEventListener( 'mouseover', function( e ) {
+
+					linkSound.play();
+					var highlight = e.target.children[0];
+
+					highlight.traverse( function( obj ){
+						if ( obj.hasOwnProperty( "material" ) ){
+							obj.material.opacity = 0.25;
+						}
+					});
+
+					highlight.scale.setZ( 0.1 );
+					var t = new TWEEN.Tween( highlight.scale )
+						.to( { z:0.5 }, 150 )
+						.start();
+
+				});
+
+				link.addEventListener( 'mouseout', function( e ) {
+
+					var highlight = e.target.children[0]
+
+					highlight.traverse( function( obj ){
+						if ( obj.hasOwnProperty( "material" ) ){
+							obj.material.opacity = 0;
+						}
+					});
+
+				});
+
+				//link.rotation.set( 0.8, 0.8, 0 )
+
+				link.add( highlight );
+				return ( link );
+
+
+			}
+
+			function populateLinks() {
+
+				var links = {
+					leap: {
+						tex: 'images/txt-leap.png',
+						url: 'http://mozvr.github.io/sechelt',
+						position: { x:-3.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+					interview: {
+						tex: 'images/txt-interview.png',
+						url: 'http://mozvr.github.io/polarsea/',
+						position: { x:-1.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+					panorama: {
+						tex: 'images/txt-panorama.png',
+						url: 'http://mozvr.github.io/sechelt',
+						position: { x:1.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+					futureofthevrweb: {
+						tex: 'images/txt-futureofthevrweb.png',
+						url: 'http://mozvr.github.io/polarsea/',
+						position: { x:3.25, y:2+userHeight, z:-5 },
+						rotation: { x:0, y:0, z:0 }
+					},
+				}
+
+				scene.add( makeLink( links.leap.tex, links.leap.url, links.leap.position, links.leap.rotation ) );
+				scene.add( makeLink( links.interview.tex, links.interview.url, links.interview.position, links.interview.rotation ) );
+				scene.add( makeLink( links.panorama.tex, links.panorama.url, links.panorama.position, links.panorama.rotation ) );
+				scene.add( makeLink( links.futureofthevrweb.tex, links.futureofthevrweb.url, links.futureofthevrweb.position, links.futureofthevrweb.rotation ) );
+
+			}
+
+		*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
