@@ -54,7 +54,12 @@ body {
   left: 2rem;
   font-size: 1rem;
   line-height: 3.2rem;
-  display: none;
+}
+
+#center {
+  position: absolute;
+  top: 65%;
+  left: 50%;
 }
 
 #intro span {
@@ -78,15 +83,17 @@ body {
   line-height: 4rem;
 }
 
+#fspointerscreen {
+  background: black;
+}
 /* navigation */
-#launch {
-  position: absolute;
+.button-large {
+  position: relative;
+  left: -50%;
+  margin: 1rem;
   width: 12rem;
-  margin: -6.5rem;
   border: 0.45rem solid rgba( 40, 40, 40, 1);
   padding: 0.5rem 0.2rem;
-  top: 85%;
-  left: 50%;
   color: rgba( 40, 40, 40, 1);
   box-shadow: 0px -16px 0px -8px rgba(50, 50, 50, 0.15);
   background-color: rgba( 0, 0, 0, 0 );
@@ -96,7 +103,7 @@ body {
   text-transform: uppercase;
 }
 
-#launch:hover {
+.button-large:hover {
   cursor: pointer;
 }
 

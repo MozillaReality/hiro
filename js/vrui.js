@@ -53,6 +53,7 @@ function VRUi(container) {
 
 			// add cursor to scene
 			self.scene.add(self.cursor.layout);
+			self.cursor.enable();
 
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
@@ -174,14 +175,14 @@ VRUi.prototype.start = function(mode) {
 
 	this.ready.then(function() {
 
-		// start hud
-		//self.toggleHud();
+		// start with hud
+		// self.toggleHud();
 
 		// start to home
 		// self.goHome(true);
 
+		// start with landing
 		VRManager.load(self.landingUrl);
-		// VRManager.load(self.homeUrl);
 
 		// kick off animation loop
 		self.animate();

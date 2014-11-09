@@ -16,78 +16,96 @@
       <!-- This is the container in which all the UI elements load into -->
       <div id="ui" class="fit"></div>
     </div><!-- #container -->
-    <div id="intro">
-      <span>We’re the Mozilla Research VR team.</span><br>
-      <span>This is our open lab, where we</span><br>
-      <span>share experiments and code.</span><br>
-    </div>
 
-    <div id="launch">
-      Enter VR
-      <div class="insideBorder"></div>
-    </div>
-
-    <div id="navigation">
-      <div id="logo" class="float-left">mozvr.com</div>
-
-      <div id="links" class="float-left">
-        <ul class="flat-list group">
-          <li>
-            <a href="launch.html" target="_blank">About</a>
-          </li>
-          <li>
-            <a href="downloads.html" target="_blank">Downloads</a>
-          </li>
-          <li>
-            <a href="readme.html" target="_blank">Read Me</a>
-          </li>
-          <li>
-            <a href="https://github.com/MozVR" target="_blank">GitHub</a>
-          </li>
-        </ul>
+    <div id="content" class="fit">
+      <div id="intro">
+        <span>We’re the Mozilla Research VR team.</span><br>
+        <span>This is our open lab, where we</span><br>
+        <span>share experiments and code.</span><br>
       </div>
 
-      <div id="modes" class="float-right">
-        <ul class="flat-list group">
-          <li id="viewing">
-            Viewing in
-          </li>
-
-          <li>
-            <a href="" id="mono" class="button-wire-small button-wire-selected is-hidden">Mono</a>
-          </li>
-          <li>
-            <a href="" id="stereo" class="button-wire-small is-hidden">Stereo</a>
-          </li>
-          <li>
-            <a href="" id="vr" class="button-wire-small is-hidden">VR</a>
-          </li>
-
-
-          <li>
-            <button id="download" class="button-download is-hidden"></button>
-          </li>
-        </ul>
-
-        <div class="status animate-in-out is-hidden" id="vrEnabled">
-          VR Browser detected
+      <div id="center">
+        <div id="pointer" class="button-large">
+          Pointer
         </div>
 
-        <div class="status status-bubble is-hidden" id="vrDownload">
-          <em>mozvr.com is a virtual reality website.</em><br/>
-          To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
+        <div id="launch" class="button-large">
+          Enter VR
+        </div>
+      </div>
 
-          <p class="center">
-            <a href="download.html"><button class="button-wire">Get Firefox VR</button></a>
-            <button class="button-wire" id="download-dismiss">Not now</button>
-          </p>
+      <div id="navigation">
+        <div id="logo" class="float-left">mozvr.com</div>
+
+        <div id="links" class="float-left">
+          <ul class="flat-list group">
+            <li>
+              <a href="launch.html" target="_blank">About</a>
+            </li>
+            <li>
+              <a href="downloads.html" target="_blank">Downloads</a>
+            </li>
+            <li>
+              <a href="readme.html" target="_blank">Read Me</a>
+            </li>
+            <li>
+              <a href="https://github.com/MozVR" target="_blank">GitHub</a>
+            </li>
+          </ul>
         </div>
 
-        </div><!-- #status -->
+        <div id="modes" class="float-right">
+          <ul class="flat-list group">
+            <li id="viewing">
+              Viewing in
+            </li>
 
-      </div><!-- #mode -->
+            <li>
+              <a href="" id="mono" class="button-wire-small button-wire-selected is-hidden">Mono</a>
+            </li>
+            <li>
+              <a href="" id="stereo" class="button-wire-small is-hidden">Stereo</a>
+            </li>
+            <li>
+              <a href="" id="vr" class="button-wire-small is-hidden">VR</a>
+            </li>
 
-    </div><!-- #navigation -->
+
+            <li>
+              <button id="download" class="button-download is-hidden"></button>
+            </li>
+          </ul>
+
+          <div class="status animate-in-out is-hidden" id="vrEnabled">
+            VR Browser detected
+          </div>
+
+          <div class="status status-bubble is-hidden" id="vrDownload">
+            <em>mozvr.com is a virtual reality website.</em><br/>
+            To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
+
+            <p class="center">
+              <a href="download.html"><button class="button-wire">Get Firefox VR</button></a>
+              <button class="button-wire" id="download-dismiss">Not now</button>
+            </p>
+          </div>
+
+          </div><!-- #status -->
+
+        </div><!-- #mode -->
+
+      </div><!-- #navigation -->
+
+    </div><!-- #content -->
+
+    <div id="fspointerscreen" class="fit is-hidden">
+      Allow and remember the fullscreen permission.
+
+      <br/><br/>
+
+      Press [ESC] to return to launch screen.
+    </div>
+
   </body>
   <script src="js/vendor/three.min.js"></script>
   <script src="js/vendor/VRControls.js"></script>
@@ -117,6 +135,44 @@
         var enterVRButton = document.querySelector('#launch');
         var downloadButton = document.querySelector('#download');
         var dissmissButton = document.querySelector('#download-dismiss');
+
+        var fspointerButton = document.querySelector('#pointer');
+        var fspointerscreen  = document.querySelector('#fspointerscreen');
+
+
+
+        fspointerButton.addEventListener('click', function() {
+          var fs = fspointerscreen;
+          fspointerscreen.classList.remove('is-hidden');
+          if (fs.requestFullscreen) {
+            fs.requestFullscreen();
+          } else if (fs.mozRequestFullScreen) {
+            fs.mozRequestFullScreen();
+          } else if (fs.webkitRequestFullscreen) {
+            fs.webkitRequestFullscreen();
+          }
+
+          var bodyEl = document.body;
+          bodyEl.requestPointerLock = bodyEl.requestPointerLock ||
+            bodyEl.mozRequestPointerLock ||
+            bodyEl.webkitRequestPointerLock;
+
+          bodyEl.requestPointerLock();
+        });
+
+        document.addEventListener('mozfullscreenchange', onFschange);
+        document.addEventListener('webkitfullscreenchange', onFschange);
+        document.addEventListener('fullscreenchange', onFschange);
+
+        function onFschange() {
+          var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+          var fs = fspointerscreen;
+
+          if (!fullscreenElement) {
+            fs.classList.add('is-hidden');
+          }
+        }
+
 
         function toggleDownloadDialogue(e) {
           e.preventDefault();

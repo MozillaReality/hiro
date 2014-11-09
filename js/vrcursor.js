@@ -12,6 +12,9 @@ function VRCursor(mode) {
   // system mouse vector
   this.mouse = null;
 
+  // body el
+  this.body = window && window.parent? window.parent.document.body : document.body;
+
   this.rotation = {
     x: 0,
     y: 0,
@@ -55,13 +58,13 @@ function VRCursor(mode) {
 
       self.layout.add(self.cursorPivot);
 
-
       resolve();
   });
 
   // bind "real" mouse events.
-  this.bindEvents();
-
+  if (this.enabled) {
+    this.bindEvents();
+  }
 }
 
 VRCursor.modes = VRCursor.prototype.modes = {
@@ -100,15 +103,18 @@ VRCursor.prototype.setMode = function(mode) {
 VRCursor.prototype.enable = function(context) {
   if (context) {
     this.context = context;
-  }
+  };
+
   if (!this.enabled) {
+    this.bindEvents();
     this.enabled = true;
     this.layout.visible = true;
-  }
+  };
 };
 
 VRCursor.prototype.disable = function() {
   if (this.enabled) {
+    this.unbindEvents();
     this.enabled = false;
     this.layout.visible = false;
   }
@@ -131,13 +137,20 @@ VRCursor.prototype.events = {
 
 // binds mouse events
 VRCursor.prototype.bindEvents = function() {
-  var body = window && window.parent? window.parent.document.body : document.body;
+  var body = this.body;
   var onMouseMoved = this.onMouseMoved.bind(this);
   var onMouseClicked = this.onMouseClicked.bind(this);
 
   body.addEventListener("mousemove", onMouseMoved, false);
   body.addEventListener("click", onMouseClicked, false);
-}
+};
+
+VRCursor.prototype.unbindEvents = function() {
+  var body = this.body;
+
+  body.removeEventListener("mousemove", this.onMouseMoved, false);
+  body.removeEventListener("click", this.onMouseClicked, false);
+};
 
 VRCursor.prototype.clampAngleTo = function(angle, boundary) {
   if (angle < -boundary) {
@@ -232,16 +245,21 @@ VRCursor.prototype.onMouseMoved = function(e) {
 };
 
 VRCursor.prototype.onMouseClicked = function(e) {
+  console.log('vrcuror click');
   var target = e.target;
 
   if (!this.enabled) {
     return false;
-  }
+  };
+
   if (target.tagName == 'BODY' ||
-    target.tagName == 'CANVAS' &&
-    this.objectMouseOver) {
+    target.tagName == 'CANVAS') {
+
+    if (this.objectMouseOver) {
       this.objectMouseOver.dispatchEvent(this.events.clickEvent);
-  }
+    }
+
+  };
 }
 
 VRCursor.prototype.updatePositionMouseSync = function(headQuat) {
