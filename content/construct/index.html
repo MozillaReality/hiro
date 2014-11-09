@@ -131,6 +131,80 @@
 			VRClient.ready();
 		}
 
+		// bend function
+
+		function bend( group, amount, multiMaterialObject ) {
+
+			function bendVertices( mesh, amount, parent ) {
+
+				var vertices = mesh.geometry.vertices;
+
+				if (!parent) {
+					parent = mesh;
+				}
+
+				for (var i = 0; i < vertices.length; i++) {
+					var vertex = vertices[i];
+
+					// apply bend calculations on vertexes from world coordinates
+					parent.updateMatrixWorld();
+
+					var worldVertex = parent.localToWorld(vertex);
+
+					var worldX = Math.sin( worldVertex.x / amount) * amount;
+					var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
+					var worldY = worldVertex.y 	;
+
+					// convert world coordinates back into local object coordinates.
+					var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
+					vertex.x = localVertex.x;
+					vertex.z = localVertex.z+amount;
+					vertex.y = localVertex.y;
+				};
+
+				mesh.geometry.computeBoundingSphere();
+				mesh.geometry.verticesNeedUpdate = true;
+			}
+
+			for ( var i = 0; i < group.children.length; i ++ ) {
+
+
+				var element = group.children[ i ];
+
+				if (element.geometry.vertices) {
+					if (multiMaterialObject) {
+						bendVertices( element, amount, group);
+					} else {
+						bendVertices( element, amount);
+					}
+				}
+
+				// if (element.userData.position) {
+				// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
+				// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
+				// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
+				// }
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		/*====================== Make layout ======================*/
+
 
 		function makeSky() {
 
@@ -161,7 +235,6 @@
 				scene.add( frame );
 
 			});
-
 		}
 
 
@@ -183,11 +256,10 @@
 				scene.add( wherever );
 
 			});
-
 		}
 
 
-		function makeMockupCylinder( src, radius, opacity ){
+		function makeCylinderLayout( src, radius, opacity ){
 
 			var circumference = radius * 2 * 3.14;
 			var height = circumference / 4;
@@ -210,7 +282,7 @@
 
 				logo.add( object );
 
-				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, opacity: 1 } );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, transparent: true, opacity: 1 } );
 
 				logo.traverse( function( node ){
 
@@ -227,215 +299,21 @@
 
 		function makeLayout() {
 
-			// setup
-
-			makeSky();
-	  	scene.fog = new THREE.Fog( 0x6ab5db, 30, 300 );
-
 			//makeFrame();
 			//makeCoverStory();
 			//populateLinks();
 			//makeSechelt();
-			
-			var scale = 0.1; // pixel scale
-			var segmentsX = 20;
-			var segmentsY = 1;
-			var depth = 7;
-			var offsetY = 1;
 
-			function makeSechelt() {
-				var w = 58 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+			// setup
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-sechelt-1.png" ) } )
-				);
-
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				group.add( mesh );
-				group.add( highlight );
-
-				// events
-				group.addEventListener( 'click', function() {
-
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 1 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
+			makeSky();
+	  	scene.fog = new THREE.Fog( 0x6ab5db, 30, 300 );
+			camera.position.set( 0, 0, 0 );
+			makeParticles();
+			populateIcons();
 
 
-
-				group.position.set(-depth, offsetY, -depth);
-
-				group.rotation.set( 0, 45 * Math.PI / 180, 0 );
-
-				bend(group, depth);
-
-				mesh.renderDepth = 2;
-
-				highlight.renderDepth = 2;
-
-				return group;
-			}
-
-			function makePolar() {
-				var w = 63 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
-
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
-				);
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				group.add( mesh );
-				group.add( highlight );
-
-				// events
-				group.addEventListener( 'click', function() {
-
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 1 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-
-				var depth = 7;
-
-				group.position.set(0, offsetY, -depth);
-
-				bend(group, depth);
-
-				mesh.renderDepth = 2;
-
-				highlight.renderDepth = 2;
-
-				return group;
-			}
-
-
-			function makeInfo() {
-				var w = 59 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
-
-
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-infodive-1.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 1 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-
-
-				group.add( mesh );
-
-				group.add( highlight );
-
-				var depth = 7;
-
-				group.position.set(depth, offsetY, -depth);
-
-				group.rotation.set( 0, -45 * Math.PI / 180, 0 );
-
-				bend(group, depth);
-
-				mesh.renderDepth = 2;
-
-				highlight.renderDepth = 2;
-
-				return group;
-			};
-
-
-			scene.add(makeSechelt());
-			scene.add(makePolar());
-			scene.add(makeInfo());
-
-
-
-
-			// full wrap
-			/*
-			var group = new THREE.Object3D();
-			var curved = new THREE.Mesh(
-				new THREE.PlaneGeometry( 313, 90, 20, 20 ),
-				new THREE.MeshBasicMaterial( { color: 0xFFCC33 } )
-			);
-			group.add( curved );
-			// curved.position.set( 0, 0, -10 );
-			bend( group, 50 );
-			scene.add( group );
-			*/
+	  	// logo
 
 			var logo = makeLogo();
 			var logoHolder = new THREE.Object3D();
@@ -474,98 +352,257 @@
 	  	*/
 
 
+	  	// cylinder layouts
 
-			var mockup1 = makeMockupCylinder( "cylinder-wherever.png", 200, 0.2 );
-			var mockup2 = makeMockupCylinder( "cylinder-text-2.png", 20, 1 );
+			var cylinder1 = makeCylinderLayout( "cylinder-wherever.png", 200, 0.2 );
+			cylinder1.renderDepth = 4;
+			cylinder1.position.set( 0, 1, 0 );
+			scene.add( cylinder1 );
 
-			mockup1.renderDepth = 2;
-			mockup2.renderDepth = 1;
-
-			mockup1.position.set( 0, 1, 0 );
-
-			//scene.add( mockup2 );
-			scene.add( mockup1 );
-
-			populateIcons();
-
-			// camera
-
-			camera.position.set( 0, 0, 0 );
-
-		}
+			// var cylinder2 = makeCylinderLayout( "cylinder-text-2.png", 20, 1 );
+			// mockup2.renderDepth = 1;
+			// scene.add( mockup2 );
 
 
+			// text links
 
+			var scale = 0.1; // pixel scale
+			var segmentsX = 20;
+			var segmentsY = 1;
+			var depth = 4;
+			var offsetY = 1;
 
+			function makeSechelt() {
 
+				var w = 58 * scale;
+				var h = 30 * scale;
+				var d = 1 * scale;
 
+				// hit area
+				var group = new THREE.Mesh(
+					new THREE.BoxGeometry( w, h, d, 1, 1 ),
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+				);
 
+				var mesh = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-sechelt-1.png" ) } )
+				);
 
+				var highlight = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+				);
 
+				group.add( mesh );
+				group.add( highlight );
 
+				// events
+				group.addEventListener( 'click', function() {
 
-	/*====================== Bend stuff ======================*/
+				});
 
-	function bend( group, amount, multiMaterialObject ) {
+				group.addEventListener( 'mouseover', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				});
 
-		function bendVertices( mesh, amount, parent ) {
+				group.addEventListener( 'mouseout', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				});
 
-			var vertices = mesh.geometry.vertices;
+				group.position.set(-depth-2, offsetY, -depth);
 
-			if (!parent) {
-				parent = mesh;
+				group.rotation.set( 0, 60 * Math.PI / 180, 0 );
+
+				bend(group, depth);
+
+				mesh.renderDepth = 2;
+
+				highlight.renderDepth = 2;
+
+				return group;
 			}
 
-			for (var i = 0; i < vertices.length; i++) {
-				var vertex = vertices[i];
 
-				// apply bend calculations on vertexes from world coordinates
-				parent.updateMatrixWorld();
+			function makePolar() {
 
-				var worldVertex = parent.localToWorld(vertex);
+				var w = 63 * scale;
+				var h = 30 * scale;
+				var d = 1 * scale;
 
-				var worldX = Math.sin( worldVertex.x / amount) * amount;
-				var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
-				var worldY = worldVertex.y 	;
+				// hit area
+				var group = new THREE.Mesh(
+					new THREE.BoxGeometry( w, h, d, 1, 1 ),
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+				);
 
-				// convert world coordinates back into local object coordinates.
-				var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
-				vertex.x = localVertex.x;
-				vertex.z = localVertex.z+amount;
-				vertex.y = localVertex.y;
+				var mesh = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
+				);
+				var highlight = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+				);
+
+				group.add( mesh );
+				group.add( highlight );
+
+				// events
+				group.addEventListener( 'click', function() {
+
+				});
+
+				group.addEventListener( 'mouseover', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				});
+
+				group.addEventListener( 'mouseout', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				});
+
+
+				group.position.set(0, offsetY, -depth - 3);
+
+				bend(group, depth);
+
+				mesh.renderDepth = 2;
+
+				highlight.renderDepth = 2;
+
+				return group;
+			}
+
+
+			function makeInfo() {
+
+				var w = 59 * scale;
+				var h = 30 * scale;
+				var d = 1 * scale;
+
+				// hit area
+				var group = new THREE.Mesh(
+					new THREE.BoxGeometry( w, h, d, 1, 1 ),
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+				);
+
+				// label
+				var mesh = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-infodive-1.png" ) } )
+				);
+
+				// highlight
+				var highlight = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+				);
+
+				// events
+				group.addEventListener( 'click', function() {
+
+				});
+
+				group.addEventListener( 'mouseover', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				});
+
+				group.addEventListener( 'mouseout', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				});
+
+				group.add( mesh );
+
+				group.add( highlight );
+
+				group.position.set(depth + 1, offsetY, -depth);
+
+				group.rotation.set( 0, -60 * Math.PI / 180, 0 );
+
+				bend(group, depth);
+
+				mesh.renderDepth = 2;
+
+				highlight.renderDepth = 2;
+
+				return group;
 			};
 
-			mesh.geometry.computeBoundingSphere();
-			mesh.geometry.verticesNeedUpdate = true;
+
+			scene.add(makeSechelt());
+			scene.add(makePolar());
+			scene.add(makeInfo());
+
 		}
 
-		for ( var i = 0; i < group.children.length; i ++ ) {
 
 
-			var element = group.children[ i ];
 
-			if (element.geometry.vertices) {
-				if (multiMaterialObject) {
-					bendVertices( element, amount, group);
-				} else {
-					bendVertices( element, amount);
-				}
+
+
+
+
+
+		/*====================== Make particles ======================*/
+
+		var particles = [];
+
+		function makeParticle() {
+			
+			function randomBetween(min, max) {
+			    if (min < 0) {
+			        return min + Math.random() * (Math.abs(min)+max);
+			    }else {
+			        return min + Math.random() * max;
+			    }
 			}
 
-			// if (element.userData.position) {
-			// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-			// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-			// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
-			// }
+			var geometry = new THREE.SphereGeometry(0.02, 3, 2);
+			geometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, randomBetween(-4, -0.5) ) );
+
+			var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, opacity: randomBetween(0.1, 0.3), side: THREE.DoubleSide } );
+
+			var particle = new THREE.Mesh( geometry, material );
+
+			particle.userData.rotation = {};
+			particle.userData.rotation.x = randomBetween(0, 360);
+			particle.userData.rotation.y = randomBetween(0, 360);
+
+			return particle;
+
 		}
-	}
 
 
+		function makeParticles() {
 
+			var mesh = new THREE.Group();
+			mesh.position.z = -1;
 
+			var particleCount = 40;
 
+			for (var i = 0; i < particleCount; i++) {
+				var p = makeParticle();
+				particles.push( p );
+				mesh.add( p );
+			}
 
+			console.log( particles.length )
 
+			scene.add( mesh );
+
+		}
 
 
 
@@ -587,72 +624,81 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( url ) {
+		function makeIconHolder( json ) {
+
+
+			// holder
 
 			var holder = new THREE.Mesh(
 				new THREE.BoxGeometry( 160, 100, 180, 1, 1 ),
 				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
 			)
 
+
+			// popup
+
 			var popup = new THREE.Object3D();
 			var mesh = new THREE.Mesh(
 				new THREE.PlaneGeometry( 30, 11, 20, 1 ), 
-				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/popup-infodive-1.png" ), side: THREE.DoubleSide } )
+				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( json.popup ), side: THREE.DoubleSide } )
 			);
 			popup.add( mesh );
+			
+			var posY = 40;
+			popup.position.set( 100, posY, -40 );
 			popup.rotation.set( 0, -80 * Math.PI / 180, 0 );
-			popup.position.set( 0, 8, 0 );
+			popup.scale.set( 5.5, 5.5, 5.5 );
+			mesh.material.opacity = 0;
 			mesh.renderDepth = 1;
 			bend( popup, 57 );	
-			var posY = 60;
-			popup.position.set( 0, posY, 0 );
-			popup.scale.set( 10, 10, 10 );
+			
 			holder.add( popup );
 
+
+			// events
+
 			holder.addEventListener('click', function() {
-				VRClient.load( url );
+				VRClient.load( json.url );
 			});
 
 			holder.addEventListener('mouseover', function(e) {
 
 				// set tween destination position by starting with canonical position, as stored in the object's userData
 
-				// new TWEEN.Tween( popup.material )
-				// 	.to( { opacity: 1 }, 200 )
-				// 	.start();
-
-				new TWEEN.Tween( popup.position )
-					.to( { y: posY + 10 }, 350 )
-					.start();
-
 				var destinationY = e.target.userData.position.y + 0.1;
 
-				var tween = new TWEEN.Tween( e.target.position )
-					.to( { y: destinationY }, 500 )
-					.easing( TWEEN.Easing.Exponential.Out )
+				new TWEEN.Tween( e.target.position )
+					.to( { y: destinationY }, 350 )
+					.start();
+ 
+				new TWEEN.Tween( popup.position )
+					.to( { y: posY + 3 }, 200 )
+					.start();
+
+				new TWEEN.Tween( mesh.material )
+					.to( { opacity: 1 }, 100 )
 					.start();
 
 			})
 
 			holder.addEventListener('mouseout', function(e) {
 
-				// new TWEEN.Tween( popup.material )
-				// 	.to( { opacity: 0 }, 75 )
-				// 	.start();
+				// set tween destination position by starting with canonical position, as stored in the object's userData
+
+				var destinationY = e.target.userData.position.y;
+
+				new TWEEN.Tween( e.target.position )
+					.to( { y: destinationY }, 150 )
+					.easing(TWEEN.Easing.Cubic.Out)
+					.start();
 
 				new TWEEN.Tween( popup.position )
 					.to( { y: posY }, 150 )
 					.start();
 
-				// set tween destination position by starting with canonical position, as stored in the object's userData
-
-				var destinationY = e.target.userData.position.y;
-
-				var tween = new TWEEN.Tween( e.target.position )
-					.to( { y: destinationY }, 500 )
-					.easing(TWEEN.Easing.Exponential.Out)
+				new TWEEN.Tween( mesh.material )
+					.to( { opacity: 0 }, 100 )
 					.start();
-
 			})
 
 			return holder;
@@ -664,7 +710,7 @@
 
 			var shadow = new THREE.Mesh(
 				new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
-				new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 0.2 } )
+				new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 0.15 } )
 			);
 			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
 
@@ -677,15 +723,18 @@
 			var icons = {
 				sechelt: {
 					model: 'models/icon-sechelt-3.json',
-					url: 'http://mozvr.github.io/sechelt'
+					url: 'http://mozvr.github.io/sechelt',
+					popup: 'images/popup-sechelt-1.png'
 				},
 				polar: {
 					model: 'models/icon-polarsea-1.json',
-					url: 'http://mozvr.github.io/polarsea/'
+					url: 'http://mozvr.github.io/polarsea/',
+					popup: 'images/popup-polarsea-1.png'
 				},
 				dive: {
 					model: 'models/icon-infodive-1.json',
-					url: 'http://mozvr.github.io/infodive/index2.html'
+					url: 'http://mozvr.github.io/infodive/index2.html',
+					popup: 'images/popup-infodive-1.png'
 				}
 			}
 
@@ -708,9 +757,10 @@
 					z = iconBasePos.z + 2.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt.url );
+				var holder = makeIconHolder( icons.sechelt );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
+				holder.rotation.set( 0, 130 * (Math.PI/180), 0 );
 				holder.add( object );
 
 				// store original position for later use.
@@ -733,9 +783,10 @@
 					z = iconBasePos.z - 0.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar.url );
+				var holder = makeIconHolder( icons.polar );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
+				holder.rotation.set( 0, 80 * (Math.PI/180), 0 );
 				holder.add( object );
 
 				// store original position for later use.
@@ -758,9 +809,10 @@
 					z = iconBasePos.z + 2.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt.url );
+				var holder = makeIconHolder( icons.dive );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
+				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );
 				holder.add( object );
 				//holder.add( makeInfoDive() );
 
@@ -1423,6 +1475,18 @@
 		}
 
 		function animate() {
+
+			for (var i = 0; i < particles.length; i++) {
+				var particle = particles[i];
+
+				var rotation = new THREE.Euler( particle.userData.rotation.x - 0.02, particle.userData.rotation.y -= 0.0005, 0 );
+	  		var quat = new THREE.Quaternion().setFromEuler( rotation, true );
+	  		var pivotQuat = new THREE.Quaternion();
+	  		pivotQuat.multiply(quat).normalize();
+
+				particle.setRotationFromQuaternion( quat );
+			}
+
 			requestAnimationFrame( animate );
 			render();
 			TWEEN.update();
@@ -1442,6 +1506,7 @@
 		init();
 		makeLayout();
 		animate();
+
 
 	</script>
 </html>
