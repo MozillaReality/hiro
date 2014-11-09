@@ -245,7 +245,6 @@ VRCursor.prototype.onMouseMoved = function(e) {
 };
 
 VRCursor.prototype.onMouseClicked = function(e) {
-  console.log('vrcuror click');
   var target = e.target;
 
   if (!this.enabled) {

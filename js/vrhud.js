@@ -145,6 +145,7 @@ VRHud.prototype.hide = function() {
 };
 
 VRHud.prototype.attachEvents = function(favorites) {
+	var self = this;
 	var d23 = this.d23;
 	favorites.forEach(function(favorite) {
 		var node = d23.getNodeById(favorite.id);
@@ -162,37 +163,14 @@ VRHud.prototype.attachEvents = function(favorites) {
 			for (var i = 0; i < favorites.length; i++) {
 				var m = d23.getNodeById(favorites[i].id).mesh;
 
-				if (m == mesh) {
-					// var tween = new TWEEN.Tween( m.position )
-					// 	.to({ z: m.userData.position.z + 0.1 }, 500 )
-					// 	.easing(TWEEN.Easing.Exponential.Out)
-					// 	.start();
-				} else {
+				if (m !== mesh) {
 					var material = m.material;
 					var tween = new TWEEN.Tween( material.color )
-						.to({ r: 0.8, g: 0.8, b: 0.8 }, 500 )
+						.to({ r: 0.6, g: 0.6, b: 0.6 }, 500 )
 						.easing(TWEEN.Easing.Exponential.Out)
 						.start();
 				}
-
 			}
-			//mesh.position.z -= 0.5;
-			// var tween = new TWEEN.Tween( mesh.material )
-			// 	.to({ opacity: 0 }, 500 )
-			// 	.easing(TWEEN.Easing.Exponential.Out)
-			// 	.delay( i * 80 )
-			// 	.onComplete(function() {
-			// 		self.layout.visible = false;
-			// 		self.visible = false;
-			// 		resolve();
-			// 	})
-			// 	.start();
-
-			// var material = e.target.material;
-			// if (material) {
-			// 	material.color.set(0x1796da);
-			// 	material.needsUpdate = true;
-			// }
 		});
 
 		mesh.addEventListener('mouseout', function(e) {
@@ -200,12 +178,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 			for (var i = 0; i < favorites.length; i++) {
 				var m = d23.getNodeById(favorites[i].id).mesh;
 
-				if (m == mesh) {
-					// var tween = new TWEEN.Tween( m.position )
-					// 	.to({ z: m.userData.position.z }, 500 )
-					// 	.easing(TWEEN.Easing.Exponential.Out)
-					// 	.start();
-				} else {
+				if (m !== mesh) {
 					var material = m.material;
 					var tween = new TWEEN.Tween( material.color )
 						.to({ r: 1, g: 1, b: 1 }, 500 )
@@ -217,15 +190,17 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 		});
 
-		(function(n, f) {
+		(function(n, f, hud) {
 			var mesh = n.mesh;
 			mesh.addEventListener('click', function(e) {
-				VRManager.ui.load(f.url, {
-					titleCredits: f.credits,
-					title: f.title
-				});
+				if (self.enabled) {
+					VRManager.ui.load(f.url, {
+						titleCredits: f.credits,
+						title: f.title
+					});
+				}
 			})
-		})(node, favorite);
+		})(node, favorite, self);
 
 
 	});

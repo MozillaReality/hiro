@@ -139,8 +139,12 @@
         var fspointerButton = document.querySelector('#pointer');
         var fspointerscreen  = document.querySelector('#fspointerscreen');
 
-
-
+        /*
+        fullscreen and pointerlock permissions show up on the rift display
+        making them inacessible and therefore the site unsusable by the user.
+        Because of this, we will need to request fullscreen and pointer lock
+        permissions on the main desktop before the user entersthe experience.
+        */
         fspointerButton.addEventListener('click', function() {
           var fs = fspointerscreen;
           fspointerscreen.classList.remove('is-hidden');
