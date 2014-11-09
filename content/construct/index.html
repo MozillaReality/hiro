@@ -915,6 +915,8 @@
 				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
 			)
 
+
+			/*
 			var geometry = new THREE.BoxGeometry( 150, 75, 0 );
 			var material = new THREE.MeshBasicMaterial( { colors: 0xffffff, transparent: true, map: THREE.ImageUtils.loadTexture( 'images/txt-futureofthevrweb.png' ) } );
 			var mesh = new THREE.Mesh( geometry, material );
@@ -922,6 +924,22 @@
 			mesh.position.set( 0, posY, 0 );
 			mesh.material.opacity = 0;
 			holder.add( mesh );
+			*/
+
+			var popup = new THREE.Object3D();
+			var mesh = new THREE.Mesh(
+				new THREE.PlaneGeometry( 30, 11, 20, 1 ), 
+				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/popup-infodive-1.png" ) } )
+			);
+			popup.add( mesh );
+			popup.rotation.set( 0, -80 * Math.PI / 180, 0 );
+			popup.position.set( 0, 8, 0 );
+			mesh.renderDepth = 1;
+			bend( popup, 57 );	
+			var posY = 60;
+			popup.position.set( 0, posY, 0 );
+			popup.scale.set( 10, 10, 10 );
+			holder.add( popup );
 
 			holder.addEventListener('click', function() {
 				VRClient.load( url );
@@ -931,11 +949,11 @@
 
 				// set tween destination position by starting with canonical position, as stored in the object's userData
 
-				new TWEEN.Tween( mesh.material )
-					.to( { opacity: 1 }, 200 )
-					.start();
+				// new TWEEN.Tween( popup.material )
+				// 	.to( { opacity: 1 }, 200 )
+				// 	.start();
 
-				new TWEEN.Tween( mesh.position )
+				new TWEEN.Tween( popup.position )
 					.to( { y: posY + 10 }, 350 )
 					.start();
 
@@ -950,11 +968,11 @@
 
 			holder.addEventListener('mouseout', function(e) {
 
-				new TWEEN.Tween( mesh.material )
-					.to( { opacity: 0 }, 75 )
-					.start();
+				// new TWEEN.Tween( popup.material )
+				// 	.to( { opacity: 0 }, 75 )
+				// 	.start();
 
-				new TWEEN.Tween( mesh.position )
+				new TWEEN.Tween( popup.position )
 					.to( { y: posY }, 150 )
 					.start();
 
