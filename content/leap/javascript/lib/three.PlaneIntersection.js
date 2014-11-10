@@ -32,11 +32,13 @@ THREE.Mesh.prototype.intersectedByLine = function(lineStart, lineEnd, worldPosit
 
   if (numerator === 0){
     // no intersection or intersects everywhere.
+    this.intersectionPoint = null;
     return false;
   }
 
   if (denominator === 0){
     // parallel
+    this.intersectionPoint = null;
     return false;
   }
 
@@ -51,13 +53,26 @@ THREE.Mesh.prototype.intersectedByLine = function(lineStart, lineEnd, worldPosit
     intersectionPoint.clone().sub(lineStart)
   );
 
-  if (dot < 0) return false;
+  if (dot < 0) {
+    this.intersectionPoint = null;
+    return false;
+  }
 
   var lengthSq = lineEnd.clone().sub(lineStart).lengthSq();
 
-  if (dot > lengthSq) return false;
+  if (dot > lengthSq) {
+    this.intersectionPoint = null;
+    return false;
+  }
 
   // we're on the line!
+
+
+  // store intersection point for later use, whether it's on the segment or not.
+  // This will be useful for frame travel of farther than a plane half.
+  this.intersectionPoint = intersectionPoint;
+
+
 
   // see if point is on the plane segment.
 

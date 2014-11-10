@@ -19,11 +19,8 @@ window.InteractablePlane = function(planeMesh, controller, options){
   this.options.resize !== undefined    || (this.options.resize  = false);
   this.options.moveX  !== undefined    || (this.options.moveX   = true );
   this.options.moveY  !== undefined    || (this.options.moveY   = true );
-  this.options.moveZ  !== undefined    || (this.options.moveZ   = true );
-
-//  planeMesh.quaternion.setFromEuler(new THREE.Euler( Math.PI, 0, 0 ));
-  this.uid = window.InteractablePlane.instanceCount;
-  window.InteractablePlane.instanceCount += 1; // increment the instance count
+  this.options.moveZ  !== undefined    || (this.options.moveZ   = false );
+  this.options.highlight  !== undefined|| (this.options.highlight = true); // this can be configured through this.highlightMesh
 
   this.mesh = planeMesh;
   this.controller = controller;
@@ -40,6 +37,7 @@ window.InteractablePlane = function(planeMesh, controller, options){
   this.travelCallbacks  = [];
   this.touchCallbacks  = [];
   this.releaseCallbacks  = [];
+  this.touched = false;
 
   // note: movement constraints are implemented for X,Y, but not grab.
   this.movementConstraintsX = [];
@@ -51,9 +49,9 @@ window.InteractablePlane = function(planeMesh, controller, options){
   this.fingersRequiredForMove = 1;
 
   this.tempVec3 = new THREE.Vector3;
-//  this.drag = 1 - 0.06; // 0.06 is the damping
-  this.drag = 0;
-  this.lastPosition = new THREE.Vector3;
+  this.drag = 1 - 0.12; // 0.06 is the damping
+//  this.drag = 0;
+  this.lastPosition = planeMesh.position.clone();
 
   // keyed by handId-fingerIndex
   // 1 or -1 to indicate which side of the mesh a finger is "on"
@@ -69,9 +67,9 @@ window.InteractablePlane = function(planeMesh, controller, options){
 
   this.bindMove();
 
-};
+  if (this.options.highlight) this.bindHighlight();
 
-window.InteractablePlane.instanceCount = 0;
+};
 
 window.InteractablePlane.prototype = {
 
@@ -93,10 +91,61 @@ window.InteractablePlane.prototype = {
 
   },
 
+  unbind: function(eventName, callback) {
+    var callbacks = this[eventName + "Callbacks"];
+
+    for (var i = 0; i < callbacks.length; i++){
+
+      if (callbacks[i] == callback){
+
+        callbacks.splice(i,1);
+        console.log('unbound', callback);
+        return true
+
+      }
+
+    }
+
+  },
+
   // This is analagous to your typical scroll event.
   travel: function(callback){
     this.travelCallbacks.push(callback);
-    return this
+    return this;
+  },
+
+  // Toggles highlight on and off
+  highlight: function(highlight) {
+    if ( highlight !== undefined ) {
+      this.highlightMesh.visible = highlight;
+    }
+    else {
+      return this.highlightMesh.visible;
+    }
+  },
+
+  bindHighlight: function(){
+
+    this.highlightMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(this.mesh.geometry.parameters.width+0.005, this.mesh.geometry.parameters.height+0.005),
+      new THREE.MeshBasicMaterial({
+        color: 0x81d41d
+      })
+    );
+    this.mesh.add(this.highlightMesh);
+    this.highlightMesh.position.set(0,0,-0.00001);
+    this.highlightMesh.visible = false;
+
+    this.touch(function(){
+      if (!this.interactable) return;
+
+      this.highlight(true);
+    }.bind(this));
+
+    this.release(function(){
+      this.highlight(false);
+    }.bind(this));
+
   },
 
   // This is analagous to your typical scroll event.
@@ -166,7 +215,10 @@ window.InteractablePlane.prototype = {
     if ( intersectionCount < this.fingersRequiredForMove) {
       // inertia
       // simple verlet integration
-      newPosition.subVectors(this.mesh.position, this.lastPosition).multiplyScalar(this.drag).add(this.mesh.position);
+      newPosition.subVectors(this.mesh.position, this.lastPosition);
+
+      newPosition.multiplyScalar(this.drag).add(this.mesh.position);
+
 
     } else {
 
@@ -313,7 +365,6 @@ window.InteractablePlane.prototype = {
 
     // this ties InteractablePlane to boneHand plugin - probably should have callbacks pushed out to scene.
     proximity.in( function(hand, intersectionPoint, key, index){
-      var firstTouch;
 
       // Let's try out a one-way state machine
       // This doesn't allow intersections to count if I'm already pinching
@@ -321,11 +372,13 @@ window.InteractablePlane.prototype = {
       if (hand.data('resizing')) return;
       setBoneMeshColor(hand, index, 0xffffff);
 
-      firstTouch = proximity.intersectionCount() > 0;
-
       this.intersections[key] = intersectionPoint.clone().sub(this.mesh.position);
 
-      if (firstTouch) this.emit('touch', this);
+      if (!this.touched) {
+        this.touched = true;
+//        console.log('touch', this.mesh.name);
+        this.emit('touch', this);
+      }
 
     }.bind(this) );
 
@@ -343,7 +396,12 @@ window.InteractablePlane.prototype = {
 
       }
 
-      if (proximity.intersectionCount() == 0) this.emit('release', this);
+      // not sure why, but sometimes getting multiple 0 proximity release events
+      if (proximity.intersectionCount() == 0 && this.touched) {
+        this.touched = false;
+//        console.log('release', this.mesh.name, proximity.intersectionCount());
+        this.emit('release', this);
+      }
 
     }.bind(this) );
 
@@ -489,10 +547,10 @@ window.InteractablePlane.prototype = {
       finger = hand.fingers[i];
 
       out.push(
-        [
-          (new THREE.Vector3).fromArray(finger.metacarpal.nextJoint),
-          (new THREE.Vector3).fromArray(finger.metacarpal.prevJoint)
-        ],
+//        [
+//          (new THREE.Vector3).fromArray(finger.metacarpal.nextJoint),
+//          (new THREE.Vector3).fromArray(finger.metacarpal.prevJoint)
+//        ],
         [
           (new THREE.Vector3).fromArray(finger.proximal.nextJoint),
           (new THREE.Vector3).fromArray(finger.proximal.prevJoint)
@@ -509,6 +567,45 @@ window.InteractablePlane.prototype = {
     }
 
     return out;
+  },
+
+  intersectionCount: function(){
+    var i = 0;
+    for (var key in this.intersections){
+      i++
+    }
+    return i;
+  },
+
+  // This checks for intersection points before making self interactable
+  // If there are any, it will wait for the plane to be untouched before becoming live again.
+  // Note that this may need a little more tuning.  As it is right now, a touch/release may flicker, causing this to be not safe enough.
+  // Thus leaving in console.logs for now.
+  safeSetInteractable: function(interactable){
+
+    if (!interactable) { this.interactable = false; return }
+
+    if ( this.touched ){
+
+//      console.log('deferring interactability', this.mesh.name);
+
+      var callback = function(){
+
+//        console.log('making interactable', this.mesh.name);
+        this.interactable = true;
+        this.unbind('release', callback);
+
+      }.bind(this);
+
+      this.release(callback);
+
+    } else {
+
+//      console.log('instant interactability', this.mesh.name);
+      this.interactable = true;
+
+    }
+
   },
 
   // could be optimized to reuse vectors between frames

@@ -22,24 +22,12 @@ window.Dock = function(scene, planeMesh, controller, options){
   this.imageMinHeight = -0.007;
 
   this.imageRemoveCallbacks = [];
+  this.imageLoadCallbacks = [];
+
+  this.interactable = true;
 };
 
 window.Dock.prototype = {
-
-  emit: function(eventName, data) {
-    // note: not ie-compatible indexOf:
-    if (['imageRemove'].indexOf(eventName) === -1) {
-      console.error("Invalid event name:", eventName);
-      return;
-    }
-
-    var callbacks = this[eventName + "Callbacks"];
-    for (var i = 0; i < callbacks.length; i++){
-
-      // could use arguments.slice here.
-      callbacks[i].call(this, data);
-    }
-  },
 
   pushImage: function(url){
 
@@ -49,7 +37,7 @@ window.Dock.prototype = {
         var scale = (height -0.02) / texture.image.height;
 
         var imgGeometry = new THREE.PlaneGeometry(texture.image.width * scale, texture.image.height * scale);
-        var material = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide});
+        var material = new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide, transparent: true});
 
         var imageMesh = new THREE.Mesh(imgGeometry, material);
         imageMesh.name = url;
@@ -65,6 +53,8 @@ window.Dock.prototype = {
 
         image.travel( this.onImageTravel.bind(this) );
         image.release( this.onRelease.bind(this) );
+
+        this.emit("imageLoad", image);
 
       }.bind(this)
     );
@@ -95,7 +85,7 @@ window.Dock.prototype = {
 
       // remove constraints:
       interactablePlane.options.moveX = true;
-      interactablePlane.options.moveZ = true;
+//      interactablePlane.options.moveZ = true;
       interactablePlane.clearMovementConstraints();
 
       // Emit an image removed event
@@ -112,7 +102,10 @@ window.Dock.prototype = {
 //      this.arrangeImages();
 
       // this is crappy to have here
-      this.scene.getObjectByName( "text").visible = false;
+      var text = this.scene.getObjectByName("text");
+      if (text) {
+        text.visible = false;
+      }
 
     }
   },
@@ -125,6 +118,35 @@ window.Dock.prototype = {
     console.assert(interactablePlane.originPosition);
 
     interactablePlane.mesh.position.copy(interactablePlane.originPosition);
+
+  },
+
+  setInteractable: function(interactable){
+
+    this.plane.safeSetInteractable(interactable);
+
+    for (var i =0; i < this.images.length; i++){
+      this.images[i].safeSetInteractable(interactable);
+    }
+
+  },
+
+  emit: function(eventName, data) {
+    var callbacks = this[eventName + "Callbacks"];
+    for (var i = 0; i < callbacks.length; i++){
+
+      // could use arguments.slice here.
+      callbacks[i].call(this, data);
+    }
+  },
+
+  on: function(eventName, callback){
+
+    var callbackKey = eventName + "Callbacks";
+
+    this[callbackKey] || (this[callbackKey] = []);
+
+    this[callbackKey].push(callback);
 
   }
 
