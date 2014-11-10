@@ -101,7 +101,7 @@ VRTransition.prototype.fadeOut = function () {
         .start();
       */
 
-      object.scale.set( 0.001, 0.001, 0.001 )
+      object.scale.set( 0.0001, 0.0001, 0.0001 )
       new TWEEN.Tween( object.scale )
         .to( { x:0.99, y:0.99, z:0.99  }, 600 )
         .delay( delay )
@@ -130,7 +130,7 @@ VRTransition.prototype.fadeIn = function () {
     //var destY = object.position.y + 100;
 
     new TWEEN.Tween( object.scale )
-      .to( { x:0.001, y:0.001, z:0.001  }, 500 )
+      .to( { x:0.0001, y:0.0001, z:0.0001  }, 500 )
       .easing( TWEEN.Easing.Cubic.In )
       //.delay(50)
       .start();
