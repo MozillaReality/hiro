@@ -43,11 +43,21 @@ function VRCursor(mode) {
       self.cursorPivot = new THREE.Object3D();
       self.projector = new THREE.Projector();
 
-      // cursor mesh
+      // cursor (image)
+      /*
       self.cursor = new THREE.Mesh(
-        new THREE.SphereGeometry( 0.05, 5, 5 ),
-        new THREE.MeshBasicMaterial( { color: 0x00baff, side: THREE.DoubleSide } )
+        //new THREE.SphereGeometry( 0.05, 5, 5 ),
+        new THREE.PlaneGeometry( 0.1, 0.1, 1, 1 ),
+        new THREE.MeshBasicMaterial( { transparent:true, map: THREE.ImageUtils.loadTexture( "cursor.png" ), side: THREE.DoubleSide } )
       );
+      */
+
+      // cursor (line)
+
+      var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 3 } );
+      var geometry = new THREE.CircleGeometry( 0.03, 64 );
+      geometry.vertices.shift(); // remove center vertex
+      self.cursor = new THREE.Line( geometry, material );
 
       self.layout.visible = self.enabled;
 

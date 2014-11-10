@@ -282,7 +282,7 @@
 
 				logo.add( object );
 
-				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false, transparent: true, opacity: 1 } );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true, transparent: true, opacity: 1 } );
 
 				logo.traverse( function( node ){
 
@@ -914,8 +914,8 @@
 					popup: 'images/popup-polarsea-1.png'
 				},
 				dive: {
-					model: 'models/icon-infodive-1.json',
-					url: 'http://mozvr.github.io/infodive/index2.html',
+					model: 'models/icon-infodive-2.json',
+					url: 'http://mozvr.github.io/infodive',
 					popup: 'images/popup-infodive-1.png'
 				}
 			}
@@ -1005,6 +1005,8 @@
 				var shadow = makeIconShadow();
 				shadow.position.setY( -130 );
 				holder.add( shadow );
+
+				holder.add( makeInfoDive() );
 
 				scene.add(holder)
 
@@ -1278,7 +1280,7 @@
 
 
 
-		/*
+		
 		function makeInfoDive() {
 
 			var object = new THREE.Object3D();
@@ -1294,6 +1296,7 @@
 		    return Math.random() * ( max - min + 1 ) + min;
 			}
 
+			/*
 			// make dotes
 			var numDots = 10;
 
@@ -1342,8 +1345,9 @@
 				arc.scale.set( 0.75, 0.75, getRandom( 0.2, 1.5 )  )
 				object.add( arc );
 			}
+			*/
 
-			// make lines
+			// make grid lines
 			var lines = new THREE.Object3D();
 
 			var quantity = 8;
@@ -1392,7 +1396,7 @@
 
 			return object;
 		}
-		*/
+		
 
 
 
