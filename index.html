@@ -69,7 +69,7 @@
 
     </div><!-- #content -->
 
-    <div id="fsPrompt" class="center fit is-hidden">
+    <div id="fsPrompt" class="center is-hidden">
       <div class="arrow-up"></div>
 
       <h2>Allow Fullscreen:</h2>
@@ -78,9 +78,7 @@
       <br/><br/>
 
       <div class="delayed-animate-in center">
-        <div id="fsContinue" class="button-large white">
-          ESC
-        </div>
+        <div id="fsContinue" class="button-large white">ESC</div>
 
         <span class='gamma'>TO CONTINUE</span>
       </div>
@@ -115,16 +113,18 @@
       function DomUi() {
         /*
         fullscreen and pointerlock permissions show up on the rift display
-        making them inacessible and therefore the site unsusable by the user.
+        making them inacessible rendering the site unsusable by the user.
         Because of this, we will need to request fullscreen and pointer lock
-        permissions on the main desktop before the user entersthe experience.
+        permissions on the main desktop before the user enters the experience.
         */
         var fsPointerscreen = document.querySelector('#fsPrompt');
 
         var fsContinueButton = document.querySelector('#fsContinue');
 
+        var enterVRButton = document.querySelector('#launch');
+
         function fullscreenPrompt() {
-          var fs = fsPointerscreen;
+          var fs = document.body;
 
           fsPointerscreen.classList.remove('is-hidden');
 
@@ -156,6 +156,7 @@
 
           if (!fullscreenElement) {
             fs.classList.add('is-hidden');
+            enterVRButton.classList.remove('is-hidden');
           }
         };
 
@@ -163,20 +164,18 @@
 
         // enter VR button
         function promptPermission() {
-          console.log(document.cookie);
+
           if (document.cookie == 'fsPrompted=true') {
             // we've prompted the user before for fullscreen permissions.  let's go!
             VRManager.enableVR();
           } else {
             document.cookie = "fsPrompted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
             fullscreenPrompt();
+            enterVRButton.classList.add('is-hidden');
           }
         };
 
 
-
-
-        var enterVRButton = document.querySelector('#launch');
 
         enterVRButton.addEventListener('click', function() {
           promptPermission();

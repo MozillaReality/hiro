@@ -105,8 +105,14 @@ em {
 }
 
 #fsPrompt {
-  background: #333;
-  padding-top: 250px;
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  background: rgba(50, 50, 50, 0.8);
+  width: 80%;
+  height: 70%;
+  min-height: 450px;
+  padding-top: 150px;
   color: #fff;
 }
 
@@ -384,7 +390,7 @@ em {
 
 
 .lightgray {
-  color: #8d8d8d
+  color: #dbdbdb
 }
 /*---------- UTILITIES ----------*/
 
