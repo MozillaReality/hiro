@@ -20,21 +20,21 @@
 
     <div id="content" class="fit">
       <div id="intro">
-        <span>We’re the Mozilla Research VR team.</span><br>
-        <span>This is our open lab, where we</span><br>
-        <span>share experiments and code.</span><br>
+        <span>We are the Mozilla Research VR team.</span><br>
+        <span>MozVR is our open lab, a VR website</span><br>
+        <span>about VR websites, where we share</span><br>
+        <span>experiments and code.</span><br>
       </div>
 
       <div id="entervr" class="center">
         <div id="launch" class="button-large">Enter VR</div>
       </div>
 
-      <div id="vrDownload" class="center is-hidden" >
-        <em>mozvr.com is a virtual reality website.</em><br/>
-        To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
-
-        <br/><br/>
-
+      <div id="vrDownload" class="is-hidden" >
+        <em>mozvr is a virtual reality website</em>
+        <p>
+          You will need a <a href="http://mozvr.com/downloads.html">VR-enabled build of Firefox</a> for Mac or PC, and an Oculus Rift headset. Support for additional devices coming soon. MozVR will also work with VR-enabled builds of <a href="https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list" target="_blank">Chromium</a>. Once you have your VR-enabled browser and Rift, check our quick <a href="http://mozvr.com/readme.html">Read Me</a> for configuration tips. On your first run, pressing "Enter VR" will prompt you to grant Fullscreen permission. Grant it and check the "Remember" option, if one is present. You will then be able to experience MozVR.
+        </p>
         <a href="downloads.html"><button class="button-wire">Get Firefox VR</button></a>
       </div>
 
@@ -59,15 +59,20 @@
           </ul>
         </div>
 
-        <div id="modes" class="float-right">
-          <div class="status animate-in-out is-hidden" id="vrEnabled">
-            VR Browser detected
-          </div>
-        </div><!-- #mode -->
+        <div id="issues">
+          <a href="https://github.com/MozVR/MozVR.com-issues" target="_blank">Report issues</a>
+        </div>
 
       </div><!-- #navigation -->
 
     </div><!-- #content -->
+
+    <div id="modes">
+      <div class="status animate-in-out is-hidden" id="vrEnabled">
+        VR Browser detected
+      </div>
+    </div><!-- #mode -->
+
 
     <div id="fsPrompt" class="center is-hidden">
       <div class="arrow-up"></div>
