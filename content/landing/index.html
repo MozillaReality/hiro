@@ -53,7 +53,7 @@
 		var icons;
 		var iconsArray = [];
 		var userHeight = -1.65;
-		var vrbutton = null;
+
 
 		function init() {
 
@@ -72,7 +72,8 @@
 			cursor.ready.then(function() {
 				scene.add(cursor.layout);
 				cursor.init(renderer.domElement, camera, scene);
-				cursor.enable();
+				cursor.disable();
+				//cursor.enable();
 			});
 
 			setRenderMode(VRClient.renderModes.mono);
@@ -103,9 +104,12 @@
 					controls = new THREE.VRControls( camera );
 					effect = new THREE.VREffect( renderer );
 					cursor.setMode('centered');
-					cursor.show();
+					// cursor.show();
 
-					vrbutton.visible = true;
+					// load construct after entering vr mode
+					setTimeout(function() {
+						loadConstruct();
+					}, 5000);
 				}
 
 				effect.setSize( window.innerWidth, window.innerHeight );
@@ -126,7 +130,7 @@
 
 			VRClient.onFocus = function() {
 				console.log('content focused');
-				cursor.enable();
+				//cursor.enable();
 			}
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
@@ -409,36 +413,15 @@
 
 
 		// VR button
-		function setupVrbutton() {
-			var geometry = new THREE.SphereGeometry( 0.05, 16, 16 );
-			var material = new THREE.MeshBasicMaterial( {
-				opacity: 1,
-				color: 0xff0000
+		function loadConstruct() {
+			VRClient.load('content/construct', {
+				noTitle: true,
+				hideLoading: true,
+				title: 'Mozvr.com',
+				titleUrl: 'www.mozvr.com',
+				titleCredits: 'mozilla vr research'
 			});
-			var mesh = new THREE.Mesh( geometry, material );
-			mesh.position.set(0,-0.3,-1);
-
-			mesh.addEventListener('click', function(e) {
-				VRClient.load('content/construct', {
-					noTitle: true,
-					hideLoading: true,
-					title: 'Mozvr.com',
-					titleUrl: 'www.mozvr.com',
-					titleCredits: 'mozilla vr research'
-				})
-			});
-
-			mesh.addEventListener('mouseover', function(e) {
-				var mesh = e.target;
-
-			})
-
-			mesh.visible = false;
-
-			this.vrbutton = mesh;
-
-			scene.add( mesh );
-		}
+		};
 
 
 
@@ -737,7 +720,6 @@
 
 		init();
 		setupIntro();
-		setupVrbutton();
 		animate();
 
 
