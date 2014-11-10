@@ -46,7 +46,7 @@ function VRCursor(mode) {
       // cursor mesh
       self.cursor = new THREE.Mesh(
         new THREE.SphereGeometry( 0.05, 5, 5 ),
-        new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, side: THREE.DoubleSide } )
+        new THREE.MeshBasicMaterial( { color: 0x00baff, side: THREE.DoubleSide } )
       );
 
       self.layout.visible = self.enabled;
@@ -494,6 +494,8 @@ VRCursor.prototype.updateCursorIntersection = function() {
   var events = this.events;
 
   if (intersects.length == 0 && objectMouseOver !== null) {
+    //this.cursor.material.color.set(0x9f2ac6);
+
     this.objectMouseOver.dispatchEvent(events.mouseOutEvent);
     this.objectMouseOver = null;
   }
