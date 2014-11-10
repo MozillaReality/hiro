@@ -422,7 +422,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-
+					VRClient.load( 'http://mozvr.github.io/sechelt/' );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -556,8 +556,8 @@
 
 			function makePanos() {
 
-				var w = 34 * scale;
-				var h = 67.25 * scale;
+				var w = 34 * 0.07;
+				var h = 67.25 * 0.07;
 				var d = 1 * scale;
 
 				// hit area
@@ -598,24 +598,20 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(depth + 5, offsetY-1.2, -depth);
-				group.rotation.set( 0, -66 * Math.PI / 180, 0 );
+				group.position.set(5.1, offsetY-1.2, 0.25);
+				group.rotation.set( 0, -105 * Math.PI / 180, 0 );
 				bend(group, 9);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
-				var holder = new THREE.Object3D();
-				holder.add( group );
-				holder.rotation.set( 0, 330 * Math.PI / 180, 0 );
-
-				return holder;
+				return group;
 			};
 
 
 			function makeLeap() {
 
-				var w = 34 * scale;
-				var h = 67.25 * scale;
+				var w = 34 * 0.07;
+				var h = 67.25 * 0.07;
 				var d = 1 * scale;
 
 				// hit area
@@ -656,24 +652,20 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(depth + 5, offsetY-1.2, -depth);
-				group.rotation.set( 0, -62 * Math.PI / 180, 0 );
+				group.position.set(4.00, offsetY-1.2, 2.5);
+				group.rotation.set( 0, -125 * Math.PI / 180, 0 );
 				bend(group, 9);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
-
-				var holder = new THREE.Object3D();
-				holder.add( group );
-				holder.rotation.set( 0, 308 * Math.PI / 180, 0 );
-
-				return holder;
+				
+				return group;
 			};
 
 
 			function makeEleVR() {
 
-				var w = 34 * scale;
-				var h = 67.25 * scale;
+				var w = 34 * 0.07;
+				var h = 67.25 * 0.07;
 				var d = 1 * scale;
 
 				// hit area
@@ -696,7 +688,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( 'http://mozvr.github.io/polarsea' );
+					VRClient.load( 'http://mozvr.com/staging/content/elevr4' );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -714,17 +706,17 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(depth + 5, offsetY-1.2, -depth);
-				group.rotation.set( 0, -62 * Math.PI / 180, 0 );
+				group.position.set(2.3, offsetY-1.2, 4.4);
+				group.rotation.set( 0, -140 * Math.PI / 180, 0 );
 				bend(group, 9);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
-				var holder = new THREE.Object3D();
-				holder.add( group );
-				holder.rotation.set( 0, 286 * Math.PI / 180, 0 );
+				// var holder = new THREE.Object3D();
+				// holder.add( group );
+				// holder.rotation.set( 0, 286 * Math.PI / 180, 0 );
 
-				return holder;
+				return group;
 			};
 
 
