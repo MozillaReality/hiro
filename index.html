@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>MozVR</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/hiro.css">
+    <link rel="stylesheet" href="css/instructions.css">
+    <link rel='stylesheet' href='fonts/montserrat/montserrat.css' type='text/css'>
+  </head>
+  <body>
+    <!-- this is a containing element that will be made fullscreen -->
+    <div id="container">
+      <!-- This is the container which external iframe content is loaded into. -->
+      <div id="loader" class="fit"></div>
+
+      <!-- This is the container in which all the UI elements load into -->
+      <div id="ui" class="fit"></div>
+    </div><!-- #container -->
+
+    <div id="content" class="fit">
+      <div id="intro">
+        <span>We are the Mozilla Research VR team.</span><br>
+        <span>MozVR is our open lab, a VR website</span><br>
+        <span>about VR websites, where we share</span><br>
+        <span>experiments and code.</span><br>
+      </div>
+
+      <div id="entervr" class="center">
+        <div id="launch" class="button-large">Enter VR</div>
+      </div>
+
+      <div id="vrDownload" class="is-hidden" >
+        <em>mozvr is a virtual reality website</em>
+        <p>
+          You will need a <a href="http://mozvr.com/downloads.html">VR-enabled build of Firefox</a> for Mac or PC, and an Oculus Rift headset. Support for additional devices coming soon. MozVR will also work with VR-enabled builds of <a href="https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list" target="_blank">Chromium</a>. Once you have your VR-enabled browser and Rift, check our quick <a href="http://mozvr.com/readme.html">Read Me</a> for configuration tips. On your first run, pressing "Enter VR" will prompt you to grant Fullscreen permission. Grant it and check the "Remember" option, if one is present. You will then be able to experience MozVR.
+        </p>
+        <a href="downloads.html"><button class="button-wire">Get Firefox VR</button></a>
+      </div>
+
+
+      <div id="navigation">
+        <div id="logo" class="float-left">mozvr.com</div>
+
+        <div id="links" class="float-left">
+          <ul class="flat-list group">
+            <li>
+              <a href="content/2014/11/10/mozvr-launches.html" target="_blank">About</a>
+            </li>
+            <li>
+              <a href="downloads.html" target="_blank">Downloads</a>
+            </li>
+            <li>
+              <a href="readme.html" target="_blank">Read Me</a>
+            </li>
+            <li>
+              <a href="https://github.com/MozVR" target="_blank">GitHub</a>
+            </li>
+          </ul>
+        </div>
+
+        <div id="issues">
+          <a href="https://github.com/MozVR/MozVR.com-issues" target="_blank">Report issues</a>
+        </div>
+
+      </div><!-- #navigation -->
+
+    </div><!-- #content -->
+
+    <div id="modes">
+      <div class="status animate-in-out is-hidden" id="vrEnabled">
+        VR Browser detected
+      </div>
+    </div><!-- #mode -->
+
+
+    <div id="fsPrompt" class="center is-hidden">
+      <div class="arrow-up"></div>
+
+      <h2>Allow Fullscreen:</h2>
+      <h3 class="lightgray">Don't forget to <u>check remember</u>!</h3>
+
+      <br/><br/>
+
+      <div class="delayed-animate-in center">
+        <div id="fsContinue" class="button-large white">ESC</div>
+
+        <span class='gamma'>TO CONTINUE</span>
+      </div>
+
+      <br/><br/>
+
+      <p class="lightgray">(You will only have to do this once.)</p>
+
+    </div>
+
+  </body>
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/VRControls.js"></script>
+  <script src="js/vendor/DeviceOrientationControls.js"></script>
+  <script src="js/vendor/VREffect.js"></script>
+  <script src="js/vendor/StereoEffect.js"></script>
+  <script src="js/vendor/tween.min.js"></script>
+  <script src="js/lib/dom2three.js"></script>
+  <script src="js/vrutils.js"></script>
+  <script src="js/vrtab.js"></script>
+  <script src="js/vrtransition.js"></script>
+  <script src="js/vrsound.js"></script>
+  <script src="js/vrcursor.js"></script>
+  <script src="js/vrhud.js"></script>
+  <script src="js/vrtitle.js"></script>
+  <script src="js/vrloading.js"></script>
+  <script src="js/vrui.js"></script>
+  <script src="js/vrmanager.js"></script>
+
+  <script>
+    window.DomUi = (function() {
+      function DomUi() {
+        /*
+        fullscreen and pointerlock permissions show up on the rift display
+        making them inacessible rendering the site unsusable by the user.
+        Because of this, we will need to request fullscreen and pointer lock
+        permissions on the main desktop before the user enters the experience.
+        */
+        var fsPointerscreen = document.querySelector('#fsPrompt');
+
+        var fsContinueButton = document.querySelector('#fsContinue');
+
+        var enterVRButton = document.querySelector('#launch');
+
+        function fullscreenPrompt() {
+          var fs = document.body;
+
+          fsPointerscreen.classList.remove('is-hidden');
+
+          if (fs.requestFullscreen) {
+            fs.requestFullscreen();
+          } else if (fs.mozRequestFullScreen) {
+            fs.mozRequestFullScreen();
+          } else if (fs.webkitRequestFullscreen) {
+            fs.webkitRequestFullscreen();
+          }
+
+          var bodyEl = document.body;
+          bodyEl.requestPointerLock = bodyEl.requestPointerLock ||
+            bodyEl.mozRequestPointerLock ||
+            bodyEl.webkitRequestPointerLock;
+
+          bodyEl.requestPointerLock();
+        };
+
+
+        // listen for fullscreen change events so we can hide the fs prompt.
+        document.addEventListener('mozfullscreenchange', onFschange);
+        document.addEventListener('webkitfullscreenchange', onFschange);
+        document.addEventListener('fullscreenchange', onFschange);
+
+        function onFschange() {
+          var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+          var fs = fsPointerscreen;
+
+          if (!fullscreenElement) {
+            fs.classList.add('is-hidden');
+            enterVRButton.classList.remove('is-hidden');
+          }
+        };
+
+
+        // enter VR button
+        function promptPermission() {
+
+          if (document.cookie == 'fsPrompted=true') {
+            // we've prompted the user before for fullscreen permissions.  let's go!
+            VRManager.enableVR();
+          } else {
+            document.cookie = "fsPrompted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+            fullscreenPrompt();
+            enterVRButton.classList.add('is-hidden');
+          }
+        };
+
+
+
+        enterVRButton.addEventListener('click', function() {
+          promptPermission();
+        })
+
+
+
+
+
+
+
+        /*
+        detect wether or not we have a VR compatible browser.   If
+        they have a VR browser, just show a status that we have detected one.
+
+        Otherwise, display a dialogue prompt to download
+        */
+
+        // elements
+        var downloadDialogue = document.querySelector('#vrDownload');
+
+        var statusDialogue = document.querySelector('#vrEnabled');
+
+        VRManager.vrReady.then(function() {
+          // VR detected
+
+          // hide entervr button
+          enterVRButton.classList.remove('is-hidden');
+
+          // hide download dialogue
+          downloadDialogue.classList.add('is-hidden');
+          statusDialogue.classList.remove('is-hidden');
+        }, function() {
+          // VR NOT detected
+
+          // add entervr button
+          enterVRButton.classList.add('is-hidden');
+
+          // show download dialogue
+          statusDialogue.classList.add('is-hidden');
+
+          // download button
+          downloadDialogue.classList.remove('is-hidden');
+        });
+
+      }
+
+      return new DomUi();
+    })();
+  </script>
+</html>

@@ -13,7 +13,7 @@ function VRUi(container) {
 
 
 	this.homeUrl = 'content/construct';
-	this.landingUrl = 'content/landing';
+	this.landingUrl = 'content/construct';
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -66,6 +66,8 @@ function VRUi(container) {
 
 
 VRUi.prototype.load = function(url, opts) {
+	console.log(url, opts);
+
 	var self = this;
 
 	var opts = opts || {};
