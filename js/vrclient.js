@@ -81,7 +81,6 @@ window.VRClient = (function() {
   };
 
   VRClient.prototype.load = function (url, opts) {
-    console.log('vrclient: ', url, opts)
     if (!opts) {
       opts = {}
     }

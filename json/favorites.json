@@ -33,7 +33,7 @@
     {
       "id": "leap",
       "title": "Leap Motion",
-      "credits": "Leap Motion\n-\nthree.js leap motion controller",
+      "credits": "Peter Ehrlich\n-\nthree.js\nLeap Motion"
       "url": "content/leap"
     },
     {
