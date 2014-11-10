@@ -120,7 +120,7 @@ VRUi.prototype.load = function(url, opts) {
 					}
 
 					function onTabReady() {
-						var holdTitleTime = 3000;
+						var holdTitleTime = 5000;
 
 						self.backgroundHide(holdTitleTime);
 
