@@ -177,7 +177,7 @@
         // enter VR button
         function promptPermission() {
 
-          if (document.cookie == 'fsPrompted=true') {
+          if (document.cookie.indexOf('fsPrompted=true') !== -1) {
             // we've prompted the user before for fullscreen permissions.  let's go!
             VRManager.enableVR();
           } else {
