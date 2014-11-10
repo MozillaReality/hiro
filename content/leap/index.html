@@ -1,0 +1,85 @@
+<!doctype html>
+<html ng-app="index">
+  <head>
+    <meta charset="utf-8">
+    <title>VRCollage</title>
+
+    <link rel="stylesheet/less" href="stylesheets/index.less" />
+
+    <!-- CDN libs -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/1.7.5/less.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
+    <script src="//js.leapmotion.com/leap-0.6.3.js"></script>
+    <script src="//js.leapmotion.com/leap-plugins-0.1.9.min.js"></script>
+
+    <!-- include boneHand from master. Fixes a super janky issue where only one hand would appear when
+         using deferred scene creation, which we do here -->
+    <script src="javascript/lib/leap.boneHand.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+
+    <!-- Local libs -->
+    <script src="javascript/lib/VRControls.js"></script>
+    <script src="javascript/lib/VREffect.js"></script>
+    <script src="javascript/lib/Arrows.js"></script>
+    <script src="javascript/lib/leap.proximity.js"></script>
+    <script src="javascript/lib/leap.pinchEvent.js"></script>
+    <script src="javascript/lib/leap.handBracketRecognizer.js"></script>
+    <script src="javascript/lib/three.MeshCorners.js"></script>
+    <script src="javascript/lib/three.PlaneIntersection.js"></script>
+    <script src="javascript/lib/InteractablePlane.js"></script>
+    <script src="javascript/lib/Dock.js"></script>
+    <script src="javascript/lib/LeapDataPlotter.js"></script>
+    <script src="javascript/lib/SortedLayoutContainer.js"></script>
+
+    <!-- Webgl Fonts -->
+    <script src="javascript/fonts/helvetiker_regular.typeface.js"></script>
+
+    <!-- Application code -->
+    <script src="javascript/factories/vrControls.js"></script>
+    <script src="javascript/directives/scene.js"></script>
+    <script src="javascript/directives/vr.js"></script>
+    <script src="javascript/app.js"></script>
+    <script src="javascript/interface.js"></script>
+
+  </head>
+
+  <body>
+
+  <!--
+  Good image sources:
+  https://www.google.com/search?q=steam+engine+three+cylinder&espv=2&biw=1272&bih=1193&source=lnms&tbm=isch&sa=X&ei=wko4VKGfAcuvogTA2oHwBg&ved=0CAYQ_AUoAQ
+  https://www.google.com/search?q=steam+engine&espv=2&biw=1272&bih=1193&source=lnms&tbm=isch&sa=X&ei=p0o4VKLaJ8aqogTkjoK4AQ&ved=0CAYQ_AUoAQ#tbm=isch&q=steam+engine+big+boy
+  -->
+
+  <scene></scene>
+
+  <p>
+    Press 'f' to go fullscreen
+  </p>
+
+
+  </body>
+<!--
+ Further implementation ideas:
+  - Live web element content
+  - CDGain hand
+  - mesh deformation
+
+  - buttons to switch modes:
+   -- move vs fly
+   -- rotate vs position
+
+  - googly eyes
+
+  - resize two corners at once
+
+  - scrollable content within a plane (such as a page)
+
+  - Currently, as intersection point is fixed within image plane, angles slight to the hand can cause the image to surprisingly
+  move a lot relative to had motion.
+
+-->
+
+</html>
+
+

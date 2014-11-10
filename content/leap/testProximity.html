@@ -1,0 +1,150 @@
+<html>
+<head>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r68/three.js"></script>
+  <script src="//js.leapmotion.com/leap-0.6.3.js"></script>
+  <script src="//js.leapmotion.com/leap-plugins-0.1.8.min.js"></script>
+  <script src="javascript/lib/OrbitControls.js"></script>
+
+  <script src="javascript/lib/three.MeshCorners.js"></script>
+  <script src="javascript/lib/three.PlaneIntersection.js"></script>
+
+  <script src="javascript/lib/leap.bone-hand.js"></script>
+  <script src="javascript/lib/leap.proximity.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+
+</head>
+<body>
+
+</body>
+
+<script>
+
+  // Set up plugins
+
+  Leap.loop()
+      .use('boneHand', {
+        targetEl: document.body,
+        opacity: 0.3,
+        jointColor: new THREE.Color(0xffffff)
+      })
+      .use('proximity');
+
+
+  // Set up scene
+
+  var scene = Leap.loopController.plugins.boneHand.scene;
+  var camera = Leap.loopController.plugins.boneHand.camera;
+
+  var plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(80,80),
+    new THREE.MeshPhongMaterial({wireframe: false})
+  );
+
+
+  plane.scale.set(2,2,2);
+  plane.position.set(0,200,-100);
+
+  camera.lookAt( plane.position );
+
+  var lineGeometry = new THREE.Geometry();
+  lineGeometry.vertices.push( new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, -300 ) );
+
+  var line = new THREE.Line(
+    lineGeometry,
+    new THREE.LineBasicMaterial({ color: 0x0000ff })
+  );
+
+  var sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(15, 32, 32),
+    new THREE.MeshPhongMaterial
+  );
+
+  scene.add(plane);
+  scene.add(line);
+  scene.add(sphere);
+
+  var cornerSpheres = [];
+  for (var i = 0; i < 5; i++){
+    cornerSpheres[i] = new THREE.Mesh(
+      new THREE.SphereGeometry(15, 32, 32),
+      new THREE.MeshPhongMaterial
+    );
+
+    scene.add(cornerSpheres[i]);
+  }
+
+  var axisHelper = new THREE.AxisHelper( 100 );
+  scene.add( axisHelper );
+
+  var controls = new THREE.OrbitControls( camera );
+
+  // Set up interactions
+
+
+  Leap.loopController.on('frame', function(frame){
+
+    if (!frame.hands.length > 0) return;
+
+    for (var i = 0; i < frame.hands.length && i < 2; i++) {
+
+      lineGeometry.vertices[i].fromArray(frame.hands[i].palmPosition);
+
+    }
+
+    lineGeometry.verticesNeedUpdate = true;
+
+  });
+
+
+  // Set up application & output
+
+  var proximity = Leap.loopController.watch(
+    plane,
+    function(){
+      return [
+        lineGeometry.vertices
+      ]
+    }
+  );
+
+  proximity.in(function(){
+    console.log('in');
+    sphere.material.color.setHex(0x00cc04);
+  });
+
+  proximity.out(function(){
+    console.log('out');
+    sphere.material.color.setHex(0x003304);
+  });
+
+  Leap.loopController.on('frame', function(frame){
+
+    var points = proximity.intersectionPoints, key;
+
+    for (var key in points){
+
+      if (points.hasOwnProperty(key)){
+        // leap.proximity doubles the function for a per-hand basis.  so we only take the first.
+
+        // only one sphere for now.
+        sphere.position.copy(points[key]);
+
+        break;
+      }
+
+    }
+
+
+  });
+
+
+
+</script>
+
+</html>
