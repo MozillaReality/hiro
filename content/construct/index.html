@@ -180,7 +180,10 @@
 			scene.add( light );
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
-			VRClient.ready();
+			setTimeout(function() {
+				VRClient.ready();
+			}, 1000);
+
 		}
 
 		// bend function

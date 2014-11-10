@@ -89,7 +89,7 @@ window.VRManager = (function() {
       if (fullscreenElement == null) {
         // launch:
         // this needs to be turned back on so we can reset the user back to the 2d landing page.
-        // self.exitVR();
+        //self.exitVR();
       }
     };
 
