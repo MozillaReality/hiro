@@ -13,7 +13,11 @@ function VRUi(container) {
 
 
 	this.homeUrl = 'content/construct';
+<<<<<<< HEAD
 	this.landingUrl = 'content/landing'; // launch: make sure set to landing
+=======
+	this.landingUrl = 'content/construct';
+>>>>>>> upstream/pr/32
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
