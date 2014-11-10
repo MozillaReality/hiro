@@ -13,11 +13,7 @@ function VRUi(container) {
 
 
 	this.homeUrl = 'content/construct';
-<<<<<<< HEAD
 	this.landingUrl = 'content/landing'; // launch: make sure set to landing
-=======
-	this.landingUrl = 'content/construct';
->>>>>>> upstream/pr/32
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -292,7 +288,7 @@ VRUi.prototype.background = function() {
 	HUD and the loaded content
 	*/
 	//var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1 );
-	var geometry = new THREE.SphereGeometry( 800 );
+	var geometry = new THREE.SphereGeometry( 1400 );
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,

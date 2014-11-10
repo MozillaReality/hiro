@@ -112,7 +112,15 @@
   <script src="js/vrloading.js"></script>
   <script src="js/vrui.js"></script>
   <script src="js/vrmanager.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+  ga('create', 'UA-24056643-3', 'auto');
+  ga('send', 'pageview');
+  </script>
   <script>
     window.DomUi = (function() {
       function DomUi() {
@@ -203,8 +211,16 @@
 
         var statusDialogue = document.querySelector('#vrEnabled');
 
+        var vrDetected = false;
+
+        // set google anayltics
+        function setGa(value) {
+          ga('send', 'dimension1', value);
+        }
+
         VRManager.vrReady.then(function() {
           // VR detected
+          vrDetected = 'true';
 
           // hide entervr button
           enterVRButton.classList.remove('is-hidden');
@@ -212,8 +228,11 @@
           // hide download dialogue
           downloadDialogue.classList.add('is-hidden');
           statusDialogue.classList.remove('is-hidden');
+
+          setGa(vrDetected);
         }, function() {
           // VR NOT detected
+          vrDetected = 'false';
 
           // add entervr button
           enterVRButton.classList.add('is-hidden');
@@ -223,7 +242,10 @@
 
           // download button
           downloadDialogue.classList.remove('is-hidden');
+
+          setGa(vrDetected);
         });
+
 
       }
 
