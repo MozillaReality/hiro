@@ -354,15 +354,41 @@
 
 	  	// cylinder layouts
 
-			var cylinder1 = makeCylinderLayout( "cylinder-wherever.png", 200, 0.2 );
-			cylinder1.renderDepth = 4;
-			cylinder1.position.set( 0, 1, 0 );
+			var cylinder1 = makeCylinderLayout( "cylinder-wherever-3.png", 220, 0.2 );
+			cylinder1.renderDepth = 5;
+			cylinder1.position.set( 0, 30, 0 );
 			scene.add( cylinder1 );
 
-			// var cylinder2 = makeCylinderLayout( "cylinder-text-2.png", 20, 1 );
-			// mockup2.renderDepth = 1;
-			// scene.add( mockup2 );
+			var cylinder1 = makeCylinderLayout( "cylinder-text-3.png", 160, 1 );
+			cylinder1.renderDepth = 4;
+			cylinder1.position.set( 0, 0, 0 );
+			scene.add( cylinder1 );
 
+
+			// instructions
+
+			var instructions = new THREE.Object3D();
+			var geometry = new THREE.PlaneGeometry( 39, 13, 1, 1 );
+			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture( "images/instructions-1.png" ) } );
+			var mesh = new THREE.Mesh( geometry, material );
+			instructions.add( mesh );
+			instructions.scale.set( 0.02, 0.02, 0.02 );
+			instructions.position.set( 0, -0.8, -1 );
+			scene.add( instructions );
+
+			var posY = mesh.position.y;
+			mesh.position.set( 0, posY + 20, 0 )
+			new TWEEN.Tween( mesh.position )
+				.to( { y: posY }, 1500 )
+				.delay( 1000 )
+				.easing( TWEEN.Easing.Cubic.Out )
+				.start();
+
+			new TWEEN.Tween( mesh.material )
+				.to( { opacity: 1 }, 1500 )
+				.easing( TWEEN.Easing.Cubic.Out )
+				.delay( 1000 )
+				.start();
 
 			// text links
 
@@ -394,9 +420,6 @@
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
 
-				group.add( mesh );
-				group.add( highlight );
-
 				// events
 				group.addEventListener( 'click', function() {
 
@@ -414,14 +437,13 @@
 						.start();
 				});
 
+				group.add( mesh );
+				group.add( highlight );
+
 				group.position.set(-depth-2, offsetY, -depth);
-
 				group.rotation.set( 0, 60 * Math.PI / 180, 0 );
-
 				bend(group, depth);
-
 				mesh.renderDepth = 2;
-
 				highlight.renderDepth = 2;
 
 				return group;
@@ -449,12 +471,9 @@
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
 
-				group.add( mesh );
-				group.add( highlight );
-
 				// events
 				group.addEventListener( 'click', function() {
-
+					VRClient.load( 'http://mozvr.github.io/polarsea/' );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -469,13 +488,12 @@
 						.start();
 				});
 
+				group.add( mesh );
+				group.add( highlight );
 
 				group.position.set(0, offsetY, -depth - 3);
-
 				bend(group, depth);
-
 				mesh.renderDepth = 2;
-
 				highlight.renderDepth = 2;
 
 				return group;
@@ -508,7 +526,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-
+					VRClient.load( 'http://mozvr.github.io/infodive/index2.html' );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -524,26 +542,198 @@
 				});
 
 				group.add( mesh );
-
 				group.add( highlight );
 
 				group.position.set(depth + 1, offsetY, -depth);
-
 				group.rotation.set( 0, -60 * Math.PI / 180, 0 );
-
 				bend(group, depth);
-
 				mesh.renderDepth = 2;
-
 				highlight.renderDepth = 2;
 
 				return group;
 			};
 
 
-			scene.add(makeSechelt());
-			scene.add(makePolar());
-			scene.add(makeInfo());
+			function makePanos() {
+
+				var w = 34 * scale;
+				var h = 67.25 * scale;
+				var d = 1 * scale;
+
+				// hit area
+				var group = new THREE.Mesh(
+					new THREE.BoxGeometry( w, h, d, 1, 1 ),
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+				);
+
+				// label
+				var mesh = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-panos-1.png" ) } )
+				);
+
+				// highlight
+				var highlight = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+				);
+
+				// events
+				group.addEventListener( 'click', function() {
+					VRClient.load( 'http://mozvr.github.io/panorama-viewer/' );
+				});
+
+				group.addEventListener( 'mouseover', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				});
+
+				group.addEventListener( 'mouseout', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				});
+
+				group.add( mesh );
+				group.add( highlight );
+
+				group.position.set(depth + 5, offsetY-1.2, -depth);
+				group.rotation.set( 0, -66 * Math.PI / 180, 0 );
+				bend(group, 9);
+				mesh.renderDepth = 2;
+				highlight.renderDepth = 2;
+
+				var holder = new THREE.Object3D();
+				holder.add( group );
+				holder.rotation.set( 0, 330 * Math.PI / 180, 0 );
+
+				return holder;
+			};
+
+
+			function makeLeap() {
+
+				var w = 34 * scale;
+				var h = 67.25 * scale;
+				var d = 1 * scale;
+
+				// hit area
+				var group = new THREE.Mesh(
+					new THREE.BoxGeometry( w, h, d, 1, 1 ),
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+				);
+
+				// label
+				var mesh = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-leap-2.png" ) } )
+				);
+
+				// highlight
+				var highlight = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+				);
+
+				// events
+				group.addEventListener( 'click', function() {
+					VRClient.load( 'http://pehrlich.github.io/VRCollage' );
+				});
+
+				group.addEventListener( 'mouseover', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				});
+
+				group.addEventListener( 'mouseout', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				});
+
+				group.add( mesh );
+				group.add( highlight );
+
+				group.position.set(depth + 5, offsetY-1.2, -depth);
+				group.rotation.set( 0, -62 * Math.PI / 180, 0 );
+				bend(group, 9);
+				mesh.renderDepth = 2;
+				highlight.renderDepth = 2;
+
+				var holder = new THREE.Object3D();
+				holder.add( group );
+				holder.rotation.set( 0, 308 * Math.PI / 180, 0 );
+
+				return holder;
+			};
+
+
+			function makeEleVR() {
+
+				var w = 34 * scale;
+				var h = 67.25 * scale;
+				var d = 1 * scale;
+
+				// hit area
+				var group = new THREE.Mesh(
+					new THREE.BoxGeometry( w, h, d, 1, 1 ),
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+				);
+
+				// label
+				var mesh = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-elevr-1.png" ) } )
+				);
+
+				// highlight
+				var highlight = new THREE.Mesh(
+					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+				);
+
+				// events
+				group.addEventListener( 'click', function() {
+					VRClient.load( 'http://mozvr.github.io/polarsea' );
+				});
+
+				group.addEventListener( 'mouseover', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				});
+
+				group.addEventListener( 'mouseout', function( e ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				});
+
+				group.add( mesh );
+				group.add( highlight );
+
+				group.position.set(depth + 5, offsetY-1.2, -depth);
+				group.rotation.set( 0, -62 * Math.PI / 180, 0 );
+				bend(group, 9);
+				mesh.renderDepth = 2;
+				highlight.renderDepth = 2;
+
+				var holder = new THREE.Object3D();
+				holder.add( group );
+				holder.rotation.set( 0, 286 * Math.PI / 180, 0 );
+
+				return holder;
+			};
+
+
+			scene.add( makeSechelt() );
+			scene.add( makePolar() );
+			scene.add( makeInfo() );
+			scene.add( makePanos() );
+			scene.add( makeLeap() );
+			scene.add( makeEleVR() );
 
 		}
 
