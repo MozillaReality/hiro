@@ -240,6 +240,8 @@ angular.module('directives', [])
           render();
         });
 
+        VRClient.ready();
+
 
       }
     };
