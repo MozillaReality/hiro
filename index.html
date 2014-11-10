@@ -164,11 +164,12 @@
 
         // enter VR button
         function promptPermission() {
-          if (document.cookie == 'fsPrompted') {
+          console.log(document.cookie);
+          if (document.cookie == 'fsPrompted=true') {
             // we've prompted the user before for fullscreen permissions.  let's go!
             VRManager.enableVR();
           } else {
-            document.cookie = 'fsPrompted';
+            document.cookie = "fsPrompted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
             fullscreenPrompt();
           }
         };
@@ -209,10 +210,6 @@
           // hide download dialogue
           downloadDialogue.classList.add('is-hidden');
           statusDialogue.classList.remove('is-hidden');
-
-          // download button
-          downloadButton.classList.add('is-hidden');
-
         }, function() {
           // VR NOT detected
 
@@ -220,7 +217,6 @@
           enterVRButton.classList.add('is-hidden');
 
           // show download dialogue
-          downloadDialogue.classList.remove('is-hidden');
           statusDialogue.classList.add('is-hidden');
 
           // download button
