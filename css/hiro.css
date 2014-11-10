@@ -17,6 +17,11 @@ body {
   box-sizing: inherit;
 }
 
+em {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-style: normal;
+}
 
 /* containing element that will fullscreen will be called on */
 #container {
@@ -56,11 +61,27 @@ body {
   line-height: 3.2rem;
 }
 
-#center {
+#entervr {
   position: absolute;
-  top: 65%;
-  left: 50%;
+  bottom: 120px;
+  width: 100%;
 }
+
+#vrDownload {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6rem;
+  letter-spacing: 0px;
+  font-size: 0.8rem;
+  max-width: 32rem;
+  background: #fff;
+  color: #333;
+  padding: 1rem 1.5rem 1rem 1.5rem;
+  opacity: 1;
+  transition: all 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940);
+}
+
 
 #intro span {
   font-size: 1.5rem;
@@ -83,17 +104,33 @@ body {
   line-height: 4rem;
 }
 
-#fspointerscreen {
-  background: black;
+#fsPrompt {
+  background: #333;
+  padding-top: 250px;
+  color: #fff;
 }
+
+#fsPrompt h1 {
+  text-align: center;
+  width: 100%;
+}
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 25px solid #fff;
+  display: inline-block;
+}
+
+
 /* navigation */
 .button-large {
-  position: relative;
-  left: -50%;
+  display: inline-block;
   margin: 1rem;
-  width: 12rem;
   border: 0.45rem solid rgba( 40, 40, 40, 1);
-  padding: 0.5rem 0.2rem;
+  padding: 0.5rem 1rem;
   color: rgba( 40, 40, 40, 1);
   box-shadow: 0px -16px 0px -8px rgba(50, 50, 50, 0.15);
   background-color: rgba( 0, 0, 0, 0 );
@@ -101,6 +138,11 @@ body {
   font-size: 2rem;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.button-large.white {
+  border: 0.45rem solid #fff;
+  color: #fff;
 }
 
 .button-large:hover {
@@ -191,16 +233,15 @@ body {
   position: absolute;
   letter-spacing: 0px;
   font-size: 0.8rem;
-  bottom: 5rem;
-  right: 1.5rem;
+  bottom: 0.7rem;
+  right: 2rem;
   max-width: 24rem;
-  background: #fff;
-  color: #626262;
+  background: rgba(0,0,0,0.2);
+  color: #fff;
   padding: 1rem 1.5rem 1rem 1.5rem;
   opacity: 1;
   transition: all 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940);
 }
-
 
 .status-bubble:after { /* bubble pointer */
   position: absolute;
@@ -223,10 +264,11 @@ body {
 }
 
 .button-wire {
-  border: 1px solid #bebebe;
-  background: transparent;
+  border: 3px solid #000;
+  background: #fff;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 700;
+  text-transform: uppercase;
   padding: 0.2rem 0.5rem;
   margin: 0.1rem;
   color: #000;
@@ -234,7 +276,9 @@ body {
 }
 .button-wire:hover {
   background: #efefef;
-  border: 1px solid transparent;
+  border: 3px solid #000;
+  background: #000;
+  color: #fff;
 }
 
 .button-download {
@@ -271,11 +315,56 @@ body {
   left: 50%;
   transform: translate(-50%,-50%);
 }
-.animate-in-out {
-  animation-name: fade-in-out;
-  animation-duration: 3s;
-  animation-delay: 1s;
+
+.delayed-animate-in {
+  -webkit-animation: fade-in 1s;
+  animation: fade-in 1s;
+  animation-delay: 3s;
+  -webkit-animation-delay: 3s;
   opacity: 0;
+  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;
+}
+
+.animate-in-out {
+  animation: fade-in-out 3s;
+  -webkit-animation: fade-in-out 3s;
+  animation-delay: 1s;
+  -webkit-animation-delay: 1s;
+  opacity: 0;
+}
+
+@-webkit-keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fade-in-out {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes fade-in-out {
@@ -292,6 +381,11 @@ body {
     opacity: 0;
   }
 }
+
+
+.lightgray {
+  color: #8d8d8d
+}
 /*---------- UTILITIES ----------*/
 
 .float-left {
@@ -303,7 +397,6 @@ body {
 .center {
   text-align: center;
 }
-
 .is-hidden {
   display: none!important;
 }

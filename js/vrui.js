@@ -259,7 +259,6 @@ VRUi.prototype.bend = function( group, amount, multiMaterialObject ) {
 		mesh.geometry.verticesNeedUpdate = true;
 	}
 
-
 	for ( var i = 0; i < group.children.length; i ++ ) {
 		var element = group.children[ i ];
 

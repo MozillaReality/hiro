@@ -194,25 +194,6 @@ window.VRManager = (function() {
     }
   };
 
-  VRManager.prototype.enableStereo = function() {
-    var self = this;
-
-    self.ui.setRenderMode(self.ui.modes.stereo);
-
-    if (self.currentDemo) {
-     self.currentDemo.setRenderMode(self.ui.mode);
-    }
-  };
-
-  VRManager.prototype.enableMono = function() {
-    var self = this;
-
-    self.ui.setRenderMode(self.ui.modes.mono);
-
-    if (self.currentDemo) {
-     self.currentDemo.setRenderMode(self.ui.mode);
-    }
-  };
 
   VRManager.prototype.exitVR = function() {
     console.log('Exiting VR mode');
@@ -244,9 +225,7 @@ window.VRManager = (function() {
     });
   };
 
-
   return new VRManager('#container');
-
 })();
 
 window.t = (function() {

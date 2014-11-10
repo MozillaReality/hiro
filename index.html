@@ -5,6 +5,7 @@
     <title>MozVR</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/hiro.css">
+    <link rel="stylesheet" href="css/instructions.css">
     <link rel='stylesheet' href='fonts/montserrat/montserrat.css' type='text/css'>
   </head>
   <body>
@@ -24,15 +25,20 @@
         <span>share experiments and code.</span><br>
       </div>
 
-      <div id="center">
-        <div id="pointer" class="button-large">
-          Pointer
-        </div>
-
-        <div id="launch" class="button-large">
-          Enter VR
-        </div>
+      <div id="entervr" class="center">
+        <div id="launch" class="button-large">Enter VR</div>
       </div>
+
+      <div id="vrDownload" class="center is-hidden" >
+        <em>mozvr.com is a virtual reality website.</em><br/>
+        To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
+
+        <br/><br/>
+
+        <a href="downloads.html"><button class="button-wire">Get Firefox VR</button></a>
+
+      </div>
+
 
       <div id="navigation">
         <div id="logo" class="float-left">mozvr.com</div>
@@ -55,55 +61,35 @@
         </div>
 
         <div id="modes" class="float-right">
-          <ul class="flat-list group">
-            <li id="viewing">
-              Viewing in
-            </li>
-
-            <li>
-              <a href="" id="mono" class="button-wire-small button-wire-selected is-hidden">Mono</a>
-            </li>
-            <li>
-              <a href="" id="stereo" class="button-wire-small is-hidden">Stereo</a>
-            </li>
-            <li>
-              <a href="" id="vr" class="button-wire-small is-hidden">VR</a>
-            </li>
-
-
-            <li>
-              <button id="download" class="button-download is-hidden"></button>
-            </li>
-          </ul>
-
           <div class="status animate-in-out is-hidden" id="vrEnabled">
             VR Browser detected
           </div>
-
-          <div class="status status-bubble is-hidden" id="vrDownload">
-            <em>mozvr.com is a virtual reality website.</em><br/>
-            To get the VR eperience, you need a VR-enabled browser, like our experimental builds of Firefox and a VR headset, like Oculus Rift.
-
-            <p class="center">
-              <a href="download.html"><button class="button-wire">Get Firefox VR</button></a>
-              <button class="button-wire" id="download-dismiss">Not now</button>
-            </p>
-          </div>
-
-          </div><!-- #status -->
-
         </div><!-- #mode -->
 
       </div><!-- #navigation -->
 
     </div><!-- #content -->
 
-    <div id="fspointerscreen" class="fit is-hidden">
-      Allow and remember the fullscreen permission.
+    <div id="fsPrompt" class="center fit is-hidden">
+      <div class="arrow-up"></div>
+
+      <h2>Allow Fullscreen:</h2>
+      <h3 class="lightgray">Don't forget to <u>check remember</u>!</h3>
 
       <br/><br/>
 
-      Press [ESC] to return to launch screen.
+      <div class="delayed-animate-in center">
+        <div id="fsContinue" class="button-large white">
+          ESC
+        </div>
+
+        <span class='gamma'>TO CONTINUE</span>
+      </div>
+
+      <br/><br/>
+
+      <p class="lightgray">(You will only have to do this once.)</p>
+
     </div>
 
   </body>
@@ -128,26 +114,21 @@
   <script>
     window.DomUi = (function() {
       function DomUi() {
-
-        // download dialogue displays when no VR compatible browser is detected.
-        var downloadDialogue = document.querySelector('#vrDownload');
-        var statusDialogue = document.querySelector('#vrEnabled');
-        var enterVRButton = document.querySelector('#launch');
-        var downloadButton = document.querySelector('#download');
-        var dissmissButton = document.querySelector('#download-dismiss');
-
-        var fspointerButton = document.querySelector('#pointer');
-        var fspointerscreen  = document.querySelector('#fspointerscreen');
-
         /*
         fullscreen and pointerlock permissions show up on the rift display
         making them inacessible and therefore the site unsusable by the user.
         Because of this, we will need to request fullscreen and pointer lock
         permissions on the main desktop before the user entersthe experience.
         */
-        fspointerButton.addEventListener('click', function() {
-          var fs = fspointerscreen;
-          fspointerscreen.classList.remove('is-hidden');
+        var fsPointerscreen = document.querySelector('#fsPrompt');
+
+        var fsContinueButton = document.querySelector('#fsContinue');
+
+        function fullscreenPrompt() {
+          var fs = fsPointerscreen;
+
+          fsPointerscreen.classList.remove('is-hidden');
+
           if (fs.requestFullscreen) {
             fs.requestFullscreen();
           } else if (fs.mozRequestFullScreen) {
@@ -162,67 +143,68 @@
             bodyEl.webkitRequestPointerLock;
 
           bodyEl.requestPointerLock();
-        });
+        };
 
+
+        // listen for fullscreen change events so we can hide the fs prompt.
         document.addEventListener('mozfullscreenchange', onFschange);
         document.addEventListener('webkitfullscreenchange', onFschange);
         document.addEventListener('fullscreenchange', onFschange);
 
         function onFschange() {
           var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
-          var fs = fspointerscreen;
+          var fs = fsPointerscreen;
 
           if (!fullscreenElement) {
             fs.classList.add('is-hidden');
           }
-        }
+        };
 
 
-        function toggleDownloadDialogue(e) {
-          e.preventDefault();
-
-          var style = downloadDialogue.style;
-          var classes = downloadDialogue.classList;
-
-          if (classes.contains('is-minimized')) {
-            style.transform = 'translate(0, 0) scale(1,1)';
-          } else {
-            style.transform = 'translate(11rem, 5rem) scale(0,0)';
-          }
-
-          classes.toggle('is-minimized');
-        }
-
-        downloadButton.addEventListener('click', toggleDownloadDialogue);
-        dissmissButton.addEventListener('click', toggleDownloadDialogue);
 
         // enter VR button
+        function promptPermission() {
+          if (document.cookie == 'fsPrompted') {
+            // we've prompted the user before for fullscreen permissions.  let's go!
+            VRManager.enableVR();
+          } else {
+            document.cookie = 'fsPrompted';
+            fullscreenPrompt();
+          }
+        };
+
+
+
+
+        var enterVRButton = document.querySelector('#launch');
+
         enterVRButton.addEventListener('click', function() {
-          VRManager.enableVR();
+          promptPermission();
         })
 
-        // mode buttons
-        var monoButton = document.querySelector('#mono');
-        var stereoButton = document.querySelector('#stereo');
-        var vrButton = document.querySelector('#vr');
 
-        // vr
-        vrButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          VRManager.enableVR();
 
-          // exitVr returns the user back to mono mode by default, so we'll assume that for now and style button accordingly.
-          document.querySelector('.button-wire-selected').classList.remove('button-wire-selected');
-          monoButton.classList.add('button-wire-selected');
-        })
+
+
+
+
+        /*
+        detect wether or not we have a VR compatible browser.   If
+        they have a VR browser, just show a status that we have detected one.
+
+        Otherwise, display a dialogue prompt to download
+        */
+
+        // elements
+        var downloadDialogue = document.querySelector('#vrDownload');
+
+        var statusDialogue = document.querySelector('#vrEnabled');
 
         VRManager.vrReady.then(function() {
-          console.log('----- VR detected');
           // VR detected
-          // show all available modes
-          monoButton.classList.remove('is-hidden');
-          // stereoButton.classList.remove('is-hidden');
-          vrButton.classList.remove('is-hidden');
+
+          // hide entervr button
+          enterVRButton.classList.remove('is-hidden');
 
           // hide download dialogue
           downloadDialogue.classList.add('is-hidden');
@@ -232,11 +214,10 @@
           downloadButton.classList.add('is-hidden');
 
         }, function() {
-          console.log('----- NoVR detected');
-          // VR not detected
-          monoButton.classList.remove('is-hidden');
-          // stereoButton.classList.remove('is-hidden');
-          vrButton.classList.add('is-hidden');
+          // VR NOT detected
+
+          // add entervr button
+          enterVRButton.classList.add('is-hidden');
 
           // show download dialogue
           downloadDialogue.classList.remove('is-hidden');
@@ -244,22 +225,6 @@
 
           // download button
           downloadButton.classList.remove('is-hidden');
-        });
-
-        // stereo
-        stereoButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          VRManager.enableStereo();
-          document.querySelector('.button-wire-selected').classList.remove('button-wire-selected');
-          this.classList.add('button-wire-selected');
-        });
-
-        // mono
-        monoButton.addEventListener('click', function(e) {
-          e.preventDefault();
-          VRManager.enableMono();
-          document.querySelector('.button-wire-selected').classList.remove('button-wire-selected');
-          this.classList.add('button-wire-selected');
         });
 
       }

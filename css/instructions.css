@@ -19,24 +19,24 @@ body {
   box-sizing: inherit;
 }
 
-h1 {
+h1, .alpha {
   font-size: 6.5rem;
   margin: 0;
 }
 
-h2 {
+h2, .beta {
   font-size: 2rem;
   font-weight: 400;
   text-transform: uppercase;
 }
 
-h3 {
+h3, .gamma {
   font-size: 1.5rem;
   font-weight: 400;
   text-transform: uppercase;
 }
 
-h4 {
+h4, .delta {
   font-size: 1rem;
   margin: 1rem 0 1rem 0;
   border-bottom: 1px dotted #333;
