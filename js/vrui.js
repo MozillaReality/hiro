@@ -13,7 +13,11 @@ function VRUi(container) {
 
 
 	this.homeUrl = 'content/construct';
+<<<<<<< HEAD
 	this.landingUrl = 'content/construct';
+=======
+	this.landingUrl = 'content/landing'; // launch: make sure set to landing
+>>>>>>> upstream/master
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -145,23 +149,24 @@ VRUi.prototype.load = function(url, opts) {
 
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible && this.hud.enabled) {
-		// hide
+		// show
+		console.log('showing HUD');
 		this.background.visible = true;
 		this.backgroundShow();
 		this.hud.show();
 		this.title.show(1000);
 		this.cursor.enable();
-		console.log('showing HUD');
+		this.cursor.show();
 		VRManager.currentDemo.blur();
 
 
 	} else if (this.hud.visible && this.hud.enabled) {
-		// show
+		// hide
+		console.log('hiding HUD');
 		this.backgroundHide(1000);
 		this.hud.hide();
 		this.title.hide(1000);
 		this.cursor.disable();
-		console.log('hiding HUD');
 		VRManager.currentDemo.focus();
 
 	} else {
@@ -383,7 +388,6 @@ VRUi.prototype.setRenderMode = function(mode) {
 		this.effect = new THREE.VREffect( this.renderer );
 		this.controls = new THREE.VRControls( this.camera );
 		this.cursor.setMode('centered');
-		this.cursor.show();
 
 	} else if (mode == VRUi.modes.stereo) {
 		console.log('Stereo render mode');

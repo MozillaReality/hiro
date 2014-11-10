@@ -47,6 +47,58 @@
 			return parameters;
 		} )();
 
+		var icons = {
+			sechelt: {
+				model: 'models/icon-sechelt-3.json',
+				url: 'http://mozvr.github.io/sechelt',
+				popup: 'images/popup-sechelt-1.png',
+				title: {
+					'title' : 'Sechelt',
+					'titleCredits' : 'Josh Carpenter\nRicardo Cabello\n—\nthree.js'
+				}
+			},
+			polar: {
+				model: 'models/icon-polarsea-1.json',
+				url: 'http://mozvr.com/content/polar',
+				popup: 'images/popup-polarsea-1.png',
+				title: {
+					'title' : 'Polar Sea',
+					'titleCredits' : 'Deep Inc.\nELEVR\n—\nWebGL'
+				}
+			},
+			dive: {
+				model: 'models/icon-infodive-1.json',
+				url: 'http://mozvr.github.io/infodive',
+				popup: 'images/popup-infodive-1.png',
+				title: {
+					'title' : 'Information Diving',
+					'titleCredits' : 'Tony Parisi\nEric Levin\nJosh Carpenter\n-\nWebGL'
+				}
+			},
+			pano: {
+				url: 'http://mozvr.github.io/panorama-viewer',
+				title: {
+					"title": "Panorama",
+					'titleCredits': "Josh Carpenter\n-\nthree.js"
+				}
+			},
+			leap: {
+				"url": "content/leap",
+				"title": {
+					"title": "Leap Motion",
+      		"titleCredits": "Peter Ehrlich\n-\nthree.js\nLeap Motion"
+				}
+			},
+			elevr4: {
+				"url": "http://mozvr.com/content/elevr4",
+				"title": {
+					"title": "ELEVR: Talk chat show EP.4",
+      		"titleCredits": "ELEVR\n-\nWebGL"
+				}
+			}
+
+		}
+
 
 		var camera, scene, renderer;
 		var controls, effect, vrEffect;
@@ -128,7 +180,10 @@
 			scene.add( light );
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
-			VRClient.ready();
+			setTimeout(function() {
+				VRClient.ready();
+			}, 1000);
+
 		}
 
 		// bend function
@@ -422,7 +477,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( 'http://mozvr.github.io/sechelt/' );
+					VRClient.load( icons.sechelt.url, icons.sechelt.title);
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -473,7 +528,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( 'http://mozvr.github.io/polarsea/' );
+					VRClient.load( icons.polar.url, icons.polar.title );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -526,7 +581,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( 'http://mozvr.github.io/infodive/index2.html' );
+					VRClient.load( icons.dive.url, icons.dive.title );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -580,7 +635,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( 'http://mozvr.github.io/panorama-viewer/' );
+					VRClient.load( icons.pano.url, icons.pano.title );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -634,7 +689,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( '../content/leap' );
+					VRClient.load( icons.leap.url, icons.leap.title );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -657,7 +712,7 @@
 				bend(group, 9);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
-				
+
 				return group;
 			};
 
@@ -688,7 +743,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( 'http://mozvr.com/staging/content/elevr4' );
+					VRClient.load( icons.elevr4.url, icons.elevr4.title );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -742,7 +797,7 @@
 		var particles = [];
 
 		function makeParticle() {
-			
+
 			function randomBetween(min, max) {
 			    if (min < 0) {
 			        return min + Math.random() * (Math.abs(min)+max);
@@ -780,10 +835,7 @@
 				mesh.add( p );
 			}
 
-			console.log( particles.length )
-
 			scene.add( mesh );
-
 		}
 
 
@@ -806,7 +858,7 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( json ) {
+		function makeIconHolder( json, urlOpts ) {
 
 
 			// holder
@@ -821,26 +873,26 @@
 
 			var popup = new THREE.Object3D();
 			var mesh = new THREE.Mesh(
-				new THREE.PlaneGeometry( 30, 11, 20, 1 ), 
+				new THREE.PlaneGeometry( 30, 11, 20, 1 ),
 				new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( json.popup ), side: THREE.DoubleSide } )
 			);
 			popup.add( mesh );
-			
+
 			var posY = 40;
 			popup.position.set( 100, posY, -40 );
 			popup.rotation.set( 0, -80 * Math.PI / 180, 0 );
 			popup.scale.set( 5.5, 5.5, 5.5 );
 			mesh.material.opacity = 0;
 			mesh.renderDepth = 1;
-			bend( popup, 57 );	
-			
+			bend( popup, 57 );
+
 			holder.add( popup );
 
 
 			// events
 
 			holder.addEventListener('click', function() {
-				VRClient.load( json.url );
+				VRClient.load( json.url, urlOpts );
 			});
 
 			holder.addEventListener('mouseover', function(e) {
@@ -852,7 +904,7 @@
 				new TWEEN.Tween( e.target.position )
 					.to( { y: destinationY }, 350 )
 					.start();
- 
+
 				new TWEEN.Tween( popup.position )
 					.to( { y: posY + 3 }, 200 )
 					.start();
@@ -939,7 +991,7 @@
 					z = iconBasePos.z + 2.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt );
+				var holder = makeIconHolder( icons.sechelt, icons.sechelt.title);
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 130 * (Math.PI/180), 0 );
@@ -965,7 +1017,7 @@
 					z = iconBasePos.z - 0.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar );
+				var holder = makeIconHolder( icons.polar, icons.polar.title );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 80 * (Math.PI/180), 0 );
@@ -991,7 +1043,7 @@
 					z = iconBasePos.z + 2.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.dive );
+				var holder = makeIconHolder( icons.dive , icons.dive.title );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );

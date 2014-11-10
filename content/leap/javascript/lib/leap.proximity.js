@@ -99,7 +99,7 @@ Leap.plugin('proximity', function(scope){
     // There is an issue here where handPoints is not indexed per hand
     // check where index is used, refactor. oops.
     // test pictures and resizing.
-    checkLines: function(hand, handPoints){
+    checkLines: function(hand, lines){
       var mesh = this.mesh, state, intersectionPoint, key;
 
 
@@ -112,14 +112,26 @@ Leap.plugin('proximity', function(scope){
       var worldPosition = (new THREE.Vector3).setFromMatrixPosition( this.mesh.matrixWorld );
 
       // j because this is inside a loop for every hand
-      for (var j = 0; j < handPoints.length; j++){
+      for (var j = 0; j < lines.length; j++){
 
         key = hand.id + '-' + j;
 
-        intersectionPoint = mesh.intersectedByLine(handPoints[j][0], handPoints[j][1], worldPosition);
+        intersectionPoint = mesh.intersectedByLine(lines[j][0], lines[j][1], worldPosition);
+
+        // if there already was an intersection point,
+        // And the new one is good in z but off in x and y,
+        // don't emit an out event.
+        if ( !intersectionPoint && this.intersectionPoints[key] && mesh.intersectionPoint ) {
+
+//          console.log('found newly lost intersection point');
+          intersectionPoint = mesh.intersectionPoint
+
+        }
 
         if (intersectionPoint){
+
           this.intersectionPoints[key] = intersectionPoint;
+
         } else if (this.intersectionPoints[key]) {
           delete this.intersectionPoints[key];
         }

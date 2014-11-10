@@ -1,1 +1,146 @@
-{"nodes":[{"rectangle":{"x":1,"y":1,"width":300,"height":237},"classList":{"0":"section"},"id":"health"},{"rectangle":{"x":451,"y":1,"width":240,"height":303},"classList":{"0":"section"},"id":"controls"},{"rectangle":{"x":841,"y":9,"width":1565,"height":40},"classList":{"0":"title"},"id":"favorites-title"},{"rectangle":{"x":841,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"next"},{"rectangle":{"x":1068.5,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"Sechelt"},{"rectangle":{"x":1296,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"polar"},{"rectangle":{"x":1523.5,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"diving"},{"rectangle":{"x":1751,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"pano"},{"rectangle":{"x":1978.5,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"leap"},{"rectangle":{"x":2206,"y":48.5,"width":200,"height":300},"classList":{"0":"fav"},"id":"elevr4"},{"rectangle":{"x":841,"y":401,"width":500,"height":36},"classList":{},"id":"tips"},{"rectangle":{"x":2556,"y":1,"width":300,"height":261},"classList":{"0":"section"},"id":"credits"}]}
+{
+  "nodes": [
+    {
+      "rectangle": {
+        "x": 1,
+        "y": 1,
+        "width": 300,
+        "height": 245
+      },
+      "classList": {
+        "0": "section"
+      },
+      "id": "health"
+    },
+    {
+      "rectangle": {
+        "x": 451,
+        "y": 1,
+        "width": 240,
+        "height": 320
+      },
+      "classList": {
+        "0": "section"
+      },
+      "id": "controls"
+    },
+    {
+      "rectangle": {
+        "x": 841,
+        "y": 9,
+        "width": 1565,
+        "height": 40
+      },
+      "classList": {
+        "0": "title"
+      },
+      "id": "favorites-title"
+    },
+    {
+      "rectangle": {
+        "x": 841,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "home"
+    },
+    {
+      "rectangle": {
+        "x": 1068.5,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "Sechelt"
+    },
+    {
+      "rectangle": {
+        "x": 1296,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "polar"
+    },
+    {
+      "rectangle": {
+        "x": 1523.5,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "diving"
+    },
+    {
+      "rectangle": {
+        "x": 1751,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "pano"
+    },
+    {
+      "rectangle": {
+        "x": 1978.5,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "leap"
+    },
+    {
+      "rectangle": {
+        "x": 2206,
+        "y": 48.5,
+        "width": 200,
+        "height": 300
+      },
+      "classList": {
+        "0": "fav"
+      },
+      "id": "elevr4"
+    },
+    {
+      "rectangle": {
+        "x": 841,
+        "y": 401,
+        "width": 500,
+        "height": 41
+      },
+      "classList": {},
+      "id": "tips"
+    },
+    {
+      "rectangle": {
+        "x": 2556,
+        "y": 1,
+        "width": 300,
+        "height": 275
+      },
+      "classList": {
+        "0": "section"
+      },
+      "id": "credits"
+    }
+  ]
+}

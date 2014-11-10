@@ -11,33 +11,53 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
     <script src="//js.leapmotion.com/leap-0.6.3.js"></script>
     <script src="//js.leapmotion.com/leap-plugins-0.1.9.min.js"></script>
+    <script src="bower_components/tween.js/build/tween.min.js"></script>
+
 
     <!-- include boneHand from master. Fixes a super janky issue where only one hand would appear when
          using deferred scene creation, which we do here -->
-    <script src="javascript/lib/leap.boneHand.js"></script>
+    <script src="javascript/lib/leap.bone-hand.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
 
     <!-- Local libs -->
     <script src="javascript/lib/VRControls.js"></script>
     <script src="javascript/lib/VREffect.js"></script>
+    <script src="javascript/lib/VRClient.js"></script> <!-- for hiro integration -->
+    <script src="javascript/lib/VRCursor.js"></script>
     <script src="javascript/lib/Arrows.js"></script>
+    <script src="javascript/lib/HandArrow.js"></script>
+    <script src="javascript/lib/TextMaker.js"></script>
     <script src="javascript/lib/leap.proximity.js"></script>
+    <script src="javascript/lib/leap.transform.js"></script>
     <script src="javascript/lib/leap.pinchEvent.js"></script>
-    <script src="javascript/lib/leap.handBracketRecognizer.js"></script>
+    <script src="javascript/lib/leap.singleHandRecognizer.js"></script>
+    <script src="javascript/lib/leap.twoHandRecognizer.js"></script>
     <script src="javascript/lib/three.MeshCorners.js"></script>
     <script src="javascript/lib/three.PlaneIntersection.js"></script>
+    <script src="javascript/lib/three.grid.js"></script>
     <script src="javascript/lib/InteractablePlane.js"></script>
     <script src="javascript/lib/Dock.js"></script>
-    <script src="javascript/lib/LeapDataPlotter.js"></script>
-    <script src="javascript/lib/SortedLayoutContainer.js"></script>
+    <script src="javascript/lib/LeapDataPlotter.js"></script> <!-- could be removed -->
+    <script src="javascript/lib/PlaneStack.js"></script>
+    <script src="javascript/lib/THREEDialog.js"></script>
 
     <!-- Webgl Fonts -->
     <script src="javascript/fonts/helvetiker_regular.typeface.js"></script>
 
+    <!-- We have this way up here to track leap ready event. Should be refactored for lazy ready event.  -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-31536531-11', 'leapmotion.github.io');
+      ga('send', 'pageview');
+
+    </script>
+
     <!-- Application code -->
-    <script src="javascript/factories/vrControls.js"></script>
     <script src="javascript/directives/scene.js"></script>
-    <script src="javascript/directives/vr.js"></script>
     <script src="javascript/app.js"></script>
     <script src="javascript/interface.js"></script>
 
@@ -56,6 +76,80 @@
   <p>
     Press 'f' to go fullscreen
   </p>
+
+  <!--<div id="noLeapWarning" class="hidden">-->
+  <div id="noLeapWarning">
+    <p>
+      <span id="controllerStatusMessage">Please plug in your Leap Motion Controller.</span>
+      <span id="desktopVsHMDMode" class="hidden">
+        Is Controller on your <a href="#" id="selectDesktop">Desktop</a> or mounted to your <a href="#" id="selectOculus" class="active">Oculus rift</a>?
+      </span>
+    </p>
+    <p>
+      No Controller? Try automatic mode: <a href="#" id="auto-part1-link">Select Photos</a>.
+    </p>
+    <!-- <ol>
+      <li>.</li>
+      <li id="auto-part2-span" class="hidden"><a href="#" id="auto-part2-link">Stack Photos</a>.</li>
+      <li id="auto-part3-span" class="hidden"><a href="#" id="auto-part3-link">Spread Photos</a>.</li>
+    </ol> -->
+  </div>
+
+
+  <script>
+
+
+var transform = Leap.loopController.plugins.transform;
+
+var HMDTransforms = {
+  quaternion: transform.quaternion,
+  scale: transform.scale,
+  position: transform.position
+};
+
+var DesktopTransforms = {
+  quaternion: new THREE.Quaternion,
+  scale: transform.scale, // stay in m
+  position: new THREE.Vector3(0,-0.3,-0.3)
+};
+
+useDesktopMode = function(){
+  console.log('use desktop');
+
+  transform.quaternion = DesktopTransforms.quaternion;
+  transform.scale      = DesktopTransforms.scale;
+  transform.position   = DesktopTransforms.position;
+
+  transform.effectiveParent = null;
+
+  Leap.loopController.setOptimizeHMD(false);
+
+  document.getElementById('selectDesktop').className = "active";
+  document.getElementById('selectOculus').className = "";
+
+
+};
+
+useHMDMode = function(){
+  console.log('use hmd');
+
+  transform.quaternion = HMDTransforms.quaternion;
+  transform.scale      = HMDTransforms.scale;
+  transform.position   = HMDTransforms.position;
+
+  transform.effectiveParent = window.camera;
+
+  Leap.loopController.setOptimizeHMD(true);
+
+  document.getElementById('selectDesktop').className = "";
+  document.getElementById('selectOculus').className = "active";
+
+};
+
+document.getElementById('selectDesktop').onclick = useDesktopMode;
+document.getElementById('selectOculus').onclick = useHMDMode;
+
+  </script>
 
 
   </body>
