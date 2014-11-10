@@ -354,15 +354,41 @@
 
 	  	// cylinder layouts
 
-			var cylinder1 = makeCylinderLayout( "cylinder-wherever-2.png", 200, 0.2 );
-			cylinder1.renderDepth = 4;
-			cylinder1.position.set( 0, 1, 0 );
+			var cylinder1 = makeCylinderLayout( "cylinder-wherever-3.png", 220, 0.2 );
+			cylinder1.renderDepth = 5;
+			cylinder1.position.set( 0, 30, 0 );
 			scene.add( cylinder1 );
 
-			// var cylinder2 = makeCylinderLayout( "cylinder-text-2.png", 20, 1 );
-			// mockup2.renderDepth = 1;
-			// scene.add( mockup2 );
+			var cylinder1 = makeCylinderLayout( "cylinder-text-3.png", 160, 1 );
+			cylinder1.renderDepth = 4;
+			cylinder1.position.set( 0, 0, 0 );
+			scene.add( cylinder1 );
 
+
+			// instructions
+
+			var instructions = new THREE.Object3D();
+			var geometry = new THREE.PlaneGeometry( 39, 13, 1, 1 );
+			var material = new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture( "images/instructions-1.png" ) } );
+			var mesh = new THREE.Mesh( geometry, material );
+			instructions.add( mesh );
+			instructions.scale.set( 0.02, 0.02, 0.02 );
+			instructions.position.set( 0, -0.8, -1 );
+			scene.add( instructions );
+
+			var posY = mesh.position.y;
+			mesh.position.set( 0, posY + 20, 0 )
+			new TWEEN.Tween( mesh.position )
+				.to( { y: posY }, 1500 )
+				.delay( 1000 )
+				.easing( TWEEN.Easing.Cubic.Out )
+				.start();
+
+			new TWEEN.Tween( mesh.material )
+				.to( { opacity: 1 }, 1500 )
+				.easing( TWEEN.Easing.Cubic.Out )
+				.delay( 1000 )
+				.start();
 
 			// text links
 
