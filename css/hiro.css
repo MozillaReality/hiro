@@ -59,6 +59,8 @@ em {
   height: 100%;
 }
 
+
+
 #intro {
   position: absolute;
   top: 2rem;
@@ -80,7 +82,17 @@ em {
   width: 100%;
 }
 
-#vrDownload {
+#entervr .button-large {
+  margin: 1rem 0 0;
+  padding: 1.2rem;
+}
+
+#entervr .button-large:hover {
+  color: #fff;
+  background: rgba( 40, 40, 40, 1 );
+}
+
+#vrDownload, #entervr {
   position: absolute;
   left: 2rem;
   /*transform: translateX(-50%);*/
@@ -297,8 +309,8 @@ em {
 .status {
   letter-spacing: 0px;
   font-size: 0.8rem;
-  background: rgba( 0, 0, 0, 0.1 );
-  color: #666;
+  background: rgba( 29, 185, 146, 0.8 );
+  color: #fff;
   padding: 0.5rem 0.7rem 0.5rem 0.7rem;
   opacity: 1;
   transition: all 0.2s cubic-bezier(0.250, 0.460, 0.450, 0.940);
