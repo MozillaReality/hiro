@@ -120,7 +120,7 @@ VRUi.prototype.load = function(url, opts) {
 					}
 
 					function onTabReady() {
-						var holdTitleTime = 3000;
+						var holdTitleTime = 5000;
 
 						self.backgroundHide(holdTitleTime);
 
@@ -288,7 +288,7 @@ VRUi.prototype.background = function() {
 	HUD and the loaded content
 	*/
 	//var geometry = new THREE.CylinderGeometry( 3, 3, 3, 40, 1 );
-	var geometry = new THREE.SphereGeometry( 800 );
+	var geometry = new THREE.SphereGeometry( 1400 );
 
 	var material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
