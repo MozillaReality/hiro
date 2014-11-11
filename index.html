@@ -143,6 +143,8 @@
 
         var enterVRButton = document.querySelector('#launch');
 
+        var configVr = document.querySelector('#entervr');
+
         function fullscreenPrompt() {
           var fs = document.body;
 
@@ -236,6 +238,9 @@
           downloadDialogue.classList.add('is-hidden');
           statusDialogue.classList.remove('is-hidden');
 
+          // show config instruction
+          configVr.classList.remove('is-hidden');
+
           setGa(vrDetected);
         }, function() {
           // VR NOT detected
@@ -249,6 +254,9 @@
 
           // download button
           downloadDialogue.classList.remove('is-hidden');
+
+          // config instruction
+          configVr.classList.add('is-hidden');
 
           setGa(vrDetected);
         });
