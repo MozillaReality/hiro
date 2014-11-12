@@ -36,6 +36,7 @@ function VRCursor(mode) {
 
   this.setMode(this.mode);
 
+
   //  return promise when all the necessary three cursor components are ready.
   this.ready = new Promise(function(resolve) {
       self.layout = new THREE.Group();
@@ -119,9 +120,20 @@ VRCursor.prototype.enable = function(context) {
     this.bindEvents();
     this.enabled = true;
     this.layout.visible = true;
+
+    // keeping raycaster separate of main frame loop update function keeps performance in check.
+    console.log('set raycast loop');
+    this.raycastIntervalId = window.setInterval(this.rayLoop.bind(this), 50);
   };
 };
 
+VRCursor.prototype.rayLoop = function() {
+  if (this.enabled) {
+    this.updateCursorIntersection();
+  } else if (this.raycastIntervalId) {
+    clearInterval(this.raycastIntervalId);
+  }
+}
 VRCursor.prototype.disable = function() {
   if (this.enabled) {
     this.unbindEvents();
@@ -423,7 +435,7 @@ VRCursor.prototype.updatePositionHides = function(headQuat) {
 VRCursor.prototype.update = function(headQuat) {
   this.updatePosition();
   // It updates hits
-  this.updateCursorIntersection();
+  // this.updateCursorIntersection();
 };
 
 VRCursor.prototype.quaternionsAngle = function(q1, q2) {

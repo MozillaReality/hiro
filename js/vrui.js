@@ -399,24 +399,18 @@ VRUi.prototype.setRenderMode = function(mode) {
 
 
 VRUi.prototype.animate = function() {
-	var self = this;
-	var controls = self.controls;
-	var headQuat;
+	var controls = this.controls;
 
 	// apply headset orientation and position to camera
 	if (controls) {
-		self.controls.update();
-
-		if (typeof controls.getVRState === 'function') {
-			headQuat = controls.getVRState().hmd.rotation;
-		}
+		this.controls.update();
 	}
 
-	self.transition.update();
+	this.transition.update();
 
-	self.loading.update();
+	this.loading.update();
 
-	self.cursor.update(headQuat);
+	this.cursor.update();
 
 	// run any animation tweens
 	TWEEN.update();
