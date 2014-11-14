@@ -102,15 +102,7 @@ window.VRManager = (function() {
         });
 
     self.ui.start();
-
   }
-
-  // VRManager.prototype.VRstart = function() {
-  //   this.ui.start();
-  // }
-  // VRManager.prototype.NoVRstart = function() {
-  //   this.ui.start();
-  // }
 
   VRManager.prototype.unloadCurrent = function() {
     var self = this;
@@ -228,6 +220,11 @@ window.VRManager = (function() {
   return new VRManager('#container');
 })();
 
+
+/*
+for debug purposes.
+todo: need a better interface for this kind of thing
+*/
 window.t = (function() {
   function t() {
     this.ui = VRManager.ui;

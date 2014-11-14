@@ -122,7 +122,6 @@ VRCursor.prototype.enable = function(context) {
     this.layout.visible = true;
 
     // keeping raycaster separate of main frame loop update function keeps performance in check.
-    console.log('set raycast loop');
     this.raycastIntervalId = window.setInterval(this.rayLoop.bind(this), 50);
   };
 };
