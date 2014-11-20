@@ -131,6 +131,9 @@
   <script>
     window.DomUi = (function() {
       function DomUi() {
+
+        this.initKeyboardControls();
+
         /*
         fullscreen and pointerlock permissions show up on the rift display
         making them inacessible rendering the site unsusable by the user.
@@ -222,11 +225,6 @@
 
         var vrDetected = false;
 
-        // set google anayltics
-        function setGa(value) {
-          ga('send', 'dimension1', value);
-        }
-
         VRManager.vrReady.then(function() {
           // VR detected
           vrDetected = 'true';
@@ -240,8 +238,6 @@
 
           // show config instruction
           configVr.classList.remove('is-hidden');
-
-          setGa(vrDetected);
         }, function() {
           // VR NOT detected
           vrDetected = 'false';
@@ -257,12 +253,49 @@
 
           // config instruction
           configVr.classList.add('is-hidden');
-
-          setGa(vrDetected);
         });
 
+      };
 
-      }
+      DomUi.prototype.urlParams = (function () {
+        var parameters = {};
+        var parts = window.location.search.substr( 1 ).split( '&' );
+        for ( var i = 0; i < parts.length; i ++ ) {
+          var parameter = parts[ i ].split( '=' );
+          parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+        }
+        return parameters;
+      })();
+
+      DomUi.prototype.initKeyboardControls = function() {
+        var self = this;
+
+        function onkey(event) {
+          //console.log(event.keyCode)
+
+          switch (event.keyCode) {
+            case 70: // f
+              VRManager.enableVR();
+              break;
+
+            case 83: // s
+              VRManager.enableVR({
+                fullscreen: false
+              });
+              break;
+
+            case 90: // z
+              VRManager.zeroSensor();
+              break;
+            case 32: // space
+              VRManager.ui.toggleHud();
+              break;
+          }
+        }
+
+        window.addEventListener("keydown", onkey, true);
+      };
+
 
       return new DomUi();
     })();

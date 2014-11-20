@@ -1,5 +1,5 @@
 window.VRClient = (function() {
-  function VRClient(container) {
+  function VRClient() {
     var self = this;
 
     // call back for render mode changes.
@@ -39,6 +39,9 @@ window.VRClient = (function() {
       self.startDemo = resolve;
     });
 
+    self.sendMessage('loading');
+
+    // listen for any post messages
     window.addEventListener("message", function (e) {
       var msg = e.data;
       if (!msg.type) {

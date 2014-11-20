@@ -58,6 +58,7 @@ window.VRManager = (function() {
       if (!msg.type) {
         return;
       }
+
       switch (msg.type) {
         case 'load':
           self.ui.load(msg.data.url, msg.data.opts);
@@ -112,7 +113,7 @@ window.VRManager = (function() {
     }
   };
 
-  VRManager.prototype.load = function (url) {
+  VRManager.prototype.load = function(url) {
     var self = this;
 
     console.log('loading url: ' + url);
@@ -126,7 +127,7 @@ window.VRManager = (function() {
     }
     self.loadingTab = newTab;
 
-    newTab.ready.then(function () {
+    newTab.ready.then(function(hasClient) {
       self.unloadCurrent();
       self.loadingTab = null;
       self.currentDemo = newTab;
@@ -134,10 +135,38 @@ window.VRManager = (function() {
       // set render mode of new demo to current UI mode.
       newTab.setRenderMode(self.ui.mode);
 
+      // capture iframe page meta
+      var iframeDoc = newTab.iframe.contentDocument;
+
+      var title;
+      try {
+        title = iframeDoc.getElementsByTagName('title')[0].textContent;
+      } catch(e) {
+        title = undefined;
+      }
+
+      var description;
+      try {
+        description = iframeDoc.querySelector("meta[name=\'description\']").content;
+      } catch(e) {
+        description = undefined;
+      }
+
+      //console.log('****', title, description);
+
+      newTab.siteInfo = {};
+      newTab.siteInfo.description = description;
+      newTab.siteInfo.title = title;
+
       newTab.show();
 
       // We'll do this elsewhere eventually
       newTab.start();
+
+      // if VRclient is present, we will wait for a ready postmessage, otherwise we will manually set off the callback.
+      if (!hasClient && self.readyCallback) {
+        self.readyCallback();
+      }
     });
 
     newTab.load();
@@ -146,23 +175,25 @@ window.VRManager = (function() {
   /*
   This runs when user enters VR mode.
   */
-  VRManager.prototype.enableVR = function () {
+  VRManager.prototype.enableVR = function(opts) {
     var self = this;
+
+    self.opts = opts || {};
+
+    // enables fullscreen distortion
+    self.opts.fullscreen = self.opts.fullscreen == undefined ? true : false;
 
     if (self.vrIsReady) {
       // start fullscreen on the container element.
-      var fs = self.container;
+      var container = self.container;
 
-      // debug: true launches into HMD distortion mode.
-      var launchFullScreen = true;
-
-      if (launchFullScreen) {
-        if (fs.requestFullscreen) {
-          fs.requestFullscreen({ vrDisplay: self.hmdDevice });
-        } else if (fs.mozRequestFullScreen) {
-          fs.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
-        } else if (fs.webkitRequestFullscreen) {
-          fs.webkitRequestFullscreen({ vrDisplay: self.hmdDevice });
+      if (self.opts.fullscreen) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen({ vrDisplay: self.hmdDevice });
+        } else if (container.mozRequestFullScreen) {
+          container.mozRequestFullScreen({ vrDisplay: self.hmdDevice });
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen({ vrDisplay: self.hmdDevice });
         }
       }
 

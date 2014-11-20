@@ -27,8 +27,6 @@ function VRUi(container) {
 
 	this.initRenderer();
 
-	this.initKeyboardControls();
-
 	//self.scene.add(self.gridlines());
 
 	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
@@ -420,32 +418,6 @@ VRUi.prototype.animate = function() {
 
 	requestAnimationFrame(this.animate.bind(this));
 }
-
-// todo: move off to main index.html?  perhaps dedicated controls module.
-VRUi.prototype.initKeyboardControls = function() {
- 	var self = this;
-
-  function onkey(event) {
-   	//console.log(event.keyCode)
-
-    switch (event.keyCode) {
-      case 70: // f
-        VRManager.enableVR();
-        break;
-      case 90: // z
-      	VRManager.zeroSensor();
-      	break;
-      case 83: // s
-      	self.setRenderMode(self.modes.stereo);
-      	break;
-      case 32: // space
-        self.toggleHud();
-        break;
-    }
-  }
-
-  window.addEventListener("keydown", onkey, true);
-};
 
 
 VRUi.prototype.initResizeHandler = function() {
