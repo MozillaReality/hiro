@@ -192,7 +192,6 @@ VRHud.prototype.attachEvents = function(favorites) {
 		});
 
 		mesh.addEventListener('click', function(e) {
-			debugger;
 			var target = e.target;
 
 			if (self.enabled) {

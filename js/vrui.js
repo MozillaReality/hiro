@@ -64,7 +64,7 @@ function VRUi(container) {
 
 
 VRUi.prototype.load = function(url, opts) {
-	console.log( Date.now() + ' loading url: ' + url);
+	console.log('loading url: ' + url);
 
 	var self = this;
 

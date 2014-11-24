@@ -73,9 +73,7 @@ function VRCursor(mode) {
   });
 
   // bind "real" mouse events.
-  if (this.enabled) {
-    this.bindEvents();
-  }
+  this.bindEvents();
 }
 
 VRCursor.modes = VRCursor.prototype.modes = {
@@ -117,7 +115,7 @@ VRCursor.prototype.enable = function(context) {
   };
 
   if (!this.enabled) {
-    this.bindEvents();
+    //this.bindEvents();
     this.enabled = true;
     this.layout.visible = true;
 
