@@ -64,38 +64,34 @@ function VRUi(container) {
 
 
 VRUi.prototype.load = function(url, opts) {
+	console.log( Date.now() + ' loading url: ' + url);
+
 	var self = this;
 
 	var opts = opts || {};
 
 	// hides loading progress animation
-	var hideLoading = opts.hideLoading || false;
+	var noLoading = opts.noLoading || false;
 
 	// hides title frame
 	var noTitle = opts.noTitle || false;
 
-	// title frame title.
-	var title = opts.title || '';
-
-	// title frame url
-	var titleUrl = opts.titleUrl || url;
-
-	// title frame credits
-	var titleCredits = opts.titleCredits || '';
+	// hides transition
+	var noTransition = opts.noTransition || false;
 
 	this.hud.hide()
 		.then(function() {
 			self.cursor.disable();
 
-			self.transition.fadeOut()
+			self.transition.fadeOut(noTransition)
 				.then(function() {
 
 					self.backgroundShow();
 
-					// title
-					self.title.setTitle(title);
-					self.title.setUrl(titleUrl);
-					self.title.setCredits(titleCredits);
+					// set title URL
+					self.title.setTitle('');
+					self.title.setCredits('');
+					self.title.setUrl(url);
 
 					if (noTitle) {
 						self.backgroundHide();
@@ -111,14 +107,24 @@ VRUi.prototype.load = function(url, opts) {
 						self.hud.enable();
 					}
 
-					VRManager.load(url);
-
-					if (!hideLoading) {
+					if (!noLoading) {
 						self.loading.show();
 					}
 
+					function onPageMeta(tab) {
+						var title = tab.siteInfo.title;
+						var credits = tab.siteInfo.description;
+
+						if (title) {
+							self.title.setTitle(title);
+						}
+						if (credits) {
+							self.title.setCredits(credits);
+						}
+					}
+
 					function onTabReady() {
-						var holdTitleTime = 5000;
+						var holdTitleTime = 5000; // how long to hold title for before fading out.
 
 						self.backgroundHide(holdTitleTime);
 
@@ -134,7 +140,11 @@ VRUi.prototype.load = function(url, opts) {
 						}, holdTitleTime);
 					}
 
-					VRManager.readyCallback = onTabReady;
+					VRManager.onPageMeta = onPageMeta;
+
+					VRManager.onTabReady = onTabReady;
+
+					VRManager.load(url);
 
 				});
 		});
@@ -178,10 +188,10 @@ VRUi.prototype.start = function(mode) {
 		// self.toggleHud();
 
 		// start to home
-		// self.goHome(true);
+		self.goHome(true);
 
 		// start with landing
-		VRManager.load(self.landingUrl);
+		// VRManager.load(self.landingUrl);
 
 		// kick off animation loop
 		self.animate();
@@ -191,26 +201,14 @@ VRUi.prototype.start = function(mode) {
 
 VRUi.prototype.goHome = function(noTransition) {
 	var self = this;
-	var home = this.home;
 
-	var opts = {
-		title: 'Home',
-		credits: 'mozvr.com',
-		hideLoading: true
-	}
+	self.cursor.disable();
 
-	this.isHome = true;
-
-	if (noTransition) {
-		// skip transitions and titles, load content directly.
-		this.title.setTitle(opts.title);
-		this.title.setCredits(opts.author);
-		this.title.setUrl(this.homeUrl);
-		self.cursor.disable();
-		VRManager.load(this.homeUrl);
-	} else {
-		this.load(this.homeUrl, opts);
-	}
+	this.load(this.homeUrl, {
+		noTransition: noTransition,
+		noTitle: true,
+		noLoading: true
+	});
 }
 
 VRUi.prototype.reset = function() {

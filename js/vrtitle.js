@@ -74,7 +74,7 @@ VRTitle.prototype.setCredits = function(value) {
 	var credit = value.toUpperCase();
 
 	this.d23.setText('current-credits', credit, {
-		newLine: '\n',
+		newLine: '%0D',
 		lineHeight: 25,
 		verticalAlign: 'bottom'
 	});

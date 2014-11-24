@@ -147,6 +147,7 @@ VRHud.prototype.hide = function() {
 VRHud.prototype.attachEvents = function(favorites) {
 	var self = this;
 	var d23 = this.d23;
+
 	favorites.forEach(function(favorite) {
 		var node = d23.getNodeById(favorite.id);
 
@@ -156,6 +157,8 @@ VRHud.prototype.attachEvents = function(favorites) {
 		}
 
 		var mesh = node.mesh;
+
+		mesh.userData.url = favorite.url;
 
 		mesh.addEventListener('mouseover', function(e) {
 			var mesh = e.target;
@@ -185,23 +188,17 @@ VRHud.prototype.attachEvents = function(favorites) {
 						.easing(TWEEN.Easing.Exponential.Out)
 						.start();
 				}
-
 			}
-
 		});
 
-		(function(n, f, hud) {
-			var mesh = n.mesh;
-			mesh.addEventListener('click', function(e) {
-				if (self.enabled) {
-					VRManager.ui.load(f.url, {
-						titleCredits: f.credits,
-						title: f.title
-					});
-				}
-			})
-		})(node, favorite, self);
+		mesh.addEventListener('click', function(e) {
+			debugger;
+			var target = e.target;
 
+			if (self.enabled) {
+				VRManager.ui.load(target.userData.url);
+			}
+		});
 
 	});
 }

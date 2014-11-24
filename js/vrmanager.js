@@ -63,11 +63,6 @@ window.VRManager = (function() {
         case 'load':
           self.ui.load(msg.data.url, msg.data.opts);
           break;
-        case 'ready':
-          if (self.readyCallback) {
-            self.readyCallback();
-          }
-          break;
         case 'ended':
           // self.sequence.next();
           break;
@@ -90,7 +85,7 @@ window.VRManager = (function() {
       if (fullscreenElement == null) {
         // launch:
         // this needs to be turned back on so we can reset the user back to the 2d landing page.
-        self.exitVR();
+        //self.exitVR();
       }
     };
 
@@ -116,8 +111,6 @@ window.VRManager = (function() {
   VRManager.prototype.load = function(url) {
     var self = this;
 
-    console.log('loading url: ' + url);
-
     var newTab = new VRTab(url);
     newTab.hide();
     newTab.mount(self.loader);
@@ -127,6 +120,24 @@ window.VRManager = (function() {
     }
     self.loadingTab = newTab;
 
+    newTab.getPageMeta.then(function(pageMeta) {
+      var description, title;
+
+      if (pageMeta) {
+        description = pageMeta.data.description;
+        title = pageMeta.data.title;
+      }
+
+      newTab.siteInfo = {};
+      newTab.siteInfo.description = description;
+      newTab.siteInfo.title = title;
+
+      // call callback
+      if (self.onPageMeta) {
+        self.onPageMeta(newTab);
+      }
+    });
+
     newTab.ready.then(function(hasClient) {
       self.unloadCurrent();
       self.loadingTab = null;
@@ -135,37 +146,14 @@ window.VRManager = (function() {
       // set render mode of new demo to current UI mode.
       newTab.setRenderMode(self.ui.mode);
 
-      // capture iframe page meta
-      var iframeDoc = newTab.iframe.contentDocument;
-
-      var title;
-      try {
-        title = iframeDoc.getElementsByTagName('title')[0].textContent;
-      } catch(e) {
-        title = undefined;
-      }
-
-      var description;
-      try {
-        description = iframeDoc.querySelector("meta[name=\'description\']").content;
-      } catch(e) {
-        description = undefined;
-      }
-
-      //console.log('****', title, description);
-
-      newTab.siteInfo = {};
-      newTab.siteInfo.description = description;
-      newTab.siteInfo.title = title;
-
       newTab.show();
 
-      // We'll do this elsewhere eventually
       newTab.start();
 
+
       // if VRclient is present, we will wait for a ready postmessage, otherwise we will manually set off the callback.
-      if (!hasClient && self.readyCallback) {
-        self.readyCallback();
+      if (!hasClient && self.onTabReady) {
+        self.onTabReady();
       }
     });
 

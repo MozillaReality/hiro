@@ -69,10 +69,16 @@ VRTransition.prototype.update = function() {
   // update loop
 }
 
-VRTransition.prototype.fadeOut = function () {
+VRTransition.prototype.fadeOut = function (noTransition) {
   var self = this;
 
+  self.noTransition = noTransition || false;
+
   return new Promise( function(resolve, reject) {
+    if (noTransition) {
+      resolve();
+      return false;
+    };
 
     self.object.visible = true;
     self.visible = true;

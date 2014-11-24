@@ -9,26 +9,33 @@ function VRTab(url) {
   self.url = url + '?timestamp=' + Date.now();
 
 
-  var clientPresent = new Promise(function(resolve, reject) {
+  self.getPageMeta = new Promise(function(resolve, reject) {
     /*
     Let's give some time for the incoming tab to announce that it has VRClient.
 
     If the VRClient hasn't announced itself with 'loading' message, we will assume its not present
     */
     var id = setTimeout(function() {
-      reject();
+      // resolve without page meta
+      resolve();
     }, 1000);
 
-    self.listenFor('loading', function() {
+    self.listenFor('loading', function(pageMeta) {
       /*
       VRClient has announced itself
       */
       clearTimeout(id);
-      resolve();
+
+      // resole with page meta data
+      resolve(pageMeta);
     });
   });
 
-  var clientReady = new Promise(function(resolve, reject) {
+
+
+
+  // listen for tab to tell us it's ready
+  self.ready = new Promise(function(resolve, reject) {
     /*
     listen for ready message from VRClient
     */
@@ -38,38 +45,15 @@ function VRTab(url) {
   });
 
 
-  // listen for tab to tell us it's ready
-  self.ready = new Promise(function(resolve, reject) {
-    var client;
-
-    clientPresent.then(
-      function() { // fulfilled
-        /*
-        looks like client is present, so we'll wait for ready to be called
-        */
-        client = true;
-        clientReady.then(resolve(client));
-      },
-      function() { // rejected
-        /*
-        no client is preent, but we will give  time for the content to setup
-        and fulfill anyways and continue on.
-        */
-        client = false;
-        setTimeout(function() {
-          resolve();
-        }, 1000);
-      });
-  });
-
-
   // listen for tab to tell us it's safe to shut down.
   self.ended = new Promise(function (resolve, reject) {
     self.listenFor('ended', resolve);
   });
 
   self.loaded = new Promise(function (resolve, reject) {
-    iframe.addEventListener('load', resolve);
+    iframe.addEventListener('load', function() {
+      resolve(iframe)
+    });
     iframe.addEventListener('error', reject);
   });
 
@@ -136,7 +120,6 @@ VRTab.prototype.destroy = function () {
 
 VRTab.prototype.load = function () {
   this.iframe.src = this.url;
-  console.log(this.url);
 };
 
 VRTab.prototype.start = function () {

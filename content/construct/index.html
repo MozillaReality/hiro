@@ -57,50 +57,26 @@
 			sechelt: {
 				model: 'models/icon-sechelt-3.json',
 				url: 'http://mozvr.github.io/sechelt',
-				popup: 'images/popup-sechelt-1.png',
-				title: {
-					'title' : 'Sechelt',
-					"titleCredits": "Josh Carpenter\nMr.DOOB\n—\nthree.js, Cinema 4D"
-				}
+				popup: 'images/popup-sechelt-1.png'
 			},
 			polar: {
 				model: 'models/icon-polarsea-1.json',
 				url: 'http://mozvr.com/content/polar',
-				popup: 'images/popup-polarsea-1.png',
-				title: {
-					'title' : 'Polar Sea',
-					"titleCredits": "Deep Inc.\nELEVR\n—\neleVR Web Player"
-				}
+				popup: 'images/popup-polarsea-1.png'
 			},
 			dive: {
 				model: 'models/icon-infodive-2.json',
 				url: 'http://mozvr.github.io/infodive',
-				popup: 'images/popup-infodive-1.png',
-				title: {
-					'title' : 'Information Diving',
-					"titleCredits": "Tony Parisi\nEric Levin\nJosh Carpenter\nTatiana Plakhova\n-\nVizi, Three.js",
-				}
+				popup: 'images/popup-infodive-1.png'
 			},
 			pano: {
-				url: 'http://mozvr.github.io/panorama-viewer',
-				title: {
-					"title": "Panorama",
-					'titleCredits': "Josh Carpenter\n-\nthree.js"
-				}
+				url: 'http://mozvr.github.io/panorama-viewer'
 			},
 			leap: {
-				"url": "content/leap",
-				"title": {
-					"title": "Leap Motion",
-      		"titleCredits": "Peter Ehrlich\n-\nthree.js\nLeapJS"
-				}
+				"url": "content/leap"
 			},
 			elevr4: {
-				"url": "http://mozvr.com/content/elevr4",
-				"title": {
-					"title": "ELEVR: Talk chat show EP.4",
-      		"titleCredits": "ELEVR\n-\nWebGL"
-				}
+				"url": "http://mozvr.com/content/elevr4"
 			}
 
 		}
@@ -483,7 +459,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.sechelt.url, icons.sechelt.title);
+					VRClient.load( icons.sechelt.url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -534,7 +510,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.polar.url, icons.polar.title );
+					VRClient.load( icons.polar.url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -587,7 +563,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.dive.url, icons.dive.title );
+					VRClient.load( icons.dive.url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -641,7 +617,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.pano.url, icons.pano.title );
+					VRClient.load( icons.pano.url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -695,7 +671,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.leap.url, icons.leap.title );
+					VRClient.load( icons.leap.url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -749,7 +725,7 @@
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.elevr4.url, icons.elevr4.title );
+					VRClient.load( icons.elevr4.url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -864,7 +840,7 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( json, urlOpts ) {
+		function makeIconHolder( json ) {
 
 
 			// holder
@@ -898,7 +874,7 @@
 			// events
 
 			holder.addEventListener('click', function() {
-				VRClient.load( json.url, urlOpts );
+				VRClient.load( json.url );
 			});
 
 			holder.addEventListener('mouseover', function(e) {
@@ -979,7 +955,7 @@
 					z = iconBasePos.z + 2.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt, icons.sechelt.title);
+				var holder = makeIconHolder( icons.sechelt );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 130 * (Math.PI/180), 0 );
@@ -1005,7 +981,7 @@
 					z = iconBasePos.z - 0.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar, icons.polar.title );
+				var holder = makeIconHolder( icons.polar );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 80 * (Math.PI/180), 0 );
@@ -1031,7 +1007,7 @@
 					z = iconBasePos.z + 2.5;
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.dive , icons.dive.title );
+				var holder = makeIconHolder( icons.dive );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );

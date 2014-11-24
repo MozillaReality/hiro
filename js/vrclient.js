@@ -39,7 +39,7 @@ window.VRClient = (function() {
       self.startDemo = resolve;
     });
 
-    self.sendMessage('loading');
+    self.sendMessage('loading', self.getPageMeta());
 
     // listen for any post messages
     window.addEventListener("message", function (e) {
@@ -73,6 +73,30 @@ window.VRClient = (function() {
       }
     }, false);
   }
+
+  VRClient.prototype.getPageMeta = function() {
+    // capture page meta
+    // title tag
+    var title;
+    try {
+      title = document.getElementsByTagName('title')[0].textContent;
+    } catch(e) {
+      title = undefined;
+    }
+
+    // description meta
+    var description;
+    try {
+      description = document.querySelector("meta[name=\'description\']").content;
+    } catch(e) {
+      description = undefined;
+    }
+
+    return {
+      title: title,
+      description: description
+    }
+  };
 
   VRClient.prototype.sendMessage = function (type, data) {
     if (window.parent !== window) {
