@@ -270,14 +270,15 @@ VRCursor.prototype.onMouseClicked = function(e) {
     return false;
   };
 
-  if (target.tagName == 'BODY' ||
-    target.tagName == 'CANVAS') {
 
-    if (this.objectMouseOver) {
-      this.objectMouseOver.dispatchEvent(this.events.clickEvent);
-    }
-
+  if (target.id == this.dom) {
+    console.log('targetting content');
   };
+
+  if (this.objectMouseOver) {
+    this.objectMouseOver.dispatchEvent(this.events.clickEvent);
+  };
+
 }
 
 VRCursor.prototype.updatePositionMouseSync = function(headQuat) {

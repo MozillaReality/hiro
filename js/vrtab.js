@@ -18,7 +18,7 @@ function VRTab(url) {
     var id = setTimeout(function() {
       // resolve without page meta
       resolve();
-    }, 1000);
+    }, 5000);
 
     self.listenFor('loading', function(pageMeta) {
       /*
