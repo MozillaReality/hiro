@@ -85,6 +85,9 @@ VRHud.prototype.show = function() {
 					.to({ x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
+					.onComplete(function(){
+						// on finish (these all take the same time), set interactable to true
+					})
 					.start();
 
 				mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
@@ -125,6 +128,8 @@ VRHud.prototype.hide = function() {
 				var mesh = node.mesh;
 
 				mesh.material.opacity = 1;
+
+				// should set interactable to false here
 
 				var tween = new TWEEN.Tween( mesh.material )
 					.to({ opacity: 0 }, 500 )
@@ -191,6 +196,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 			}
 		});
 
+		// button should trigger click event
 		mesh.addEventListener('click', function(e) {
 			var target = e.target;
 
@@ -215,6 +221,9 @@ VRHud.prototype.makeLayout = function(nodes) {
 			var mesh = node.mesh;
 			// persist the current position so we can use it later.
 			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
+			console.log('adding mesh', mesh.name, mesh.position);
+			// here turn these in to interactable planes/buttons
+			// make them initially uninteractable
 
 			mesh.userData.scale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
 
