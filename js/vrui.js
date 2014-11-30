@@ -51,7 +51,6 @@ function VRUi(container) {
 
 			// add cursor to scene
 			self.scene.add(self.cursor.layout);
-			self.cursor.enable();
 
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
@@ -64,7 +63,7 @@ function VRUi(container) {
 
 
 VRUi.prototype.load = function(url, opts) {
-	console.log('loading url: ' + url);
+	console.log('loading url: ' + url, opts);
 
 	var self = this;
 
@@ -132,8 +131,12 @@ VRUi.prototype.load = function(url, opts) {
 
 						self.transition.fadeIn();
 
-						// hide title after set amount of time
-						setTimeout(function() {
+						if (self.titleTimeout) {
+							window.clearTimeout(self.titleTimeout);
+							delete self.titleTimeout;
+						};
+
+						self.titleTimeout = window.setTimeout(function() {
 							if (!self.hud.visible) {
 								self.title.hide();
 							}
@@ -186,12 +189,13 @@ VRUi.prototype.start = function(mode) {
 
 		// start with hud
 		// self.toggleHud();
+		self.cursor.disable();
 
 		// start to home
-		self.goHome(true);
+		//self.goHome(true);
 
 		// start with landing
-		// VRManager.load(self.landingUrl);
+		VRManager.load(self.landingUrl);
 
 		// kick off animation loop
 		self.animate();
@@ -201,8 +205,6 @@ VRUi.prototype.start = function(mode) {
 
 VRUi.prototype.goHome = function(noTransition) {
 	var self = this;
-
-	self.cursor.disable();
 
 	this.load(this.homeUrl, {
 		noTransition: noTransition,

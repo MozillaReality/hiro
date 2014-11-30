@@ -134,6 +134,8 @@
 
         this.initKeyboardControls();
 
+        this.initGamepadControls();
+
         /*
         fullscreen and pointerlock permissions show up on the rift display
         making them inacessible rendering the site unsusable by the user.
@@ -266,6 +268,62 @@
         }
         return parameters;
       })();
+
+      DomUi.prototype.initGamepadControls = function() {
+        var interval;
+
+        function disconnecthandler(e) {
+          clearInterval(interval);
+          console.log('Gamepad disconnected.');
+        }
+
+        function connecthandler(e) {
+          var gp = navigator.getGamepads()[e.gamepad.index];
+          console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+            gp.index, gp.id,
+            gp.buttons.length, gp.axes.length);
+
+          var pressed;
+
+          interval = setInterval(function() {
+            for (var i = 0; i < gp.buttons.length; i++) {
+              var b = gp.buttons[i];
+              if (i == 0) {
+                // select
+                if (pressed !== i && b.pressed) {
+                  document.body.dispatchEvent(new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                  }));
+
+                  pressed = i;
+                } else if (pressed == i && !b.pressed) {
+                  pressed = undefined;
+                }
+
+              } else if (i == 10) {
+                // menu
+                if (pressed !== i && b.pressed) {
+                  VRManager.ui.toggleHud();
+                  pressed = i;
+                } else if (pressed == i && !b.pressed) {
+                  pressed = undefined;
+                }
+
+
+              }
+            }
+
+          }, 50)
+
+        }
+
+        window.addEventListener("gamepaddisconnected", disconnecthandler);
+        window.addEventListener("gamepadconnected", connecthandler)
+      }
+
+
 
       DomUi.prototype.initKeyboardControls = function() {
         var self = this;

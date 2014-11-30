@@ -85,7 +85,7 @@ window.VRManager = (function() {
       if (fullscreenElement == null) {
         // launch:
         // this needs to be turned back on so we can reset the user back to the 2d landing page.
-        //self.exitVR();
+        self.exitVR();
       }
     };
 
@@ -138,7 +138,7 @@ window.VRManager = (function() {
       }
     });
 
-    newTab.ready.then(function(hasClient) {
+    newTab.ready.then(function() {
       self.unloadCurrent();
       self.loadingTab = null;
       self.currentDemo = newTab;
@@ -150,9 +150,7 @@ window.VRManager = (function() {
 
       newTab.start();
 
-
-      // if VRclient is present, we will wait for a ready postmessage, otherwise we will manually set off the callback.
-      if (!hasClient && self.onTabReady) {
+      if (self.onTabReady) {
         self.onTabReady();
       }
     });
@@ -199,7 +197,8 @@ window.VRManager = (function() {
       // tell loaded content that we are changing render modes.
       if (self.currentDemo) {
        self.currentDemo.setRenderMode(self.ui.mode);
-      }
+      };
+
     } else {
       console.log('no vr mode available');
     }
@@ -213,9 +212,9 @@ window.VRManager = (function() {
     this.ui.setRenderMode(this.ui.modes.mono);
 
     // tell content that we have changed render modes.
-    // if (this.currentDemo) {
-    //   this.currentDemo.setRenderMode(this.ui.mode);
-    // }
+    if (this.currentDemo) {
+      this.currentDemo.setRenderMode(this.ui.mode);
+    }
 
     this.ui.reset();
   };

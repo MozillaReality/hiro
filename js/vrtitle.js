@@ -41,6 +41,7 @@ function VRTitle() {
 
 VRTitle.prototype.show = function(delay) {
 	var self = this;
+
 	if (!self.visible) {
 		self.visible = true;
 
@@ -49,8 +50,13 @@ VRTitle.prototype.show = function(delay) {
 			self.animateIn(self.mesh);
 		}
 
+		if (self.timeoutId) {
+			window.clearTimeout(self.timeoutId);
+			delete self.timeoutId;
+		}
+
 		if (delay) {
-			setTimeout(animate, delay)
+			self.timeoutId = window.setTimeout(animate, delay);
 		} else {
 			animate();
 		}
@@ -110,6 +116,7 @@ VRTitle.prototype.setUrl = function(value) {
 
 VRTitle.prototype.animateOut = function(mesh, delay) {
 	return new Promise(function(resolve, reject) {
+
 		for (var i = 0; i < mesh.children.length; i++) {
 			var m = mesh.children[i];
 
@@ -132,6 +139,7 @@ VRTitle.prototype.animateOut = function(mesh, delay) {
 
 VRTitle.prototype.animateIn = function(mesh) {
 	return new Promise(function(resolve, reject) {
+
 		for (var i = 0; i < mesh.children.length; i++) {
 			var m = mesh.children[i];
 			m.material.opacity = 0;
