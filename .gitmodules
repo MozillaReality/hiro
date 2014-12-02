@@ -1,0 +1,7 @@
+[submodule "elevr4"]
+    path = content/elevr4
+    url = git@github.com:MozVR/elevr4.git
+
+[submodule "polarsea"]
+    path = content/polar
+    url = git@github.com:MozVR/polarsea.git
