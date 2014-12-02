@@ -177,9 +177,9 @@
 				updateCursorState();
 			}
 
-			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
-			light.position.set( 100, 110, 150 );
-			scene.add( light );
+//			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
+//			light.position.set( 100, 110, 150 );
+//			scene.add( light );
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
 			setTimeout(function() {
@@ -189,10 +189,9 @@
 
 
 
-			// makes the icons far too bright.
-//			var handLight = new THREE.PointLight(0xffffff, 1, 1);
-//			handLight.position.setY(0.3);
-//			this.scene.add(handLight);
+			var handLight = new THREE.PointLight(0xffffff, 1, 1);
+			handLight.position.setY(0.3);
+			this.scene.add(handLight);
 
 			Leap.loop()
 				.use('transform', {
