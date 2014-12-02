@@ -222,11 +222,16 @@ VRHud.prototype.makeLayout = function(nodes) {
 			var mesh = node.mesh;
 			// persist the current position so we can use it later.
 			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
-			console.log('adding mesh', mesh.name, mesh.position);
 			// here turn these in to interactable planes/buttons
 			// make them initially uninteractable
 
-			mesh.userData.scale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+			if (Leap.loopController){
+				mesh.userData.button = new PushButton(
+					new InteractablePlane(mesh, Leap.loopController)
+				);
+			}
+
+			// camera is available here window.VRManager.ui.camera
 
 			layout.add( mesh );
 		});

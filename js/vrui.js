@@ -27,7 +27,7 @@ function VRUi(container) {
 
 	this.initRenderer();
 
-	this.initLeapInteraction();
+	//this.initLeapInteraction();
 
 	//self.scene.add(self.gridlines());
 
