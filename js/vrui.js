@@ -349,7 +349,6 @@ VRUi.prototype.initRenderer = function() {
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
-	this.camera.rotateY(Math.PI / 2 );  // dev peter
 
 	this.setRenderMode(this.mode);
 
@@ -381,40 +380,6 @@ VRUi.prototype.initLeapInteraction = function() {
 	var light = new THREE.PointLight(0xffffff, 1, 3);
 	light.position.setY(0.3);
 	this.scene.add(light);
-
-	// let's add a test button, right exactly here. :-)
-	var planeGeo = new THREE.PlaneGeometry(0.1, 0.2);
-	var material = new THREE.MeshPhongMaterial({
-	 side: THREE.DoubleSide // necessary for z-movement, which currently requires raycasting.
-	});
-	var imageMesh = new THREE.Mesh(planeGeo, material);
-
-	imageMesh.position.setY(0.1);
-	imageMesh.name = "button";
-
-
-	var button = new PushButton(
-	 new InteractablePlane(imageMesh, Leap.loopController, {moveZ: true, moveX: false, moveY: false})
-	);
-
-
-	var longThrow = -0.05;
-
-	var base = new THREE.Mesh(new THREE.BoxGeometry(0.1, longThrow, longThrow), new THREE.MeshPhongMaterial({color: 0x222222}));
-	//  base.position.set(0.1, 0, 0);
-	base.position.set(-0.3, -0.05, 0);
-	base.rotateY(Math.PI / 4); // todo - once we can parent.
-
-	imageMesh.position.set(
-	 0,
-	 imageMesh.geometry.parameters.height / 2 - longThrow / 2,
-	 -longThrow / 2
-	);
-	button.plane.resetPosition(); // resets the original position, etc to the current one
-
-	base.add(imageMesh);
-
-	this.scene.add(base);
 
 }
 
