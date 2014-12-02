@@ -95,6 +95,11 @@
 		var iconsArray = [];
 		var userHeight = -1.65;
 
+		// requirements for cursor.
+		VRClientFocus = false; // todo - make focus fire on load.
+		VRClientIsVR = false;
+		handsInFrame = false;
+
 
 		function init() {
 
@@ -113,7 +118,7 @@
 			cursor.ready.then(function() {
 				scene.add(cursor.layout);
 				cursor.init(renderer.domElement, camera, scene);
-				cursor.enable();
+				updateCursorState();
 			});
 
 			setRenderMode(VRClient.renderModes.mono);
@@ -122,6 +127,7 @@
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
+
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
 				if (mode == modes.mono) {
@@ -129,19 +135,23 @@
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
+					VRClientIsVR = false;
+					updateCursorState();
 
 				} else if (mode == modes.stereo) {
 					// controls = new THREE.DeviceOrientationControls( camera );
 					controls = null;
 					effect = new THREE.StereoEffect( renderer );
 					//cursor.setMode('centered');
-					cursor.disable();
-
+					VRClientIsVR = false;
+					updateCursorState();
 				} else if (mode == modes.vr) {
+					VRClientIsVR = true;
 					controls = new THREE.VRControls( camera );
 					effect = new THREE.VREffect( renderer );
 					cursor.setMode('centered');
 					cursor.show();
+					updateCursorState();
 				}
 
 				effect.setSize( window.innerWidth, window.innerHeight );
@@ -155,11 +165,15 @@
 			}
 
 			VRClient.onBlur = function() {
-				cursor.disable();
+				VRClientFocus = false;
+				console.log('construct unfocus');
+				updateCursorState();
 			}
 
 			VRClient.onFocus = function() {
-				cursor.enable();
+				VRClientFocus = true;
+				console.log('construct focus');
+				updateCursorState();
 			}
 
 			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
@@ -190,7 +204,27 @@
 					arm: true
 				})
 				.use('proximity');
+
+			// only show the cursor when no hands in frame.
+			Leap.loopController.on('frame', function(frame){
+
+				var newHandsInFrame = (frame.hands.length > 0);
+				if (newHandsInFrame != handsInFrame){
+					handsInFrame = newHandsInFrame;
+					updateCursorState();
+				}
+
+			});
+
 		}
+
+		updateCursorState = function(){
+			if (VRClientFocus && VRClientIsVR && !handsInFrame){
+				cursor.enable()
+			}else {
+				cursor.disable();
+			}
+		};
 
 		// bend function
 
