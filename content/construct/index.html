@@ -558,16 +558,16 @@
 				// hit area
 				var group = new THREE.Mesh(
 					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:false, opacity: 0, depthTest: false})
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
 				);
 
 				var mesh = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: false, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
 				);
 				var highlight = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: false, opacity: 0, color: 0x73C9EB } )
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
 
 				// events
@@ -590,7 +590,7 @@
 				group.add( mesh );
 				group.add( highlight );
 
-//				group.position.set(1, offsetY, -depth - (3 * masterScale) );
+				group.position.set(1, offsetY, -depth - (3 * masterScale) );
 				bend(group, depth);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
