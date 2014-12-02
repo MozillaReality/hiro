@@ -304,6 +304,7 @@
 		/* scale things down to put them within reach */
 //		var masterScale = 0.55; // Desktop mode
 		var masterScale = 0.15; // VR Mode
+//		var masterScale = 1; // No Leap
 
 
 		function makeSky() {
@@ -496,8 +497,9 @@
 			var segmentsX = 20;
 			var segmentsY = 1;
 			var depth = 4 * masterScale;
-			var offsetY = 1;
+			var offsetY = 1 * masterScale;
 
+			// Adds the text description, but not the icon
 			function makeSechelt() {
 
 				var w = 58 * scale;
@@ -540,7 +542,7 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(-depth-2, offsetY, -depth);
+				group.position.set(-depth- (2 * masterScale), offsetY, -depth);
 				group.rotation.set( 0, 60 * Math.PI / 180, 0 );
 				bend(group, depth);
 				mesh.renderDepth = 2;
@@ -591,7 +593,7 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(1, offsetY, -depth - (3 * masterScale) );
+				group.position.set(1 * masterScale, offsetY, -depth - (3 * masterScale) );
 				bend(group, depth);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
@@ -644,7 +646,7 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(depth + 1, offsetY, -depth);
+				group.position.set(depth + (1 * masterScale), offsetY, -depth);
 				group.rotation.set( 0, -60 * Math.PI / 180, 0 );
 				bend(group, depth);
 				mesh.renderDepth = 2;
