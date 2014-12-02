@@ -82,7 +82,8 @@ VRHud.prototype.show = function() {
 				mesh.position.set(mesh.userData.position.x, mesh.userData.position.y - 1, mesh.userData.position.z + 1);
 
 				var tween = new TWEEN.Tween( mesh.position )
-					.to({ x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
+					//.to( mesh.userData.position, 700 ) // For some reason, this seems to append NaN to the .position constructor method source. https://github.com/sole/tween.js/issues/175
+					.to( { x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.onComplete(function(){
@@ -93,7 +94,7 @@ VRHud.prototype.show = function() {
 				mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
 
 				var tween = new TWEEN.Tween( mesh.scale )
-					.to({ x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z}, 500 )
+					.to( { x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z} , 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
@@ -101,7 +102,7 @@ VRHud.prototype.show = function() {
 				mesh.material.opacity = 0;
 
 				var tween = new TWEEN.Tween( mesh.material )
-					.to({ opacity: 1}, 300 )
+					.to({ opacity: 1 }, 300 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
