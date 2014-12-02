@@ -25,12 +25,17 @@
 	<body>
 
 	</body>
-	<script src="../../js/vendor/three.min.js"></script>
+	<!--<script src="../../js/vendor/three.min.js"></script>-->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
 	<script src="../../js/vendor/tween.min.js"></script>
 	<script src="../../js/vendor/VRControls.js"></script>
 	<script src="../../js/vendor/VREffect.js"></script>
 	<script src="../../js/vendor/DeviceOrientationControls.js"></script>
 	<script src="../../js/vendor/StereoEffect.js"></script>
+
+	<script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+	<script src="../../js/vendor/leap-plugins-0.1.11pre.js"></script>
+	<script src="../../js/vendor/leap-widgets-0.1.0.js"></script>
 
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 	<script src="../../js/vrclient.js"></script>
@@ -101,7 +106,7 @@
 
 			scene = new THREE.Scene();
 
-			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
 
 			cursor = new VRCursor();
 
@@ -166,6 +171,25 @@
 				VRClient.ready();
 			}, 1000);
 
+
+
+
+			// makes the icons far too bright.
+//			var handLight = new THREE.PointLight(0xffffff, 1, 1);
+//			handLight.position.setY(0.3);
+//			this.scene.add(handLight);
+
+			Leap.loop()
+				.use('transform', {
+					scale: 0.001,
+					position: new THREE.Vector3(0,-0.3,-0.35),
+					effectiveParent: this.camera
+				})
+				.use('boneHand', {
+					scene: this.scene,
+					arm: true
+				})
+				.use('proximity');
 		}
 
 		// bend function
@@ -241,6 +265,7 @@
 
 
 		/*====================== Make layout ======================*/
+		var masterScale = 0.055; /* scale thigns down to put them within reach */
 
 
 		function makeSky() {
@@ -429,10 +454,10 @@
 
 			// text links
 
-			var scale = 0.1; // pixel scale
+			var scale = 0.1 * masterScale; // pixel scale
 			var segmentsX = 20;
 			var segmentsY = 1;
-			var depth = 4;
+			var depth = 4 * masterScale;
 			var offsetY = 1;
 
 			function makeSechelt() {
@@ -496,16 +521,16 @@
 				// hit area
 				var group = new THREE.Mesh(
 					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:false, opacity: 0, depthTest: false})
 				);
 
 				var mesh = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
+					new THREE.MeshBasicMaterial( { transparent: false, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
 				);
 				var highlight = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
+					new THREE.MeshBasicMaterial( { transparent: false, opacity: 0, color: 0x73C9EB } )
 				);
 
 				// events
@@ -528,7 +553,7 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(0, offsetY, -depth - 3);
+//				group.position.set(1, offsetY, -depth - (3 * masterScale) );
 				bend(group, depth);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
@@ -840,7 +865,7 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( json ) {
+		function makeIconHolder( json, iconObject ) {
 
 
 			// holder
@@ -848,7 +873,35 @@
 			var holder = new THREE.Mesh(
 				new THREE.BoxGeometry( 160, 100, 180, 1, 1 ),
 				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
-			)
+			);
+
+			var buttonMesh = new THREE.Mesh(
+				new THREE.CircleGeometry(100, 8),
+				new THREE.MeshBasicMaterial ({ transparent:true, opacity: 0, depthTest: false, depthWrite: false} ) // hide default button visuals
+			);
+			buttonMesh.name = "collider";
+
+			// The button always moves along the z axis. Create wrapper for it.
+			var dolly = new THREE.Object3D();
+			dolly.rotateX( - Math.PI / 2);
+			dolly.name = "collider-dolly";
+
+			dolly.add(buttonMesh);
+			holder.add(dolly);
+
+			var button = new PushButton(
+				new InteractablePlane(buttonMesh, Leap.loopController, {moveX: false, moveY: false}),
+				{locking: false}
+			);
+
+			button.longThrow = -35;
+			button.shortThrow = -20;
+			button.on('press', function(){
+				holder.dispatchEvent({type: 'click'});
+			});
+
+			iconObject.rotateX( Math.PI / 2); // inverse the dolly rotation
+			buttonMesh.add(iconObject);
 
 
 			// popup
@@ -881,14 +934,14 @@
 
 				// set tween destination position by starting with canonical position, as stored in the object's userData
 
-				var destinationY = e.target.userData.position.y + 0.1;
+				var destinationY = e.target.userData.position.y + (0.1 * masterScale);
 
 				new TWEEN.Tween( e.target.position )
 					.to( { y: destinationY }, 350 )
 					.start();
 
 				new TWEEN.Tween( popup.position )
-					.to( { y: posY + 3 }, 200 )
+					.to( { y: posY + (3 * masterScale) }, 200 )
 					.start();
 
 				new TWEEN.Tween( mesh.material )
@@ -939,27 +992,23 @@
 			var loader = new THREE.ObjectLoader();
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: 0.6 + userHeight,
-				z: -4.5
+				y: (0.6 + userHeight) * masterScale,
+				z: -4.5 * masterScale
 			};
-			var iconBaseScale = 0.015;	// scale icons
-			var spread = 4.5;	// spread between icons
-			var depth = 10;	// depth at which icons are placed.
-
+			var iconBaseScale = 0.015 * masterScale;	// scale icons
 
 			loader.load( icons.sechelt.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x - 2.25,
-					y = iconBasePos.y + 0.2,
-					z = iconBasePos.z + 2.5;
+				var x = iconBasePos.x - (2.25 * masterScale),
+					  y = iconBasePos.y + (0.2 * masterScale),
+					  z = iconBasePos.z + (2.5 * masterScale);
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt );
+				var holder = makeIconHolder( icons.sechelt, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 130 * (Math.PI/180), 0 );
-				holder.add( object );
 
 				// store original position for later use.
 				holder.userData.position = new THREE.Vector3(x, y, z);
@@ -976,16 +1025,15 @@
 			loader.load( icons.polar.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 0,
-					y = iconBasePos.y + 0
-					z = iconBasePos.z - 0.5;
+				var x = iconBasePos.x + (0   * masterScale),
+				   	y = iconBasePos.y + (0   * masterScale),
+					  z = iconBasePos.z - (0.5 * masterScale);
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar );
+				var holder = makeIconHolder( icons.polar, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 80 * (Math.PI/180), 0 );
-				holder.add( object );
 
 				// store original position for later use.
 				holder.userData.position = new THREE.Vector3(x, y, z);
@@ -1002,16 +1050,15 @@
 			loader.load( icons.dive.model, function ( object ) {
 
 				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 2.25,
-					y = iconBasePos.y + 0.2,
-					z = iconBasePos.z + 2.5;
+				var x = iconBasePos.x + (2.25 * masterScale),
+					  y = iconBasePos.y + (0.2 * masterScale),
+					  z = iconBasePos.z + (2.5 * masterScale);
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.dive );
+				var holder = makeIconHolder( icons.dive, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
 				holder.position.set( x, y, z);
 				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );
-				holder.add( object );
 				//holder.add( makeInfoDive() );
 
 				// store original position for later use.
