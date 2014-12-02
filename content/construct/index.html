@@ -195,8 +195,9 @@
 
 			Leap.loop()
 				.use('transform', {
-					scale: 0.001,
-					position: new THREE.Vector3(0,-0.3,-0.35),
+//					scale: 0.001,
+//					position: new THREE.Vector3(0,-0.3,-0.35),
+					vr: true,
 					effectiveParent: this.camera
 				})
 				.use('boneHand', {
@@ -299,7 +300,9 @@
 
 
 		/*====================== Make layout ======================*/
-		var masterScale = 0.055; /* scale thigns down to put them within reach */
+		/* scale things down to put them within reach */
+//		var masterScale = 0.55; // Desktop mode
+		var masterScale = 0.15; // VR Mode
 
 
 		function makeSky() {
