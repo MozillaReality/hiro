@@ -41,6 +41,7 @@
 	<script src="../../js/vrclient.js"></script>
 	<script src="../../js/vrcursor.js"></script>
 
+
 	<script>
 
 
@@ -97,7 +98,7 @@
 
 		// requirements for cursor.
 		// This state tracking is sort of ugly, and should be moved to inside VRClient and/or VRCursor.
-		VRClientFocus = false; // todo - make focus fire on load.
+		VRClientFocus = false;
 		VRClientIsVR = false;
 		handsInFrame = false;
 
@@ -106,6 +107,8 @@
 
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.autoClear = false;
+			renderer.shadowMapEnabled = true;
+	  	renderer.shadowMapType = THREE.PCFSoftShadowMap;
 			renderer.setClearColor( 0x000000 );
 
 			document.body.appendChild( renderer.domElement );
@@ -189,12 +192,38 @@
 
 
 
-			var handLight = new THREE.PointLight(0xffffff, 1, 1);
-			handLight.position.setY(0.3);
-			this.scene.add(handLight);
+			var handLight = new THREE.SpotLight(0xffffff, 0.25);
+			handLight.castShadow = true;
+			handLight.shadowCameraVisible = true;
+			handLight.shadowCameraNear = 0.01;
+			handLight.shadowCameraFar = 3;
+			handLight.shadowDarkness = 0.8;
 
-			Leap.loop()
-				.use('transform', {
+			handLight.target.position.set(0,0,-1);
+			scene.add(handLight.target);
+
+			var dolly = new THREE.Object3D;
+			dolly.position.set(0,0.2,0.8);
+
+			scene.add(dolly);
+			dolly.add(handLight);
+
+
+			Leap.loop();
+
+			// Add a certain default lightness, even in low-light situations
+			Leap.loopController.on('handMeshCreated', function(handMesh){
+
+				handMesh.traverse(function(mesh){
+					// mesh is a joint or a bone
+					if (mesh.material){
+						mesh.material.emissive.copy(mesh.material.color).multiplyScalar(0.75);
+					}
+				})
+
+			});
+
+			Leap.loopController.use('transform', {
 //					scale: 0.001,
 //					position: new THREE.Vector3(0,-0.3,-0.35),
 					vr: true,
@@ -205,6 +234,7 @@
 					arm: true
 				})
 				.use('proximity');
+
 
 			// only show the cursor when no hands in frame.
 			Leap.loopController.on('frame', function(frame){
@@ -218,6 +248,7 @@
 			});
 
 		}
+
 
 		updateCursorState = function(){
 			if (VRClientFocus && VRClientIsVR && !handsInFrame){
@@ -951,6 +982,11 @@
 			buttonMesh.add(iconObject);
 
 
+			iconObject.traverse(function(child){
+				child.receiveShadow = true
+			});
+
+
 			// popup
 
 			var popup = new THREE.Object3D();
@@ -1104,9 +1140,8 @@
 				// create parent holder object
 				var holder = makeIconHolder( icons.dive, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z);
+				holder.position.set( x, y, z );
 				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );
-				//holder.add( makeInfoDive() );
 
 				// store original position for later use.
 				holder.userData.position = new THREE.Vector3(x, y, z);
