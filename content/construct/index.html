@@ -657,9 +657,9 @@
 
 			function makePanos() {
 
-				var w = 34 * 0.07;
-				var h = 67.25 * 0.07;
-				var d = 1 * scale;
+				var w = 34 * 0.07 * masterScale;
+				var h = 67.25 * 0.07 * masterScale;
+				var d = 1 * scale * masterScale;
 
 				// hit area
 				var group = new THREE.Mesh(
@@ -668,9 +668,16 @@
 				);
 
 				// label
-				var mesh = new THREE.Mesh(
+				var imageMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-panos-1.png" ) } )
+				);
+				imageMesh.name = "txt-panos-1";
+
+				var button = new PushButton(
+					new InteractablePlane(
+						imageMesh, Leap.loopController, {moveX: false, moveY: false}
+					)
 				);
 
 				// highlight
@@ -678,6 +685,7 @@
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
+				highlight.name = "highlight-txt-panos-1";
 
 				// events
 				group.addEventListener( 'click', function() {
@@ -696,13 +704,13 @@
 						.start();
 				});
 
-				group.add( mesh );
-				group.add( highlight );
+				imageMesh.add( highlight ); // move with the button mesh
+				group.add( imageMesh );
 
-				group.position.set(5.1, offsetY-1.2, 0.25);
+				group.position.set(2.5 * masterScale, offsetY-(1.2 * masterScale), 0.25 * masterScale);
 				group.rotation.set( 0, -105 * Math.PI / 180, 0 );
 				bend(group, 9);
-				mesh.renderDepth = 2;
+				imageMesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
 				return group;
