@@ -685,12 +685,35 @@
 				return group;
 			};
 
+			// Sets position at radius and angle
+			// Sets the rotation to face the origin.
+			// In z radians from <0,0,-1>
+			// This would be more nicely moved in to an instance method on object3d
+			positionRadially = function(output, radius, angle, height){
+
+				output.position.set(
+					 radius * Math.sin(angle),
+					height,
+					-radius * Math.cos(angle)
+				);
+
+				output.lookAt(
+					new THREE.Vector3(0,height,0)
+				);
+
+			};
+
+			var TO_RAD = Math.PI / 180;
+			var tileRadius = 0.377;
+			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
+			var tileAngleIncrement = 40;
+			var tileHeight = offsetY - (1.2 * masterScale);
 
 			function makePanos() {
 
-				var w = 34 * 0.07 * masterScale;
-				var h = 67.25 * 0.07 * masterScale;
-				var d = 1 * scale * masterScale;
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
 				// hit area
 				var group = new THREE.Mesh(
@@ -738,9 +761,8 @@
 				imageMesh.add( highlight ); // move with the button mesh
 				group.add( imageMesh );
 
-				group.position.set(2.5 * masterScale, offsetY-(1.2 * masterScale), 0.25 * masterScale);
-				group.rotation.set( 0, -105 * Math.PI / 180, 0 );
-				bend(group, 9);
+				positionRadially(group, tileRadius,  tileBaseAngle * TO_RAD, tileHeight );
+				bend(group, tileRadius);
 				imageMesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
@@ -750,9 +772,9 @@
 
 			function makeLeap() {
 
-				var w = 34 * 0.07;
-				var h = 67.25 * 0.07;
-				var d = 1 * scale;
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
 				// hit area
 				var group = new THREE.Mesh(
@@ -792,9 +814,8 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(4.00, offsetY-1.2, 2.5);
-				group.rotation.set( 0, -125 * Math.PI / 180, 0 );
-				bend(group, 9);
+				positionRadially(group, tileRadius,  (tileBaseAngle + tileAngleIncrement) * TO_RAD, tileHeight );
+				bend(group, tileRadius);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
@@ -804,9 +825,9 @@
 
 			function makeEleVR() {
 
-				var w = 34 * 0.07;
-				var h = 67.25 * 0.07;
-				var d = 1 * scale;
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
 				// hit area
 				var group = new THREE.Mesh(
@@ -846,9 +867,8 @@
 				group.add( mesh );
 				group.add( highlight );
 
-				group.position.set(2.3, offsetY-1.2, 4.4);
-				group.rotation.set( 0, -140 * Math.PI / 180, 0 );
-				bend(group, 9);
+				positionRadially(group, tileRadius,  (tileBaseAngle + tileAngleIncrement * 2) * TO_RAD, tileHeight );
+				bend(group, tileRadius);
 				mesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
