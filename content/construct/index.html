@@ -75,13 +75,13 @@
 				url: 'http://mozvr.github.io/infodive',
 				popup: 'images/popup-infodive-1.png'
 			},
-			pano: {
+			"txt-panos-1": {
 				url: 'http://mozvr.github.io/panorama-viewer'
 			},
-			leap: {
+			"txt-leap-2": {
 				"url": "content/leap"
 			},
-			elevr4: {
+			"txt-elevr-1": {
 				"url": "http://mozvr.com/content/elevr4"
 			}
 
@@ -689,31 +689,23 @@
 			// Sets the rotation to face the origin.
 			// In z radians from <0,0,-1>
 			// This would be more nicely moved in to an instance method on object3d
-			positionRadially = function(output, radius, angle, height){
+			positionRadially = function(object, radius, angle, height){
 
-				output.position.set(
+				object.position.set(
 					 radius * Math.sin(angle),
 					height,
 					-radius * Math.cos(angle)
 				);
 
-				output.lookAt(
+				object.lookAt(
 					new THREE.Vector3(0,height,0)
 				);
 
+				bend(object, tileRadius);
+
 			};
 
-			var TO_RAD = Math.PI / 180;
-			var tileRadius = 0.377;
-			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
-			var tileAngleIncrement = 40;
-			var tileHeight = offsetY - (1.2 * masterScale);
-
-			function makePanos() {
-
-				var w = 34 * 0.07 * masterScale * tileScale;
-				var h = 67.25 * 0.07 * masterScale * tileScale;
-				var d = 1 * scale * masterScale * tileScale;
+			createTile = function(name,w,d,h,angle){
 
 				// hit area
 				var group = new THREE.Mesh(
@@ -724,26 +716,26 @@
 				// label
 				var imageMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-panos-1.png" ) } )
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/" + name + ".png" ) } )
 				);
-				imageMesh.name = "txt-panos-1";
+				imageMesh.name = name;
+				imageMesh.receiveShadow = true;
 
 				var button = new PushButton(
 					new InteractablePlane(
-						imageMesh, Leap.loopController, {moveX: false, moveY: false}
+						imageMesh, Leap.loopController, {moveX: false, moveY: false, locking: false}
 					)
 				);
 
-				// highlight
 				var highlight = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
-				highlight.name = "highlight-txt-panos-1";
+				highlight.name = "highlight-" + name;
 
 				// events
 				group.addEventListener( 'click', function() {
-					VRClient.load( icons.pano.url );
+					VRClient.load( icons[name].url );
 				});
 
 				group.addEventListener( 'mouseover', function( e ) {
@@ -761,12 +753,27 @@
 				imageMesh.add( highlight ); // move with the button mesh
 				group.add( imageMesh );
 
-				positionRadially(group, tileRadius,  tileBaseAngle * TO_RAD, tileHeight );
-				bend(group, tileRadius);
+				positionRadially(group, tileRadius,  angle * TO_RAD, tileHeight );
 				imageMesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
-				return group;
+				return group
+			}
+
+			var TO_RAD = Math.PI / 180;
+			var tileRadius = 0.377;
+			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
+			var tileAngleIncrement = 40;
+			var tileHeight = offsetY - (1.2 * masterScale);
+
+			function makePanos() {
+
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
+
+				return createTile("txt-panos-1", w,d,h, tileBaseAngle)
+
 			};
 
 
@@ -776,50 +783,8 @@
 				var h = 67.25 * 0.07 * masterScale * tileScale;
 				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
+				return createTile("txt-leap-2", w,d,h, tileBaseAngle + tileAngleIncrement)
 
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-leap-2.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.leap.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				positionRadially(group, tileRadius,  (tileBaseAngle + tileAngleIncrement) * TO_RAD, tileHeight );
-				bend(group, tileRadius);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
 			};
 
 
@@ -829,54 +794,7 @@
 				var h = 67.25 * 0.07 * masterScale * tileScale;
 				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-elevr-1.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.elevr4.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				positionRadially(group, tileRadius,  (tileBaseAngle + tileAngleIncrement * 2) * TO_RAD, tileHeight );
-				bend(group, tileRadius);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				// var holder = new THREE.Object3D();
-				// holder.add( group );
-				// holder.rotation.set( 0, 286 * Math.PI / 180, 0 );
-
-				return group;
+				return createTile("txt-elevr-1", w,d,h, tileBaseAngle + tileAngleIncrement * 2)
 			};
 
 
