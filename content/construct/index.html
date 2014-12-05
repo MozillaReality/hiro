@@ -544,7 +544,7 @@
 
 
 			var TO_RAD = Math.PI / 180;
-			var tileRadius = 0.56;
+			var tileRadius = 0.5;
 			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
 			var tileAngleIncrement = 40;
 			var tileHeight = offsetY - (1.2 * masterScale);
@@ -794,7 +794,7 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( json, iconObject ) {
+		function makeIconHolder( json, iconObject, scale ) {
 
 
 			// holder
@@ -824,7 +824,6 @@
 			);
 
 			button.longThrow = -35;
-			button.shortThrow = -20;
 			button.on('press', function(){
 				holder.dispatchEvent({type: 'click'});
 			});
@@ -904,10 +903,11 @@
 					.start();
 			})
 
+			holder.scale.multiplyScalar(scale);
+
 			return holder;
 
 		}
-
 
 		function makeIconShadow(  ){
 
@@ -936,8 +936,7 @@
 			loader.load( icons.sechelt.model, function ( object ) {
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt, object );
-				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+				var holder = makeIconHolder( icons.sechelt, object, iconBaseScale );
 				positionRadially(holder, iconRadius, -iconAngle, iconBasePos.y);
 
 				// store original position for later use.
@@ -955,8 +954,7 @@
 			loader.load( icons.polar.model, function ( object ) {
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar, object );
-				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+				var holder = makeIconHolder( icons.polar, object, iconBaseScale );
 				positionRadially(holder, iconRadius, 0, iconBasePos.y);
 
 				// store original position for later use.
@@ -974,8 +972,7 @@
 			loader.load( icons.dive.model, function ( object ) {
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.dive, object );
-				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
+				var holder = makeIconHolder( icons.dive, object, iconBaseScale );
 				positionRadially(holder, iconRadius, iconAngle, iconBasePos.y);
 
 				// store original position for later use.
