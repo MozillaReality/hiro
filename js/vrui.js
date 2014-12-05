@@ -27,6 +27,8 @@ function VRUi(container) {
 
 	this.initRenderer();
 
+	//this.initLeapInteraction();
+
 	//self.scene.add(self.gridlines());
 
 	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
@@ -348,7 +350,7 @@ VRUi.prototype.initRenderer = function() {
 	this.renderer.sortObjects = false;
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
-  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
 
 	this.setRenderMode(this.mode);
 
@@ -358,6 +360,30 @@ VRUi.prototype.initRenderer = function() {
 
   this.initResizeHandler();
 };
+
+
+// note: either need to hide this when in background.. unless HUD is shown in another app, in which case focus is given back
+// This should be called after the scene is initializer
+// But before animate (#start), so that the Leap animation frame callbacks get registered before the render ones.
+VRUi.prototype.initLeapInteraction = function() {
+
+	Leap.loop({background: true}) // more for dev - makes use while consoling easier
+		.use('transform', {
+			scale: 0.001,
+			position: new THREE.Vector3(0,-0.3,-0.35),
+			effectiveParent: this.camera
+		})
+		.use('boneHand', {
+			scene: this.scene,
+			arm: true
+		})
+		.use('proximity');
+
+	var light = new THREE.PointLight(0xffffff, 1, 3);
+	light.position.setY(0.3);
+	this.scene.add(light);
+
+}
 
 // todo: needs to be put somewhere else.  duplicated in vrcursor and vrclient.
 VRUi.modes = VRUi.prototype.modes = {

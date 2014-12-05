@@ -250,6 +250,8 @@ var DOM2three = (function() {
 				mesh = new THREE.Mesh( geometry, materials[0] );
 			}
 
+			mesh.name = node.id;
+
 			mesh.position.set( x, -y, 0);
 
 			mesh.scale.set( rectangle.width * scale, rectangle.height * scale, 1 );

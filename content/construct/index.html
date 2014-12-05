@@ -25,16 +25,23 @@
 	<body>
 
 	</body>
-	<script src="../../js/vendor/three.min.js"></script>
+	<!--<script src="../../js/vendor/three.min.js"></script>-->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r69/three.js"></script>
 	<script src="../../js/vendor/tween.min.js"></script>
 	<script src="../../js/vendor/VRControls.js"></script>
 	<script src="../../js/vendor/VREffect.js"></script>
 	<script src="../../js/vendor/DeviceOrientationControls.js"></script>
 	<script src="../../js/vendor/StereoEffect.js"></script>
 
+	<script src="//js.leapmotion.com/leap-0.6.4.js"></script>
+	<script src="../../js/vendor/leap-plugins-0.1.11pre.js"></script>
+	<script src="../../js/vendor/leap-widgets-0.1.0.js"></script>
+	<!--<script src="../../js/vendor/OrbitControls.js"></script>-->
+
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 	<script src="../../js/vrclient.js"></script>
 	<script src="../../js/vrcursor.js"></script>
+
 
 	<script>
 
@@ -69,14 +76,20 @@
 				url: 'http://mozvr.github.io/infodive',
 				popup: 'images/popup-infodive-1.png'
 			},
-			pano: {
+			"txt-panos-1": {
 				url: 'http://mozvr.github.io/panorama-viewer'
 			},
-			leap: {
+			"txt-leap-2": {
 				"url": "content/leap"
 			},
-			elevr4: {
+			"txt-elevr-1": {
 				"url": "http://mozvr.com/content/elevr4"
+			},
+			"txt-polarsea-3": {
+				url: 'http://mozvr.com/content/polar',
+			},
+			"txt-infodive-2": {
+				url: 'http://mozvr.github.io/infodive',
 			}
 
 		}
@@ -89,26 +102,37 @@
 		var icons;
 		var iconsArray = [];
 		var userHeight = -1.65;
+		var iconAngle = 45; // degrees
+
+		// requirements for cursor.
+		// This state tracking is sort of ugly, and should be moved to inside VRClient and/or VRCursor.
+		VRClientFocus = false;
+		VRClientIsVR = false;
 
 
 		function init() {
 
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.autoClear = false;
+			renderer.shadowMapEnabled = true;
+	  	renderer.shadowMapType = THREE.PCFSoftShadowMap;
 			renderer.setClearColor( 0x000000 );
 
 			document.body.appendChild( renderer.domElement );
 
 			scene = new THREE.Scene();
 
-			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
+			scene.add(camera); // Lights are attached and must be in scene.
+
+			if (THREE.OrbitControls) window.orbitControls = new THREE.OrbitControls( camera );
 
 			cursor = new VRCursor();
 
 			cursor.ready.then(function() {
 				scene.add(cursor.layout);
 				cursor.init(renderer.domElement, camera, scene);
-				cursor.enable();
+				updateCursorState();
 			});
 
 			setRenderMode(VRClient.renderModes.mono);
@@ -117,6 +141,7 @@
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
+
 			function setRenderMode(mode) {
 				var modes = VRClient.renderModes;
 				if (mode == modes.mono) {
@@ -124,19 +149,23 @@
 					effect = renderer;
 					cursor.setMode('mono');
 					cursor.hide();
+					VRClientIsVR = false;
+					updateCursorState();
 
 				} else if (mode == modes.stereo) {
 					// controls = new THREE.DeviceOrientationControls( camera );
 					controls = null;
 					effect = new THREE.StereoEffect( renderer );
 					//cursor.setMode('centered');
-					cursor.disable();
-
+					VRClientIsVR = false;
+					updateCursorState();
 				} else if (mode == modes.vr) {
+					VRClientIsVR = true;
 					controls = new THREE.VRControls( camera );
 					effect = new THREE.VREffect( renderer );
 					cursor.setMode('centered');
 					cursor.show();
+					updateCursorState();
 				}
 
 				effect.setSize( window.innerWidth, window.innerHeight );
@@ -150,23 +179,100 @@
 			}
 
 			VRClient.onBlur = function() {
-				cursor.disable();
+				VRClientFocus = false;
+				console.log('construct unfocus');
+				updateCursorState();
 			}
 
 			VRClient.onFocus = function() {
-				cursor.enable();
+				VRClientFocus = true;
+				console.log('construct focus');
+				updateCursorState();
 			}
 
-			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
-			light.position.set( 100, 110, 150 );
-			scene.add( light );
+//			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
+//			light.position.set( 100, 110, 150 );
+//			scene.add( light );
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
 			setTimeout(function() {
 				VRClient.ready();
 			}, 1000);
 
+
+
+
+			var handLight = new THREE.SpotLight(0xffffff, 0.25);
+			handLight.castShadow = true;
+			handLight.shadowCameraVisible = false;
+			handLight.shadowCameraNear = 0.01;
+			handLight.shadowCameraFar = 3;
+			handLight.shadowDarkness = 0.8;
+			handLight.shadowMapWidth = 1024; // default is 512
+			handLight.shadowMapHeight = 1024; // default is 512
+
+			handLight.position.set(0,1,1);
+			handLight.target.position.set(0,0,-1);
+			camera.add(handLight.target);
+
+			var dolly = new THREE.Object3D;
+			dolly.position.set(0,0.2,0.8);
+
+			scene.add(dolly);
+			camera.add(handLight);
+
+
+
+			Leap.loop();
+
+			// Add a certain default lightness, even in low-light situations
+			Leap.loopController.on('handMeshCreated', function(handMesh){
+
+				handMesh.traverse(function(mesh){
+					// mesh is a joint or a bone
+					if (mesh.material){
+						mesh.material.emissive.copy(mesh.material.color).multiplyScalar(0.75);
+					}
+				})
+
+			});
+
+			Leap.loopController.use('transform', {
+//					scale: 0.001,
+//					position: new THREE.Vector3(0,-0.3,-0.35),
+					vr: true,
+					effectiveParent: this.camera
+				})
+				.use('boneHand', {
+					scene: this.scene,
+					arm: true
+				})
+				.use('proximity');
+
+
+			// only show the cursor when no hands in frame.
+			Leap.loopController.on('streamingStarted', updateCursorState);
+			Leap.loopController.on('streamingStopped', updateCursorState);
+
+			// Todo - check if mouse is being moved, and show cursor for 1s..
+			// doesn't seem to be passed through to iframe
+			// not because the iframe wouldn't get them, but because there are layers of transparent divs above.
+			// Maybe we need a shim which would pipe these events through, to do it right.
+//			document.addEventListener("mousemove", function(e){
+//				console.log('mm', e.x, e.y); // chrome
+//				console.log('mm', e.clientX, e.clientY); // firefox
+//			});
+
 		}
+
+
+		updateCursorState = function(){
+			if (VRClientFocus && VRClientIsVR && !Leap.loopController.streaming() ){
+				cursor.enable()
+			}else {
+				cursor.disable();
+			}
+		};
 
 		// bend function
 
@@ -241,6 +347,11 @@
 
 
 		/*====================== Make layout ======================*/
+		/* scale things down to put them within reach */
+//		var masterScale = 0.55; // Desktop mode
+		var masterScale = 0.15; // VR Mode
+		var tileScale = 0.7;
+//		var masterScale = 1; // No Leap
 
 
 		function makeSky() {
@@ -345,7 +456,7 @@
 
 			makeSky();
 	  	scene.fog = new THREE.Fog( 0x6ab5db, 30, 300 );
-			camera.position.set( 0, 0, 0 );
+			if (THREE.OrbitControls) camera.position.set( 0, 0, -0.1 );
 			makeParticles();
 			populateIcons();
 
@@ -429,337 +540,188 @@
 
 			// text links
 
-			var scale = 0.1; // pixel scale
+			var scale = 0.1 * masterScale; // pixel scale
 			var segmentsX = 20;
 			var segmentsY = 1;
-			var depth = 4;
-			var offsetY = 1;
+			var depth = 4 * masterScale;
+			var offsetY = 1 * masterScale;
 
+
+			var TO_RAD = Math.PI / 180;
+			var tileRadius = 0.5;
+			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
+			var tileAngleIncrement = 40;
+			var tileHeight = offsetY - (1.2 * masterScale);
+			var iconDescriptionRadius = tileRadius + 0.25;
+			var iconDescriptionHeight = tileHeight + 0.05;
+
+			// Adds the text description, but not the icon
 			function makeSechelt() {
 
-				var w = 58 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+				var w = 58 * 0.07 * masterScale * tileScale;
+				var h = 30 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * 0.07 * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-sechelt-1.png" ) } )
-				);
-
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.sechelt.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(-depth-2, offsetY, -depth);
-				group.rotation.set( 0, 60 * Math.PI / 180, 0 );
-				bend(group, depth);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
+				return createTile("txt-sechelt-1", w,d,h, -iconAngle - 12, iconDescriptionRadius, iconDescriptionHeight )
 			}
 
 
 			function makePolar() {
 
-				var w = 63 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+				var w = 63 * 0.07 * masterScale * tileScale;
+				var h = 30 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
-				);
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.polar.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(0, offsetY, -depth - 3);
-				bend(group, depth);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
+				return createTile("txt-polarsea-3", w,d,h, 0, iconDescriptionRadius, iconDescriptionHeight )
 			}
 
 
 			function makeInfo() {
 
-				var w = 59 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+				var w = 59 * 0.07 * masterScale * tileScale;
+				var h = 30 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale  * masterScale * tileScale;
+
+				return createTile("txt-infodive-2", w,d,h, iconAngle + 12, iconDescriptionRadius, iconDescriptionHeight )
+			};
+
+			// Sets position at radius and angle
+			// Sets the rotation to face the origin.
+			// In z radians from <0,0,-1>
+			// This would be more nicely moved in to an instance method on object3d
+			positionRadially = function(object, radius, angle, height){
+
+				object.position.set(
+					 radius * Math.sin(angle),
+					height,
+					-radius * Math.cos(angle)
+				);
+
+				object.lookAt(
+					new THREE.Vector3(0,height,0)
+				);
+
+			};
+
+			createTile = function(name,w,d,h,angle,radius,height){
+				radius || (radius = tileRadius);
+				height || (height = tileHeight);
 
 				// hit area
 				var group = new THREE.Mesh(
 					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false, side: THREE.DoubleSide})
 				);
 
-				// label
-				var mesh = new THREE.Mesh(
+				var imageMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-infodive-2.png" ) } )
+					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/" + name + ".png" ) } )
+				);
+				imageMesh.name = name;
+				imageMesh.receiveShadow = true;
+
+				var button = new PushButton(
+					new InteractablePlane(
+						imageMesh, Leap.loopController, {moveX: false, moveY: false}
+					),
+					{locking: false}
 				);
 
-				// highlight
+
 				var highlight = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
+				highlight.name = "highlight-" + name;
 
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.dive.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
+				// TODO - old animate should be aborted before new animation begins.
+				animateInHighlight = function( ) {
 					new TWEEN.Tween( highlight.material )
 						.to( { opacity: 0.25 }, 250 )
 						.start();
-				});
+				};
 
-				group.addEventListener( 'mouseout', function( e ) {
+				animateOutHighlight = function( ) {
 					new TWEEN.Tween( highlight.material )
 						.to( { opacity: 0 }, 250 )
 						.start();
+				};
+
+				var hoverJump = 0.01;
+				button.plane.hoverBounds = [0, 0.25];
+				button.plane.hover( animateInHighlight, animateOutHighlight );
+				button.plane.hover(
+						function(){ button.plane.originalPosition.z += hoverJump },
+						function(){
+							// We use a tween to return, rather than the spring which took it out, as there is no back end constraint.
+							new TWEEN.Tween( button.plane.originalPosition )
+												.to( { z: button.plane.originalPosition.z - hoverJump }, 250 )
+												.start();
+						}
+				);
+
+				button.on('press', function(){
+					group.dispatchEvent({type: 'click'});
 				});
 
-				group.add( mesh );
-				group.add( highlight );
+				// events
+				group.addEventListener( 'click', function() {
+					VRClient.load( icons[name].url );
+				});
 
-				group.position.set(depth + 1, offsetY, -depth);
-				group.rotation.set( 0, -60 * Math.PI / 180, 0 );
-				bend(group, depth);
-				mesh.renderDepth = 2;
+				group.addEventListener( 'mouseover', animateInHighlight );
+
+				group.addEventListener( 'mouseout', animateOutHighlight );
+
+				imageMesh.add( highlight ); // move with the button mesh
+				group.add( imageMesh );
+
+				positionRadially(group, radius,  angle * TO_RAD, height );
+				bend(group, tileRadius);
+				imageMesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
-				return group;
-			};
-
+				return group
+			}
 
 			function makePanos() {
 
-				var w = 34 * 0.07;
-				var h = 67.25 * 0.07;
-				var d = 1 * scale;
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
+				return createTile("txt-panos-1", w,d,h, tileBaseAngle)
 
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-panos-1.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.pano.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(5.1, offsetY-1.2, 0.25);
-				group.rotation.set( 0, -105 * Math.PI / 180, 0 );
-				bend(group, 9);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
 			};
 
 
 			function makeLeap() {
 
-				var w = 34 * 0.07;
-				var h = 67.25 * 0.07;
-				var d = 1 * scale;
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
+				return createTile("txt-leap-2", w,d,h, tileBaseAngle + tileAngleIncrement)
 
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-leap-2.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.leap.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(4.00, offsetY-1.2, 2.5);
-				group.rotation.set( 0, -125 * Math.PI / 180, 0 );
-				bend(group, 9);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
 			};
 
 
 			function makeEleVR() {
 
-				var w = 34 * 0.07;
-				var h = 67.25 * 0.07;
-				var d = 1 * scale;
+				var w = 34 * 0.07 * masterScale * tileScale;
+				var h = 67.25 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-elevr-1.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.elevr4.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(2.3, offsetY-1.2, 4.4);
-				group.rotation.set( 0, -140 * Math.PI / 180, 0 );
-				bend(group, 9);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				// var holder = new THREE.Object3D();
-				// holder.add( group );
-				// holder.rotation.set( 0, 286 * Math.PI / 180, 0 );
-
-				return group;
+				return createTile("txt-elevr-1", w,d,h, tileBaseAngle + tileAngleIncrement * 2)
 			};
 
 
+			// descriptions
 			scene.add( makeSechelt() );
 			scene.add( makePolar() );
 			scene.add( makeInfo() );
+
+			// tiles
 			scene.add( makePanos() );
 			scene.add( makeLeap() );
 			scene.add( makeEleVR() );
@@ -840,7 +802,7 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( json ) {
+		function makeIconHolder( json, iconObject, scale ) {
 
 
 			// holder
@@ -848,7 +810,39 @@
 			var holder = new THREE.Mesh(
 				new THREE.BoxGeometry( 160, 100, 180, 1, 1 ),
 				new THREE.MeshBasicMaterial ({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false} )
-			)
+			);
+
+			var buttonMesh = new THREE.Mesh(
+				new THREE.CircleGeometry(100, 8),
+				new THREE.MeshBasicMaterial ({ transparent:true, opacity: 0, depthTest: false, depthWrite: false} ) // hide default button visuals
+			);
+			buttonMesh.name = "collider";
+
+			// The button always moves along the z axis. Create wrapper for it.
+			var dolly = new THREE.Object3D();
+			dolly.rotateX( - Math.PI / 2);
+			dolly.name = "collider-dolly";
+
+			dolly.add(buttonMesh);
+			holder.add(dolly);
+
+			var button = new PushButton(
+				new InteractablePlane(buttonMesh, Leap.loopController, {moveX: false, moveY: false}),
+				{locking: false}
+			);
+
+			button.longThrow = -35;
+			button.on('press', function(){
+				holder.dispatchEvent({type: 'click'});
+			});
+
+			iconObject.rotateX( Math.PI / 2); // inverse the dolly rotation
+			buttonMesh.add(iconObject);
+
+
+			iconObject.traverse(function(child){
+				child.receiveShadow = true
+			});
 
 
 			// popup
@@ -880,14 +874,14 @@
 
 				// set tween destination position by starting with canonical position, as stored in the object's userData
 
-				var destinationY = e.target.userData.position.y + 0.1;
+				var destinationY = e.target.userData.position.y + (0.1 * masterScale);
 
 				new TWEEN.Tween( e.target.position )
 					.to( { y: destinationY }, 350 )
 					.start();
 
 				new TWEEN.Tween( popup.position )
-					.to( { y: posY + 3 }, 200 )
+					.to( { y: posY + (3 * masterScale) }, 200 )
 					.start();
 
 				new TWEEN.Tween( mesh.material )
@@ -916,10 +910,11 @@
 					.start();
 			})
 
+			holder.scale.multiplyScalar(scale);
+
 			return holder;
 
 		}
-
 
 		function makeIconShadow(  ){
 
@@ -935,33 +930,24 @@
 
 		function populateIcons() {
 
+			var iconRadius = 0.56; // same as tileRadius
+
 			var loader = new THREE.ObjectLoader();
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
-				y: 0.6 + userHeight,
-				z: -4.5
+				y: (0.6 + userHeight) * masterScale,
+				z: -4.5 * masterScale
 			};
-			var iconBaseScale = 0.015;	// scale icons
-			var spread = 4.5;	// spread between icons
-			var depth = 10;	// depth at which icons are placed.
-
+			var iconBaseScale = 0.015 * masterScale;	// scale icons
 
 			loader.load( icons.sechelt.model, function ( object ) {
 
-				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x - 2.25,
-					y = iconBasePos.y + 0.2,
-					z = iconBasePos.z + 2.5;
-
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt );
-				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z);
-				holder.rotation.set( 0, 130 * (Math.PI/180), 0 );
-				holder.add( object );
+				var holder = makeIconHolder( icons.sechelt, object, iconBaseScale );
+				positionRadially(holder, iconRadius, -iconAngle, iconBasePos.y);
 
 				// store original position for later use.
-				holder.userData.position = new THREE.Vector3(x, y, z);
+				holder.userData.position = holder.position.clone();
 
 				// create dropshadow
 				var shadow = makeIconShadow();
@@ -974,20 +960,12 @@
 
 			loader.load( icons.polar.model, function ( object ) {
 
-				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 0,
-					y = iconBasePos.y + 0
-					z = iconBasePos.z - 0.5;
-
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar );
-				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z);
-				holder.rotation.set( 0, 80 * (Math.PI/180), 0 );
-				holder.add( object );
+				var holder = makeIconHolder( icons.polar, object, iconBaseScale );
+				positionRadially(holder, iconRadius, 0, iconBasePos.y);
 
 				// store original position for later use.
-				holder.userData.position = new THREE.Vector3(x, y, z);
+				holder.userData.position = holder.position.clone();
 
 				// create dropshadow
 				var shadow = makeIconShadow();
@@ -1000,21 +978,12 @@
 
 			loader.load( icons.dive.model, function ( object ) {
 
-				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + 2.25,
-					y = iconBasePos.y + 0.2,
-					z = iconBasePos.z + 2.5;
-
 				// create parent holder object
-				var holder = makeIconHolder( icons.dive );
-				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z);
-				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );
-				holder.add( object );
-				//holder.add( makeInfoDive() );
+				var holder = makeIconHolder( icons.dive, object, iconBaseScale );
+				positionRadially(holder, iconRadius, iconAngle, iconBasePos.y);
 
 				// store original position for later use.
-				holder.userData.position = new THREE.Vector3(x, y, z);
+				holder.userData.position = holder.position.clone();
 
 				// create dropshadow
 				var shadow = makeIconShadow();
@@ -1212,6 +1181,8 @@
 
 				particle.setRotationFromQuaternion( quat );
 			}
+
+			if (THREE.OrbitControls) orbitControls.update();
 
 			requestAnimationFrame( animate );
 			render();

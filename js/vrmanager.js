@@ -155,7 +155,16 @@ window.VRManager = (function() {
       }
     });
 
+    newTab.loaded.then(function(){
+
+      if ( !self.ui.hud.visible && self.currentDemo ){
+        self.currentDemo.focus();
+      }
+
+    });
+
     newTab.load();
+
   };
 
   /*

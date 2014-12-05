@@ -82,15 +82,19 @@ VRHud.prototype.show = function() {
 				mesh.position.set(mesh.userData.position.x, mesh.userData.position.y - 1, mesh.userData.position.z + 1);
 
 				var tween = new TWEEN.Tween( mesh.position )
-					.to({ x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
+					//.to( mesh.userData.position, 700 ) // For some reason, this seems to append NaN to the .position constructor method source. https://github.com/sole/tween.js/issues/175
+					.to( { x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
+					.onComplete(function(){
+						// on finish (these all take the same time), set interactable to true
+					})
 					.start();
 
 				mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
 
 				var tween = new TWEEN.Tween( mesh.scale )
-					.to({ x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z}, 500 )
+					.to( { x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z} , 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
@@ -98,7 +102,7 @@ VRHud.prototype.show = function() {
 				mesh.material.opacity = 0;
 
 				var tween = new TWEEN.Tween( mesh.material )
-					.to({ opacity: 1}, 300 )
+					.to({ opacity: 1 }, 300 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
@@ -125,6 +129,8 @@ VRHud.prototype.hide = function() {
 				var mesh = node.mesh;
 
 				mesh.material.opacity = 1;
+
+				// should set interactable to false here
 
 				var tween = new TWEEN.Tween( mesh.material )
 					.to({ opacity: 0 }, 500 )
@@ -191,6 +197,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 			}
 		});
 
+		// button should trigger click event
 		mesh.addEventListener('click', function(e) {
 			var target = e.target;
 
@@ -215,8 +222,16 @@ VRHud.prototype.makeLayout = function(nodes) {
 			var mesh = node.mesh;
 			// persist the current position so we can use it later.
 			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
+			// here turn these in to interactable planes/buttons
+			// make them initially uninteractable
 
-			mesh.userData.scale = new THREE.Vector3(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+			if (Leap.loopController){
+				mesh.userData.button = new PushButton(
+					new InteractablePlane(mesh, Leap.loopController)
+				);
+			}
+
+			// camera is available here window.VRManager.ui.camera
 
 			layout.add( mesh );
 		});
