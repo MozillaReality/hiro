@@ -61,11 +61,13 @@ window.VRClient = (function() {
           self.zeroSensor();
           break;
         case 'onBlur':
+          window.dispatchEvent(new Event('blur'));
           if (typeof self.onBlur == 'function') {
             self.onBlur();
           }
           break;
         case 'onFocus':
+          window.dispatchEvent(new Event('focus'));
           if (typeof self.onFocus == 'function') {
             self.onFocus();
           }
