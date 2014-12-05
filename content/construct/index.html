@@ -719,7 +719,6 @@
 					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
 				);
 
-				// label
 				var imageMesh = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/" + name + ".png" ) } )
@@ -734,28 +733,47 @@
 					{locking: false}
 				);
 
+
 				var highlight = new THREE.Mesh(
 					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
 					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
 				);
 				highlight.name = "highlight-" + name;
 
+				// TODO - old animate should be aborted before new animation begins.
+				animateInHighlight = function( ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0.25 }, 250 )
+						.start();
+				};
+
+				animateOutHighlight = function( ) {
+					new TWEEN.Tween( highlight.material )
+						.to( { opacity: 0 }, 250 )
+						.start();
+				};
+
+				var hoverJump = 0.01;
+				button.plane.hoverBounds = [0, 0.25];
+				button.plane.hover( animateInHighlight, animateOutHighlight );
+				button.plane.hover(
+						function(){ button.plane.originalPosition.z += hoverJump },
+						function(){
+							// We use a tween to return, rather than the spring which took it out, as there is no back end constraint.
+							new TWEEN.Tween( button.plane.originalPosition )
+												.to( { z: button.plane.originalPosition.z - hoverJump }, 250 )
+												.start();
+						}
+				);
+
 				// events
 				group.addEventListener( 'click', function() {
 					VRClient.load( icons[name].url );
 				});
 
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
+				group.addEventListener( 'mouseover', animateInHighlight );
 
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
+				group.addEventListener( 'mouseout', animateOutHighlight );
 
 				imageMesh.add( highlight ); // move with the button mesh
 				group.add( imageMesh );
