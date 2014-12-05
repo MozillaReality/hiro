@@ -83,6 +83,12 @@
 			},
 			"txt-elevr-1": {
 				"url": "http://mozvr.com/content/elevr4"
+			},
+			"txt-polarsea-3": {
+				url: 'http://mozvr.com/content/polar',
+			},
+			"txt-infodive-2": {
+				url: 'http://mozvr.github.io/infodive',
 			}
 
 		}
@@ -95,6 +101,7 @@
 		var icons;
 		var iconsArray = [];
 		var userHeight = -1.65;
+		var iconAngle = 45; // degrees
 
 		// requirements for cursor.
 		// This state tracking is sort of ugly, and should be moved to inside VRClient and/or VRCursor.
@@ -535,160 +542,43 @@
 			var depth = 4 * masterScale;
 			var offsetY = 1 * masterScale;
 
+
+			var TO_RAD = Math.PI / 180;
+			var tileRadius = 0.56;
+			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
+			var tileAngleIncrement = 40;
+			var tileHeight = offsetY - (1.2 * masterScale);
+			var iconDescriptionRadius = tileRadius + 0.25;
+			var iconDescriptionHeight = tileHeight + 0.05;
+
 			// Adds the text description, but not the icon
 			function makeSechelt() {
 
-				var w = 58 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+				var w = 58 * 0.07 * masterScale * tileScale;
+				var h = 30 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * 0.07 * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-sechelt-1.png" ) } )
-				);
-
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.sechelt.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(-depth- (2 * masterScale), offsetY, -depth);
-				group.rotation.set( 0, 60 * Math.PI / 180, 0 );
-				bend(group, depth);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
+				return createTile("txt-sechelt-1", w,d,h, -iconAngle - 12, iconDescriptionRadius, iconDescriptionHeight )
 			}
 
 
 			function makePolar() {
 
-				var w = 63 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+				var w = 63 * 0.07 * masterScale * tileScale;
+				var h = 30 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-polarsea-3.png" ) } )
-				);
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.polar.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(1 * masterScale, offsetY, -depth - (3 * masterScale) );
-				bend(group, depth);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
+				return createTile("txt-polarsea-3", w,d,h, 0, iconDescriptionRadius, iconDescriptionHeight )
 			}
 
 
 			function makeInfo() {
 
-				var w = 59 * scale;
-				var h = 30 * scale;
-				var d = 1 * scale;
+				var w = 59 * 0.07 * masterScale * tileScale;
+				var h = 30 * 0.07 * masterScale * tileScale;
+				var d = 1 * scale  * masterScale * tileScale;
 
-				// hit area
-				var group = new THREE.Mesh(
-					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
-				);
-
-				// label
-				var mesh = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 1, map: THREE.ImageUtils.loadTexture( "images/txt-infodive-2.png" ) } )
-				);
-
-				// highlight
-				var highlight = new THREE.Mesh(
-					new THREE.PlaneGeometry( w, h, segmentsX, segmentsY ),
-					new THREE.MeshBasicMaterial( { transparent: true, opacity: 0, color: 0x73C9EB } )
-				);
-
-				// events
-				group.addEventListener( 'click', function() {
-					VRClient.load( icons.dive.url );
-				});
-
-				group.addEventListener( 'mouseover', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0.25 }, 250 )
-						.start();
-				});
-
-				group.addEventListener( 'mouseout', function( e ) {
-					new TWEEN.Tween( highlight.material )
-						.to( { opacity: 0 }, 250 )
-						.start();
-				});
-
-				group.add( mesh );
-				group.add( highlight );
-
-				group.position.set(depth + (1 * masterScale), offsetY, -depth);
-				group.rotation.set( 0, -60 * Math.PI / 180, 0 );
-				bend(group, depth);
-				mesh.renderDepth = 2;
-				highlight.renderDepth = 2;
-
-				return group;
+				return createTile("txt-infodive-2", w,d,h, iconAngle + 12, iconDescriptionRadius, iconDescriptionHeight )
 			};
 
 			// Sets position at radius and angle
@@ -709,12 +599,14 @@
 
 			};
 
-			createTile = function(name,w,d,h,angle){
+			createTile = function(name,w,d,h,angle,radius,height){
+				radius || (radius = tileRadius);
+				height || (height = tileHeight);
 
 				// hit area
 				var group = new THREE.Mesh(
 					new THREE.BoxGeometry( w, h, d, 1, 1 ),
-					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false})
+					new THREE.MeshBasicMaterial({ color: 0xffffff, transparent:true, opacity: 0, depthTest: false, side: THREE.DoubleSide})
 				);
 
 				var imageMesh = new THREE.Mesh(
@@ -776,18 +668,13 @@
 				imageMesh.add( highlight ); // move with the button mesh
 				group.add( imageMesh );
 
-				positionRadially(group, tileRadius,  angle * TO_RAD, tileHeight );
+				positionRadially(group, radius,  angle * TO_RAD, height );
+				bend(group, tileRadius);
 				imageMesh.renderDepth = 2;
 				highlight.renderDepth = 2;
 
 				return group
 			}
-
-			var TO_RAD = Math.PI / 180;
-			var tileRadius = 0.6;
-			var tileBaseAngle = 110; // It would be better to Object-Orient this with a parent element, but.. not right now.
-			var tileAngleIncrement = 40;
-			var tileHeight = offsetY - (1.2 * masterScale);
 
 			function makePanos() {
 
@@ -821,9 +708,12 @@
 			};
 
 
+			// descriptions
 			scene.add( makeSechelt() );
 			scene.add( makePolar() );
 			scene.add( makeInfo() );
+
+			// tiles
 			scene.add( makePanos() );
 			scene.add( makeLeap() );
 			scene.add( makeEleVR() );
@@ -1048,7 +938,7 @@
 				// create parent holder object
 				var holder = makeIconHolder( icons.sechelt, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				positionRadially(holder, iconRadius, -45, iconBasePos.y);
+				positionRadially(holder, iconRadius, -iconAngle, iconBasePos.y);
 
 				// store original position for later use.
 				holder.userData.position = holder.position.clone();
@@ -1086,7 +976,7 @@
 				// create parent holder object
 				var holder = makeIconHolder( icons.dive, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				positionRadially(holder, iconRadius, 45, iconBasePos.y);
+				positionRadially(holder, iconRadius, iconAngle, iconBasePos.y);
 
 				// store original position for later use.
 				holder.userData.position = holder.position.clone();
