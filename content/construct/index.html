@@ -707,8 +707,6 @@
 					new THREE.Vector3(0,height,0)
 				);
 
-				bend(object, tileRadius);
-
 			};
 
 			createTile = function(name,w,d,h,angle){
@@ -1035,6 +1033,8 @@
 
 		function populateIcons() {
 
+			var iconRadius = 0.56; // same as tileRadius
+
 			var loader = new THREE.ObjectLoader();
 			var iconBasePos = {// base positioning of icons position.
 				x: 0,
@@ -1045,19 +1045,13 @@
 
 			loader.load( icons.sechelt.model, function ( object ) {
 
-				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x - (2.25 * masterScale),
-					  y = iconBasePos.y + (0.2 * masterScale),
-					  z = iconBasePos.z + (2.5 * masterScale);
-
 				// create parent holder object
 				var holder = makeIconHolder( icons.sechelt, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z);
-				holder.rotation.set( 0, 130 * (Math.PI/180), 0 );
+				positionRadially(holder, iconRadius, -45, iconBasePos.y);
 
 				// store original position for later use.
-				holder.userData.position = new THREE.Vector3(x, y, z);
+				holder.userData.position = holder.position.clone();
 
 				// create dropshadow
 				var shadow = makeIconShadow();
@@ -1070,19 +1064,13 @@
 
 			loader.load( icons.polar.model, function ( object ) {
 
-				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + (0   * masterScale),
-				   	y = iconBasePos.y + (0   * masterScale),
-					  z = iconBasePos.z - (0.5 * masterScale);
-
 				// create parent holder object
 				var holder = makeIconHolder( icons.polar, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z);
-				holder.rotation.set( 0, 80 * (Math.PI/180), 0 );
+				positionRadially(holder, iconRadius, 0, iconBasePos.y);
 
 				// store original position for later use.
-				holder.userData.position = new THREE.Vector3(x, y, z);
+				holder.userData.position = holder.position.clone();
 
 				// create dropshadow
 				var shadow = makeIconShadow();
@@ -1095,19 +1083,13 @@
 
 			loader.load( icons.dive.model, function ( object ) {
 
-				// relative object positioning to iconBasePos.
-				var x = iconBasePos.x + (2.25 * masterScale),
-					  y = iconBasePos.y + (0.2 * masterScale),
-					  z = iconBasePos.z + (2.5 * masterScale);
-
 				// create parent holder object
 				var holder = makeIconHolder( icons.dive, object );
 				holder.scale.set( iconBaseScale, iconBaseScale, iconBaseScale );
-				holder.position.set( x, y, z );
-				holder.rotation.set( 0, 35 * (Math.PI/180), 0 );
+				positionRadially(holder, iconRadius, 45, iconBasePos.y);
 
 				// store original position for later use.
-				holder.userData.position = new THREE.Vector3(x, y, z);
+				holder.userData.position = holder.position.clone();
 
 				// create dropshadow
 				var shadow = makeIconShadow();
