@@ -100,7 +100,6 @@
 		// This state tracking is sort of ugly, and should be moved to inside VRClient and/or VRCursor.
 		VRClientFocus = false;
 		VRClientIsVR = false;
-		handsInFrame = false;
 
 
 		function init() {
@@ -116,6 +115,8 @@
 			scene = new THREE.Scene();
 
 			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
+			scene.add(camera); // Lights are attached and must be in scene.
+
 
 			cursor = new VRCursor();
 
@@ -194,19 +195,21 @@
 
 			var handLight = new THREE.SpotLight(0xffffff, 0.25);
 			handLight.castShadow = true;
-			handLight.shadowCameraVisible = true;
+			handLight.shadowCameraVisible = false;
 			handLight.shadowCameraNear = 0.01;
 			handLight.shadowCameraFar = 3;
 			handLight.shadowDarkness = 0.8;
 
+			handLight.position.set(0,1,1);
 			handLight.target.position.set(0,0,-1);
-			scene.add(handLight.target);
+			camera.add(handLight.target);
 
 			var dolly = new THREE.Object3D;
 			dolly.position.set(0,0.2,0.8);
 
 			scene.add(dolly);
-			dolly.add(handLight);
+			camera.add(handLight);
+
 
 
 			Leap.loop();
@@ -336,6 +339,7 @@
 		/* scale things down to put them within reach */
 //		var masterScale = 0.55; // Desktop mode
 		var masterScale = 0.15; // VR Mode
+		var tileScale = 0.7;
 //		var masterScale = 1; // No Leap
 
 
@@ -725,8 +729,9 @@
 
 				var button = new PushButton(
 					new InteractablePlane(
-						imageMesh, Leap.loopController, {moveX: false, moveY: false, locking: false}
-					)
+						imageMesh, Leap.loopController, {moveX: false, moveY: false}
+					),
+					{locking: false}
 				);
 
 				var highlight = new THREE.Mesh(
