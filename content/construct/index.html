@@ -656,6 +656,10 @@
 						}
 				);
 
+				button.on('press', function(){
+					group.dispatchEvent({type: 'click'});
+				});
+
 				// events
 				group.addEventListener( 'click', function() {
 					VRClient.load( icons[name].url );
