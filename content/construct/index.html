@@ -237,21 +237,23 @@
 
 
 			// only show the cursor when no hands in frame.
-			Leap.loopController.on('frame', function(frame){
+			Leap.loopController.on('streamingStarted', updateCursorState);
+			Leap.loopController.on('streamingStopped', updateCursorState);
 
-				var newHandsInFrame = (frame.hands.length > 0);
-				if (newHandsInFrame != handsInFrame){
-					handsInFrame = newHandsInFrame;
-					updateCursorState();
-				}
-
-			});
+			// Todo - check if mouse is being moved, and show cursor for 1s..
+			// doesn't seem to be passed through to iframe
+			// not because the iframe wouldn't get them, but because there are layers of transparent divs above.
+			// Maybe we need a shim which would pipe these events through, to do it right.
+//			document.addEventListener("mousemove", function(e){
+//				console.log('mm', e.x, e.y); // chrome
+//				console.log('mm', e.clientX, e.clientY); // firefox
+//			});
 
 		}
 
 
 		updateCursorState = function(){
-			if (VRClientFocus && VRClientIsVR && !handsInFrame){
+			if (VRClientFocus && VRClientIsVR && !Leap.loopController.streaming() ){
 				cursor.enable()
 			}else {
 				cursor.disable();
