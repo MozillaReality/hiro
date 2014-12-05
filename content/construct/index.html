@@ -36,6 +36,7 @@
 	<script src="//js.leapmotion.com/leap-0.6.4.js"></script>
 	<script src="../../js/vendor/leap-plugins-0.1.11pre.js"></script>
 	<script src="../../js/vendor/leap-widgets-0.1.0.js"></script>
+	<!--<script src="../../js/vendor/OrbitControls.js"></script>-->
 
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 	<script src="../../js/vrclient.js"></script>
@@ -124,6 +125,7 @@
 			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
 			scene.add(camera); // Lights are attached and must be in scene.
 
+			if (THREE.OrbitControls) window.orbitControls = new THREE.OrbitControls( camera );
 
 			cursor = new VRCursor();
 
@@ -454,7 +456,7 @@
 
 			makeSky();
 	  	scene.fog = new THREE.Fog( 0x6ab5db, 30, 300 );
-			camera.position.set( 0, 0, 0 );
+			if (THREE.OrbitControls) camera.position.set( 0, 0, -0.1 );
 			makeParticles();
 			populateIcons();
 
@@ -1180,6 +1182,8 @@
 
 				particle.setRotationFromQuaternion( quat );
 			}
+
+			if (THREE.OrbitControls) orbitControls.update();
 
 			requestAnimationFrame( animate );
 			render();
