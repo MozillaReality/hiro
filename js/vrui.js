@@ -44,8 +44,6 @@ function VRUi(container) {
 			self.bend(self.title.mesh, 2.5, true)
 			self.scene.add(self.title.mesh);
 
-			// add hud layout to scene
-			self.bend(self.hud.layout, 2, false)
 			self.scene.add(self.hud.layout);
 
 			// loading progress
@@ -226,56 +224,51 @@ VRUi.prototype.reset = function() {
 	self.hud.disable();
 };
 
+// Sets position at radius and angle
+// Sets the rotation to face the origin.
+// In z radians from <0,0,-1>
+THREE.Object3D.prototype.positionRadially = function(radius, angle, height){
+	height || (height = this.position.y);
 
-VRUi.prototype.bend = function( group, amount, multiMaterialObject ) {
-	function bendVertices( mesh, amount, parent ) {
-		var vertices = mesh.geometry.vertices;
+	this.position.set(
+		 radius * Math.sin(angle),
+		height,
+		-radius * Math.cos(angle)
+	);
 
-		if (!parent) {
-			parent = mesh;
-		}
+	this.lookAt(
+		new THREE.Vector3(0,height,0)
+	);
 
-		for (var i = 0; i < vertices.length; i++) {
-			var vertex = vertices[i];
+};
 
-			// apply bend calculations on vertexes from world coordinates
-			parent.updateMatrixWorld();
 
-			var worldVertex = parent.localToWorld(vertex);
+THREE.PlaneGeometry.prototype.bend = function(radius, mesh ){
+	var vertices = this.vertices;
+	mesh.updateMatrixWorld();
 
-			var worldX = Math.sin( worldVertex.x / amount) * amount;
-			var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
-			var worldY = worldVertex.y 	;
+	for (var i = 0; i < vertices.length; i++) {
+		var vertex = vertices[i];
+		var worldVertex = mesh.localToWorld(vertex);
 
-			// convert world coordinates back into local object coordinates.
-			var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
-			vertex.x = localVertex.x;
-			vertex.z = localVertex.z;
-			vertex.y = localVertex.y;
-		};
+		//vertex.x = Math.sin( vertex.x / radius) * radius;
+		//vertex.z = - Math.cos( vertex.x / radius ) * radius;
 
-		mesh.geometry.computeBoundingSphere();
-		mesh.geometry.verticesNeedUpdate = true;
+		vertex.set(
+			Math.sin( worldVertex.x / radius) * radius,
+			worldVertex.y,
+			- Math.cos( worldVertex.x / radius ) * radius
+		)
+
+		mesh.worldToLocal(vertex);
+		vertex.z += radius;
 	}
 
-	for ( var i = 0; i < group.children.length; i ++ ) {
-		var element = group.children[ i ];
-
-		if (element.geometry.vertices) {
-			if (multiMaterialObject) {
-				bendVertices( element, amount, group);
-			} else {
-				bendVertices( element, amount);
-			}
-		}
-
-		// if (element.userData.position) {
-		// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-		// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-		// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
-		// }
-	}
+	this.computeBoundingSphere();
+	this.verticesNeedUpdate = true;
 }
+
+
 
 /*
 todo: move backgrounds off to seperate module
@@ -346,9 +339,17 @@ VRUi.prototype.gridlines = function() {
 VRUi.prototype.initRenderer = function() {
 	this.renderer = new THREE.WebGLRenderer({ alpha: true });
 	this.renderer.sortObjects = false;
+	this.renderer.shadowMapEnabled = true;
+	//this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
+	this.scene.add(this.camera);
+
+	if (THREE.OrbitControls) window.orbitControls = new THREE.OrbitControls( this.camera );
+	//if (THREE.OrbitControls) this.camera.position.set( 0, 0, 0.1 );
+	if (THREE.OrbitControls) this.camera.position.set( 2.3831, 13.825, 6.1769 );
+	if (THREE.OrbitControls) this.camera.rotation.set( -1.1506, 0.15609, 0.3348 );
 
 	this.setRenderMode(this.mode);
 
@@ -365,21 +366,38 @@ VRUi.prototype.initRenderer = function() {
 // But before animate (#start), so that the Leap animation frame callbacks get registered before the render ones.
 VRUi.prototype.initLeapInteraction = function() {
 
-	Leap.loop({background: true}) // more for dev - makes use while consoling easier
+	Leap.loop() // more for dev - makes use while consoling easier
 		.use('transform', {
-			scale: 0.001,
-			position: new THREE.Vector3(0,-0.3,-0.35),
+			vr: true,
 			effectiveParent: this.camera
 		})
 		.use('boneHand', {
 			scene: this.scene,
 			arm: true
-		})
-		.use('proximity');
+		});
 
-	var light = new THREE.PointLight(0xffffff, 1, 3);
-	light.position.setY(0.3);
-	this.scene.add(light);
+	Leap.loopController.setMaxListeners(100);  // Don't overload with many interactable planes
+
+
+	var light = new THREE.SpotLight(0xffffff, 0.25);
+	light.castShadow = true;
+	light.shadowCameraVisible = false;
+	light.shadowCameraNear = 0.01;
+	light.shadowCameraFar = 3;
+	light.shadowDarkness = 0.8;
+	light.shadowMapWidth = 1024; // default is 512
+	light.shadowMapHeight = 1024; // default is 512
+
+	light.position.set(0,1,1);
+	light.target.position.set(0,0,-1);
+	this.camera.add(light.target);
+
+	var dolly = new THREE.Object3D;
+	dolly.position.set(0,0.2,0.8);
+
+	this.scene.add(dolly);
+	this.camera.add(light);
+
 
 }
 
@@ -433,6 +451,8 @@ VRUi.prototype.animate = function() {
 	this.loading.update();
 
 	this.cursor.update();
+
+	if (THREE.OrbitControls) window.orbitControls.update();
 
 	// run any animation tweens
 	TWEEN.update();

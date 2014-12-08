@@ -36,7 +36,7 @@
 	<script src="//js.leapmotion.com/leap-0.6.4.js"></script>
 	<script src="../../js/vendor/leap-plugins-0.1.11pre.js"></script>
 	<script src="../../js/vendor/leap-widgets-0.1.0.js"></script>
-	<!--<script src="../../js/vendor/OrbitControls.js"></script>-->
+	<script src="../../js/vendor/OrbitControls.js"></script>
 
 	<!-- This is a library that allows this application to communicate with the main JAVRIS application host -->
 	<script src="../../js/vrclient.js"></script>
@@ -590,6 +590,7 @@
 			// In z radians from <0,0,-1>
 			// This would be more nicely moved in to an instance method on object3d
 			positionRadially = function(object, radius, angle, height){
+				height || (height = group.position.y);
 
 				object.position.set(
 					 radius * Math.sin(angle),

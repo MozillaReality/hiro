@@ -6,6 +6,7 @@ function VRHud() {
 	this.visible = false;
 	this.hudItems = [];
 	this.layout = new THREE.Group();
+	this.layout.name = "hud.layout";
 	this.layout.visible = this.visible;
 	this.homeButtonMesh = null;
 	this.d23 = null;
@@ -72,18 +73,18 @@ VRHud.prototype.show = function() {
 			self.layout.visible = true;
 			self.visible = true;
 
-			var nodes = self.d23.getNodesByClass('fav');
+			var buttonPlungers = self.d23.getNodesByClass('fav').map( function(node){return node.mesh;} );
 
-			for (var i = 0; i < nodes.length; i++) {
-				var node = nodes[i];
-				var mesh = node.mesh;
+			for (var i = 0; i < buttonPlungers.length; i++) {
+				var button = buttonPlungers[i];
+				var holder = button.parent;
 
+				// this offsets appear to do.. nothing..
+				holder.position.set(holder.userData.position.x, holder.userData.position.y - 1, holder.userData.position.z + 1);
 
-				mesh.position.set(mesh.userData.position.x, mesh.userData.position.y - 1, mesh.userData.position.z + 1);
-
-				var tween = new TWEEN.Tween( mesh.position )
+				new TWEEN.Tween( holder.position )
 					//.to( mesh.userData.position, 700 ) // For some reason, this seems to append NaN to the .position constructor method source. https://github.com/sole/tween.js/issues/175
-					.to( { x: mesh.userData.position.x, y: mesh.userData.position.y, z: mesh.userData.position.z}, 700 )
+					.to( { x: holder.userData.position.x, y: holder.userData.position.y, z: holder.userData.position.z}, 700 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.onComplete(function(){
@@ -91,17 +92,18 @@ VRHud.prototype.show = function() {
 					})
 					.start();
 
-				mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
+				//mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
+				holder.scale.copy(holder.userData.scale).multiplyScalar(0.75); // z scale should be no-op (unless used by bend?)
 
-				var tween = new TWEEN.Tween( mesh.scale )
-					.to( { x: mesh.userData.scale.x, y: mesh.userData.scale.y, z: mesh.userData.scale.z} , 500 )
+				new TWEEN.Tween( holder.scale )
+					.to( { x: holder.userData.scale.x, y: holder.userData.scale.y, z: holder.userData.scale.z} , 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
 
-				mesh.material.opacity = 0;
+				button.material.opacity = 0;
 
-				var tween = new TWEEN.Tween( mesh.material )
+				new TWEEN.Tween( button.material )
 					.to({ opacity: 1 }, 300 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
@@ -211,32 +213,44 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 VRHud.prototype.makeLayout = function(nodes) {
 	var self = this;
+	var hudRadius = 2;
 
 	var layout = self.layout;
 
-	var favorites = [];
-	this.favorites = favorites;
+	this.favorites = [];
+
+	layout.position.set(0, -0.15, 0);
 
 	return new Promise( function(resolve, reject) {
 		nodes.forEach( function(node) {
 			var mesh = node.mesh;
-			// persist the current position so we can use it later.
-			mesh.userData.position = new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z);
-			// here turn these in to interactable planes/buttons
-			// make them initially uninteractable
+
+			var holder = new THREE.Object3D();
+
+			holder.positionRadially( hudRadius, mesh.position.x / hudRadius );
+			mesh.position.set(0,0,0);  // Remove initial positioning from d23
+
+			mesh.geometry.bend( hudRadius, mesh );
+
+			mesh.material.side = THREE.DoubleSide;
+
+			holder.add( mesh );
+			layout.add( holder );
+
+			holder.userData.position = holder.position.clone();
+			holder.userData.scale    = holder.scale.clone();
 
 			if (Leap.loopController){
 				mesh.userData.button = new PushButton(
-					new InteractablePlane(mesh, Leap.loopController)
+					new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} )
 				);
 			}
 
-			// camera is available here window.VRManager.ui.camera
 
-			layout.add( mesh );
+			// here turn these in to interactable planes/buttons
+			// make them initially uninteractable
 		});
 
-		layout.position.set(0, -0.15, 0);
 
 		resolve();
 	});
