@@ -208,6 +208,15 @@ VRHud.prototype.attachEvents = function(favorites) {
 			}
 		});
 
+
+		if (Leap.loopController){
+			mesh.userData.button = new PushButton(
+				new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} ),
+				{ locking: false }
+			);
+		}
+
+
 	});
 }
 
@@ -240,14 +249,6 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 			holder.userData.position = holder.position.clone();
 			holder.userData.scale    = holder.scale.clone();
-
-			if (Leap.loopController){
-				mesh.userData.button = new PushButton(
-					new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} ),
-					{ locking: false }
-				);
-			}
-
 
 			// here turn these in to interactable planes/buttons
 			// make them initially uninteractable
