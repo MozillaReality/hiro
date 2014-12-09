@@ -220,16 +220,14 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 	this.favorites = [];
 
-	layout.position.set(0, -0.15, 0);
-
 	return new Promise( function(resolve, reject) {
 		nodes.forEach( function(node) {
 			var mesh = node.mesh;
 
 			var holder = new THREE.Object3D();
 
-			mesh.scale.multiplyScalar(0.5 * hudScale);
-			mesh.position.multiplyScalar(0.5 * hudScale);
+			mesh.scale.multiplyScalar(hudScale);
+			mesh.position.multiplyScalar(hudScale);
 			holder.positionRadially( hudRadius, mesh.position.x / hudRadius, mesh.position.y );
 			mesh.position.set(0,0,0);  // Remove initial positioning from d23
 
@@ -245,7 +243,8 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 			if (Leap.loopController){
 				mesh.userData.button = new PushButton(
-					new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} )
+					new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} ),
+					{ locking: false }
 				);
 			}
 
