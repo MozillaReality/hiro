@@ -212,8 +212,9 @@ VRHud.prototype.attachEvents = function(favorites) {
 }
 
 VRHud.prototype.makeLayout = function(nodes) {
+	var hudScale = 0.15;
 	var self = this;
-	var hudRadius = 2;
+	var hudRadius = 2 * hudScale;
 
 	var layout = self.layout;
 
@@ -227,7 +228,9 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 			var holder = new THREE.Object3D();
 
-			holder.positionRadially( hudRadius, mesh.position.x / hudRadius );
+			mesh.scale.multiplyScalar(0.5 * hudScale);
+			mesh.position.multiplyScalar(0.5 * hudScale);
+			holder.positionRadially( hudRadius, mesh.position.x / hudRadius, mesh.position.y );
 			mesh.position.set(0,0,0);  // Remove initial positioning from d23
 
 			mesh.geometry.bend( hudRadius, mesh );

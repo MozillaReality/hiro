@@ -27,7 +27,7 @@ function VRUi(container) {
 
 	this.initRenderer();
 
-	//this.initLeapInteraction();
+	this.initLeapInteraction();
 
 	//self.scene.add(self.gridlines());
 
@@ -259,9 +259,8 @@ THREE.PlaneGeometry.prototype.bend = function(radius, mesh ){
 			worldVertex.y,
 			- Math.cos( worldVertex.x / radius ) * radius
 		)
-
-		mesh.worldToLocal(vertex);
 		vertex.z += radius;
+		mesh.worldToLocal(vertex);
 	}
 
 	this.computeBoundingSphere();
