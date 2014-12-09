@@ -27,6 +27,9 @@ function VRUi(container) {
 
 	this.initRenderer();
 
+	// This needs to be called before init leap, so that it can stop events before they get picked up and sent to the Leap Service
+	this.rerouteFocusEvents();
+
 	this.initLeapInteraction();
 
 	//self.scene.add(self.gridlines());
@@ -150,6 +153,27 @@ VRUi.prototype.load = function(url, opts) {
 		});
 };
 
+// This function, somewhat experimentally, allows only one context to have focus state at a time (either the iframe, or the hud)
+VRUi.prototype.rerouteFocusEvents = function(){
+
+	window.addEventListener('focus', function(e) {
+		if ( !( this.hud.visible && this.hud.enabled ) ) {
+			e.stopImmediatePropagation();
+			VRManager.currentDemo.focus();
+		}
+		return false;
+	}.bind(this) );
+
+	window.addEventListener('blur', function(e) {
+		if ( !( this.hud.visible && this.hud.enabled ) ) {
+			e.stopImmediatePropagation();
+			VRManager.currentDemo.blur();
+		}
+		return false;
+	}.bind(this) );
+
+}
+
 
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible && this.hud.enabled) {
@@ -162,6 +186,7 @@ VRUi.prototype.toggleHud = function() {
 		this.cursor.enable();
 		this.cursor.show();
 		VRManager.currentDemo.blur();
+		window.dispatchEvent(new Event('focus'));
 
 
 	} else if (this.hud.visible && this.hud.enabled) {
@@ -172,6 +197,7 @@ VRUi.prototype.toggleHud = function() {
 		this.title.hide(1000);
 		this.cursor.disable();
 		VRManager.currentDemo.focus();
+		window.dispatchEvent(new Event('blur'));
 
 	} else {
 		this.hud.hide();
@@ -376,6 +402,9 @@ VRUi.prototype.initLeapInteraction = function() {
 		});
 
 	Leap.loopController.setMaxListeners(100);  // Don't overload with many interactable planes
+
+	// Set initial Leap focus state. See LeapJS's browser.js L64
+	Leap.loopController.connection.windowVisible = this.hud.visible && this.hud.enabled;
 
 
 	var light = new THREE.SpotLight(0xffffff, 0.25);
