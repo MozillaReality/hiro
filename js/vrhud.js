@@ -145,6 +145,8 @@ VRHud.prototype.hide = function() {
 					})
 					.start();
 			}
+
+
 		} else {
 			// already hidden, so resolve.
 			resolve();
@@ -218,8 +220,12 @@ VRHud.prototype.attachEvents = function(favorites) {
 			mesh.receiveShadow = true;
 
 			button.on('press', function(){
+
+				if ( !self.visible ) return;
+
 				mesh.dispatchEvent({type: 'click'});
-			});
+
+			} );
 		}
 
 
