@@ -425,6 +425,7 @@ VRUi.prototype.initLeapInteraction = function() {
 			if (!this.hud.visible){
 
 				this.hud.show();
+				this.hud.leapActivated = true;
 
 			}
 
@@ -432,7 +433,7 @@ VRUi.prototype.initLeapInteraction = function() {
 
 		if ( frame.hands.length === 0 ) {
 
-			if (this.hud.visible) {
+			if ( this.hud.visible && this.hud.leapActivated ) {
 
 				this.hud.hide();
 

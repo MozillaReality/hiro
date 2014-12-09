@@ -11,6 +11,7 @@ function VRHud() {
 	this.homeButtonMesh = null;
 	this.d23 = null;
 	this.enabled = false;
+	this.leapActivated = false;
 
 	function loadJson(url) {
 		return new Promise( function(resolve, reject) {
@@ -145,6 +146,8 @@ VRHud.prototype.hide = function() {
 					})
 					.start();
 			}
+
+			self.leapActivated = false;
 
 
 		} else {
