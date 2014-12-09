@@ -365,7 +365,7 @@ VRUi.prototype.initRenderer = function() {
 	this.renderer = new THREE.WebGLRenderer({ alpha: true });
 	this.renderer.sortObjects = false;
 	this.renderer.shadowMapEnabled = true;
-	//this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+	this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
   this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 10000 );
@@ -391,8 +391,21 @@ VRUi.prototype.initRenderer = function() {
 // But before animate (#start), so that the Leap animation frame callbacks get registered before the render ones.
 VRUi.prototype.initLeapInteraction = function() {
 
-	Leap.loop() // more for dev - makes use while consoling easier
-		.use('transform', {
+	Leap.loop(); // more for dev - makes use while consoling easier
+
+	// Add a certain default lightness, even in low-light situations
+	Leap.loopController.on('handMeshCreated', function(handMesh){
+
+		handMesh.traverse(function(mesh){
+			// mesh is a joint or a bone
+			if (mesh.material){
+				mesh.material.emissive.copy(mesh.material.color).multiplyScalar(0.75);
+			}
+		})
+
+	});
+
+	Leap.loopController.use('transform', {
 			vr: true,
 			effectiveParent: this.camera
 		})
@@ -405,6 +418,7 @@ VRUi.prototype.initLeapInteraction = function() {
 
 	// Set initial Leap focus state. See LeapJS's browser.js L64
 	Leap.loopController.connection.windowVisible = this.hud.visible && this.hud.enabled;
+
 
 
 	var light = new THREE.SpotLight(0xffffff, 0.25);

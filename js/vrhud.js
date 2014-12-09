@@ -210,10 +210,16 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 
 		if (Leap.loopController){
-			mesh.userData.button = new PushButton(
+			var button = mesh.userData.button = new PushButton(
 				new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} ),
 				{ locking: false }
 			);
+
+			mesh.receiveShadow = true;
+
+			button.on('press', function(){
+				mesh.dispatchEvent({type: 'click'});
+			});
 		}
 
 
