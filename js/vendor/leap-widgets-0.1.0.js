@@ -29,6 +29,7 @@ window.InteractablePlane = function(planeMesh, controller, options){
   this.options.moveY  !== undefined    || (this.options.moveY   = true );
   this.options.moveZ  !== undefined    || (this.options.moveZ   = false );
   this.options.highlight  !== undefined|| (this.options.highlight = true); // this can be configured through this.highlightMesh
+  this.options.damping !== undefined   || (this.options.damping = 0.12); // this can be configured through this.highlightMesh
 
   this.mesh = planeMesh;
 
@@ -65,7 +66,6 @@ window.InteractablePlane = function(planeMesh, controller, options){
 
   this.tempVec3 = new THREE.Vector3;
 
-  this.drag = 1 - 0.12;
   this.density = 1;
   this.mass = this.mesh.geometry.area() * this.density;
   this.k = this.mass;
@@ -268,7 +268,7 @@ window.InteractablePlane.prototype = {
   // need a base rotation. Perhaps they could be childs of a plane).
   calcZForce: function(hands){
 
-    var hand, finger, key, overlap, overlapPoint, sumPushthrough = 0;
+    var hand, key, overlap, overlapPoint, sumPushthrough = 0, countPushthrough = 0;
 
     // todo, make sure there's no frame lag in matrixWorld
     // (corners may be updated matrix world, causing this to coincidentally work)
@@ -293,6 +293,7 @@ window.InteractablePlane.prototype = {
         ){
 
           sumPushthrough += overlap;
+          countPushthrough++;
 
         }
 
@@ -305,6 +306,12 @@ window.InteractablePlane.prototype = {
       }
 
     }
+
+    var Zovw = countPushthrough * (this.mesh.position.z - this.originalPosition.z) + sumPushthrough;
+
+    this.mesh.position.z = (this.k * Zovw + this.originalPosition.z * (countPushthrough + 1) ) / (this.returnSpringK + countPushthrough);
+    console.log(Zovw, this.mesh.position.z);
+    console.assert(!isNaN(this.mesh.position.z));
 
     this.force.z += this.k * sumPushthrough;
 
@@ -319,6 +326,11 @@ window.InteractablePlane.prototype = {
       )
 
     }
+
+    // balance forces
+    // spring foce = finger force
+    // kx = kx
+    //springDisplacement * returnSpringK = sumPushthrough * this.k
 
     var spring, springDisplacement;
     for (var i = 0; i < this.springs.length; i++){
@@ -338,14 +350,21 @@ window.InteractablePlane.prototype = {
   stepPhysics: function(newPosition){
     // inertia
     // simple verlet integration
-    newPosition.subVectors(this.mesh.position, this.lastPosition);
+    //newPosition.subVectors(this.mesh.position, this.lastPosition);
+    newPosition.set(0,0,0);
 
     newPosition.add( this.force.divideScalar(this.mass) );
     this.force.set(0,0,0);
 
-    newPosition.multiplyScalar(this.drag);
+    newPosition.multiplyScalar( 1 - this.options.damping );
 
     newPosition.add(this.mesh.position);
+
+  },
+
+  setPositionAnalytic: function (newPosition) {
+
+
 
   },
 
@@ -453,13 +472,13 @@ window.InteractablePlane.prototype = {
 
     }
 
-    if ( newPosition.equals( this.mesh.position ) ) {
-
-      // there's been no change, give it up to inertia, forces, and springs
-      // Todo - intera/physics stepping should probably take place on frame end, not on frame.
-      this.stepPhysics(newPosition);
-
-    }
+    //if ( newPosition.equals( this.mesh.position ) ) {
+    //
+    //  // there's been no change, give it up to inertia, forces, and springs
+    //  // Todo - intera/physics stepping should probably take place on frame end, not on frame.
+    //  this.stepPhysics(newPosition);
+    //
+    //}
 
     this.lastPosition.copy(this.mesh.position);
 
@@ -796,8 +815,8 @@ var PushButton = function(interactablePlane, options){
   this.options.locking  !== undefined || (this.options.locking = true);
 
   // Todo - these should be a percentage of the button size, perhaps.
-  this.longThrow  = -0.05;
-  this.shortThrow = -0.03;
+  this.options.longThrow  !== undefined || (this.options.longThrow  = -0.05);
+  this.options.shortThrow !== undefined || (this.options.shortThrow = -0.03);
 
   this.pressed = false;
   this.canChangeState = true;
@@ -838,12 +857,12 @@ PushButton.prototype.releasedConstraint = function(z){
     return origZ;
   }
 
-  if (z < origZ + this.longThrow){
+  if (z < origZ + this.options.longThrow){
     if (!this.pressed && this.canChangeState){
       this.canChangeState = false;
       this.emit('press', this.plane.mesh);
     }
-    return origZ + this.longThrow;
+    return origZ + this.options.longThrow;
   }
 
   return z;
@@ -853,17 +872,17 @@ PushButton.prototype.releasedConstraint = function(z){
 PushButton.prototype.pressedConstraint = function(z){
   var origZ = this.plane.originalPosition.z;
 
-  if (z > origZ + this.shortThrow) {
+  if (z > origZ + this.options.shortThrow) {
     this.canRelease = true;
-    return origZ + this.shortThrow;
+    return origZ + this.options.shortThrow;
   }
 
-  if (z < origZ + this.longThrow){
+  if (z < origZ + this.options.longThrow){
     if (this.pressed && this.canRelease) {
       this.canRelease = false;
       this.emit('release', this.plane.mesh);
     }
-    return origZ + this.longThrow;
+    return origZ + this.options.longThrow;
   }
 
   return z;
@@ -1492,6 +1511,48 @@ THREE.CircleGeometry.prototype.area = function () {
   return Math.pow(this.parameters.radius, 2) * Math.PI;
 
 };
+
+THREE.Mesh.prototype.border = function(lineMaterial){
+  
+  var lineGeo = new THREE.Geometry();
+  lineGeo.vertices.push(
+    this.geometry.corners()[0],
+    this.geometry.corners()[1],
+    this.geometry.corners()[2],
+    this.geometry.corners()[3],
+    this.geometry.corners()[0],
+    this.geometry.corners()[4],
+    this.geometry.corners()[5],
+    this.geometry.corners()[6],
+    this.geometry.corners()[7],
+    this.geometry.corners()[4]
+  );
+
+  this.add(new THREE.Line(lineGeo, lineMaterial));
+
+  lineGeo = new THREE.Geometry();
+  lineGeo.vertices.push(
+    this.geometry.corners()[1],
+    this.geometry.corners()[5]
+  );
+  this.add(new THREE.Line(lineGeo, lineMaterial));
+
+  lineGeo = new THREE.Geometry();
+  lineGeo.vertices.push(
+    this.geometry.corners()[2],
+    this.geometry.corners()[6]
+  );
+
+  this.add(new THREE.Line(lineGeo, lineMaterial));
+
+  lineGeo = new THREE.Geometry();
+  lineGeo.vertices.push(
+    this.geometry.corners()[3],
+    this.geometry.corners()[7]
+  );
+  this.add(new THREE.Line(lineGeo, lineMaterial));
+  
+}
 // Adds a method to THREE.Mesh which figures out if a line segment intersects it.
 
 // http://en.wikipedia.org/wiki/Line-plane_intersection

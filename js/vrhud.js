@@ -50,8 +50,8 @@ function VRHud() {
 		var meshNodes = result[0];
 		var favorites = result[1].favorites;
 
-		self.attachEvents.call(self, favorites);
 		self.makeLayout.call(self, meshNodes);
+		self.attachEvents.call(self, favorites);
 	});
 
 	return this;
@@ -229,6 +229,39 @@ VRHud.prototype.attachEvents = function(favorites) {
 				mesh.dispatchEvent({type: 'click'});
 
 			} );
+
+			var box = new THREE.Mesh(
+				new THREE.BoxGeometry(mesh.geometry.parameters.width, mesh.geometry.parameters.height, button.options.longThrow),
+				new THREE.MeshPhongMaterial({transparent: true, opacity: 0.3, color: 0xccccff})
+			);
+			box.scale.copy(mesh.scale);
+			box.name = mesh.name + '-box';
+
+			box.border(new THREE.LineBasicMaterial({
+		    color: 0xffffff,
+		    linewidth: 2
+		  }));
+
+			var scaleBox = function( plane, mesh ){
+
+				// we can only change z by adjusting scale.
+				// base * scale = newZ
+				// newZ = base - travel
+				// base * scale = base - travel
+				// scale = (base - travel) / base
+				// scale = 1 - travel / base
+
+				box.scale.z = ( 1 - mesh.position.z / button.options.longThrow );  // divide by 0 could be fun
+
+				box.position.z = (button.options.longThrow + mesh.position.z) / 2;
+
+			};
+
+			scaleBox(button.plane, mesh);
+			button.plane.on('travel', scaleBox);
+
+			mesh.parent.add(box);
+
 		}
 
 
@@ -256,8 +289,6 @@ VRHud.prototype.makeLayout = function(nodes) {
 			mesh.position.set(0,0,0);  // Remove initial positioning from d23
 
 			mesh.geometry.bend( hudRadius, mesh );
-
-			mesh.material.side = THREE.DoubleSide;
 
 			holder.add( mesh );
 			layout.add( holder );
