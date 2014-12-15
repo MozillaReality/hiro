@@ -222,6 +222,19 @@
 			camera.add(handLight);
 
 
+			Leap.Controller.prototype.clear = function(){
+				var frameData = this.lastConnectionFrame.data;
+
+				if (!frameData) return;
+
+				frameData.hands      = [];
+				frameData.fingers    = [];
+				frameData.pointables = [];
+				frameData.tools      = [];
+
+				this.lastConnectionFrame = new Leap.Frame(frameData);
+			};
+
 
 			Leap.loop();
 
@@ -250,6 +263,7 @@
 				.use('proximity');
 
 
+
 			// only show the cursor when no hands in frame.
 			Leap.loopController.on('streamingStarted', updateCursorState);
 			Leap.loopController.on('streamingStopped', updateCursorState);
@@ -263,7 +277,19 @@
 //				console.log('mm', e.clientX, e.clientY); // firefox
 //			});
 
+			// Hide the hand when focus is lost.
+			window.addEventListener('blur', function(){
+				Leap.loopController.clear();
+			});
+
+			Leap.loopController.on('deviceFrame', function(){
+				if (this.connection.focusedState) return;
+
+				console.log('dropping out of focus device frame');
+				this.clear();
+			});
 		}
+
 
 
 		updateCursorState = function(){
