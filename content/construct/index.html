@@ -182,17 +182,13 @@
 				VRClientFocus = false;
 				console.log('construct unfocus');
 				updateCursorState();
-			}
+			};
 
 			VRClient.onFocus = function() {
 				VRClientFocus = true;
 				console.log('construct focus');
 				updateCursorState();
-			}
-
-//			var light = new THREE.DirectionalLight( 0xffffff, 0.15 );
-//			light.position.set( 100, 110, 150 );
-//			scene.add( light );
+			};
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
 			setTimeout(function() {
@@ -251,8 +247,6 @@
 			});
 
 			Leap.loopController.use('transform', {
-//					scale: 0.001,
-//					position: new THREE.Vector3(0,-0.3,-0.35),
 					vr: true,
 					effectiveParent: this.camera
 				})
