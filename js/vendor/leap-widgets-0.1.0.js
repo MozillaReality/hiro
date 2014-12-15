@@ -6,18 +6,6 @@
  * Released under the Apache-2.0 license                                       
  * http://github.com/leapmotion/leapjs-widgets/blob/master/LICENSE             
  */
-// This is a 3d box, or 2d immersed surface
-// This takes in a Leap Controller and is added to a scene, or
-// Would be great to use RequireJS, but that's not set up for this project currently.
-// This is an experimental class
-// it does:
-// - Handle resizing
-// -  with visual affordances made from DOM
-// - Moving
-// - Mesh deformations
-// - etc?
-// there's very nothing in this class which cares if it is a box or a plane.
-
 (function() {
   'use strict';
 
@@ -30,6 +18,7 @@ window.InteractablePlane = function(planeMesh, controller, options){
   this.options.moveZ  !== undefined    || (this.options.moveZ   = false );
   this.options.highlight  !== undefined|| (this.options.highlight = true); // this can be configured through this.highlightMesh
   this.options.damping !== undefined   || (this.options.damping = 0.12); // this can be configured through this.highlightMesh
+  this.options.hoverBounds !== undefined   || (this.options.hoverBounds = [0, 0.32]);  // react to hover within 3cm.
 
   this.mesh = planeMesh;
 
@@ -69,7 +58,6 @@ window.InteractablePlane = function(planeMesh, controller, options){
   this.density = 1;
   this.mass = this.mesh.geometry.area() * this.density;
   this.k = this.mass;
-  this.hoverBounds = [0, 0.32]; // react to hover within 3cm. We incude a negative number in case the hands push throuhg?
 
   this.isHovered = null;
 
@@ -151,13 +139,11 @@ window.InteractablePlane.prototype = {
 
   },
 
-  // This is analagous to your typical scroll event.
   touch: function(callback){
     this.on('touch', callback);
     return this
   },
 
-  // This is analagous to your typical scroll event.
   release: function(callback){
     this.on('release', callback);
     return this
@@ -205,7 +191,7 @@ window.InteractablePlane.prototype = {
       }
     }
 
-    // todo - experiment with spring physics, like what's seen in beer-pong
+    // todo - experiment with spring physics
     if ( intersectionCount < this.fingersRequiredForMove) {
 
       newPosition.copy(this.mesh.position);
@@ -258,17 +244,33 @@ window.InteractablePlane.prototype = {
 
   },
 
-  // Takes each of five finger tips
-  // stores which side they are on, if any
-  // If a finger tip moves through the mesh, moves the mesh accordingly
-  // If two fingers fight.. rotate the mesh?
-  // Rotation could be interesting, as it would mean that the x/y/z translation functions should
-  // be updated, to compensate for the mesh's rotation
-  // This would probably work pretty well for flat planes. Not sure about other stuff. (e.g., 3d models which may
-  // need a base rotation. Perhaps they could be childs of a plane).
-  calcZForce: function(hands){
+  testZForce: function(){
 
-    var hand, key, overlap, overlapPoint, sumPushthrough = 0, countPushthrough = 0;
+    var pushThrough = -0.01;
+
+    this.mesh.pointOverlap = function(){
+      return new THREE.Vector3(0,0,pushThrough)
+    };
+
+    this.interactiveJoints = function(){
+      return [[0,0,0]]
+    };
+
+    this.previousOverlap["undefined-0"] = pushThrough * -1; // opposite sign
+
+    var z = ( ( this.returnSpringK * this.originalPosition.z ) + ( pushThrough * this.k ) ) / ( this.returnSpringK + this.k );
+
+    var out = new THREE.Vector3;
+
+    this.getZPosition( [{}], out );
+
+    console.assert(out.z === z);
+
+  },
+
+  getPushthrough: function(hands, offset){
+
+    var hand, key, overlap, overlapPoint, sumPushthrough = 0, countPushthrough = 0, min = Infinity;
 
     // todo, make sure there's no frame lag in matrixWorld
     // (corners may be updated matrix world, causing this to coincidentally work)
@@ -288,9 +290,16 @@ window.InteractablePlane.prototype = {
 
         overlap = (overlapPoint && overlapPoint.z);
 
+        if (offset){
+          overlap += offset;
+        }
+
+
         if (overlap && this.previousOverlap[key] &&
            overlap * this.previousOverlap[key] < 0 // not same sign, therefore pushthrough
         ){
+
+          if (overlap < min) min = overlap;
 
           sumPushthrough += overlap;
           countPushthrough++;
@@ -307,13 +316,48 @@ window.InteractablePlane.prototype = {
 
     }
 
-    var Zovw = countPushthrough * (this.mesh.position.z - this.originalPosition.z) + sumPushthrough;
+    return {
+      sum: sumPushthrough,
+      count: countPushthrough,
+      min: min
+    }
 
-    this.mesh.position.z = (this.k * Zovw + this.originalPosition.z * (countPushthrough + 1) ) / (this.returnSpringK + countPushthrough);
-    console.log(Zovw, this.mesh.position.z);
-    console.assert(!isNaN(this.mesh.position.z));
+  },
 
-    this.force.z += this.k * sumPushthrough;
+  // uses analytic spring equations, rather than force-based physics.
+  getZPosition: function(hands, newPosition){
+
+    var pushthrough = this.getPushthrough(
+      hands,
+      this.mesh.position.z - this.originalPosition.z
+    );
+
+    // this spring equation works, but isin't really that great here
+    //newPosition.z = (this.returnSpringK * this.originalPosition.z + pushthrough.sum * this.k ) / (this.returnSpringK + pushthrough.count * this.k);
+
+
+    // Todo/note: currently, it would be better if any back-step (positive z direction) was ecluded from this update,
+    // Handing it over to force-based instead.  However, the force-based simulator currently would pull it too far,
+    // back in to the fingertips, causing a 60FPS flicker. :-(
+    if ( pushthrough.count > 0 ){
+      newPosition.z = pushthrough.min + this.originalPosition.z;
+    }
+
+  },
+
+  // Takes each of five finger tips
+  // stores which side they are on, if any
+  // If a finger tip moves through the mesh, moves the mesh accordingly
+  // If two fingers fight.. rotate the mesh?
+  // Rotation could be interesting, as it would mean that the x/y/z translation functions should
+  // be updated, to compensate for the mesh's rotation
+  // This would probably work pretty well for flat planes. Not sure about other stuff. (e.g., 3d models which may
+  // need a base rotation. Perhaps they could be childs of a plane).
+  calcZForce: function(hands){
+
+    var pushthrough = this.getPushthrough( hands );
+
+    this.force.z += this.k * pushthrough.sum;
 
     // note that there can still be significant high-frequency oscillation for large values of returnSpringK.
     // This probably mean that we just shouldn't support high-k (as a real-world material may fracture).
@@ -330,7 +374,7 @@ window.InteractablePlane.prototype = {
     // balance forces
     // spring foce = finger force
     // kx = kx
-    //springDisplacement * returnSpringK = sumPushthrough * this.k
+    //springDisplacement * returnSpringK = getPushthrough * this.k
 
     var spring, springDisplacement;
     for (var i = 0; i < this.springs.length; i++){
@@ -350,8 +394,7 @@ window.InteractablePlane.prototype = {
   stepPhysics: function(newPosition){
     // inertia
     // simple verlet integration
-    //newPosition.subVectors(this.mesh.position, this.lastPosition);
-    newPosition.set(0,0,0);
+    newPosition.subVectors(this.mesh.position, this.lastPosition);
 
     newPosition.add( this.force.divideScalar(this.mass) );
     this.force.set(0,0,0);
@@ -359,12 +402,6 @@ window.InteractablePlane.prototype = {
     newPosition.multiplyScalar( 1 - this.options.damping );
 
     newPosition.add(this.mesh.position);
-
-  },
-
-  setPositionAnalytic: function (newPosition) {
-
-
 
   },
 
@@ -464,21 +501,27 @@ window.InteractablePlane.prototype = {
 
     }
 
-    if (this.options.moveZ){
+    if (this.options.moveZ && this.returnSpringK){
 
-      // add force to instantaneous velocity (position delta) divided by mass
-      // eventually, x and y should be converted to this as well.
-      this.calcZForce(frame.hands);
+      this.getZPosition( frame.hands, newPosition );
 
     }
 
-    //if ( newPosition.equals( this.mesh.position ) ) {
-    //
-    //  // there's been no change, give it up to inertia, forces, and springs
-    //  // Todo - intera/physics stepping should probably take place on frame end, not on frame.
-    //  this.stepPhysics(newPosition);
-    //
-    //}
+    // there's been no change, give it up to inertia, forces, and springs
+    if ( newPosition.equals( this.mesh.position ) ) {
+
+      if (this.options.moveZ){
+
+        // add force to instantaneous velocity (position delta) divided by mass
+        // eventually, x and y should be converted to this as well.
+        this.calcZForce(frame.hands);
+
+      }
+
+      // Todo - intera/physics stepping should probably take place on frame end, not on frame.
+      this.stepPhysics(newPosition);
+
+    }
 
     this.lastPosition.copy(this.mesh.position);
 
@@ -533,7 +576,7 @@ window.InteractablePlane.prototype = {
     // note - include moveZ here when implemented.
     if ( moveX || moveY || moveZ ) this.emit( 'travel', this, this.mesh );
 
-    if (this.hoverBounds) this.emitHoverEvents();
+    if (this.options.hoverBounds) this.emitHoverEvents();
   },
 
   // Takes the previousOverlap calculated earlier in this frame.
@@ -547,7 +590,7 @@ window.InteractablePlane.prototype = {
 
       overlap = this.previousOverlap[key];
 
-      if ( overlap > this.hoverBounds[0] && overlap < this.hoverBounds[1] ) {
+      if ( overlap > this.options.hoverBounds[0] && overlap < this.options.hoverBounds[1] ) {
 
         isHovered = true;
         break;
@@ -699,10 +742,15 @@ window.InteractablePlane.prototype = {
         );
       }
 
+      var endPos = finger.distal.nextJoint;
+      var offset = [0,0,0.02];
+      Leap.vec3.transformMat3(offset, offset, finger.distal.matrix() );
+      Leap.vec3.add(offset, endPos, offset);
+
       out.push(
         finger.pipPosition,
         finger.dipPosition,
-        finger.tipPosition
+        offset
       );
 
     }
@@ -827,6 +875,7 @@ var PushButton = function(interactablePlane, options){
   }
 
 };
+
 
 PushButton.prototype.bindLocking = function(){
 
@@ -1087,10 +1136,7 @@ Leap.plugin('proximity', function(scope){
 
     },
 
-    // There is an issue here where handPoints is not indexed per hand
-    // check where index is used, refactor. oops.
-    // test pictures and resizing.
-    // Todo - this loop is giant, and should be split in to methods for compiler optimization.
+    // Todo - this loop could be split in to smaller methods for JIT compiler optimization.
     checkLines: function(hand, lines){
       var mesh = this.mesh, state, intersectionPoint, key;
 
