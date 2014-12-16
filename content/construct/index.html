@@ -199,6 +199,7 @@
 
 
 			var handLight = new THREE.SpotLight(0xffffff, 0.25);
+			// Note, this causes WebGL errors with r69: https://github.com/mrdoob/three.js/issues/5293
 			handLight.castShadow = true;
 			handLight.shadowCameraVisible = false;
 			handLight.shadowCameraNear = 0.01;
