@@ -280,7 +280,6 @@
 			Leap.loopController.on('deviceFrame', function(){
 				if (this.connection.focusedState) return;
 
-				console.log('dropping out of focus device frame');
 				this.clear();
 			});
 		}

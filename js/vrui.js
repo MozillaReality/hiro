@@ -84,42 +84,38 @@ VRUi.prototype.load = function(url, opts) {
 
 	self.cursor.disable();
 
-				.then(function() {
 	self.transition.fadeOut(noTransition)
 		.then(function() {
 
+			self.backgroundShow();
 
-					self.title.setTitle('');
 			// set title URL
 			self.title.setTitle('');
 			self.title.setCredits('');
 			self.title.setUrl(url);
 
-						self.backgroundHide();
 			if (noTitle) {
 				self.backgroundHide();
 			} else {
 				self.title.show();
 			}
 
+			self.currentUrl = url;
 
+			self.isHome = (url == self.homeUrl ? true : false );
 
-						self.hud.enable();
 			if (self.isHome) {
 				self.hud.enable();
 			}
 
-						self.loading.show();
 			if (!noLoading) {
 				self.loading.show();
 			}
 
-						var title = tab.siteInfo.title;
 			function onPageMeta(tab) {
 				var title = tab.siteInfo.title;
 				var credits = tab.siteInfo.description;
 
-							self.title.setTitle(title);
 				if (title) {
 					self.title.setTitle(title);
 				}
@@ -128,30 +124,29 @@ VRUi.prototype.load = function(url, opts) {
 				}
 			}
 
-						var holdTitleTime = 5000; // how long to hold title for before fading out.
 			function onTabReady() {
 				var holdTitleTime = 5000; // how long to hold title for before fading out.
 
+				self.backgroundHide(holdTitleTime);
 
+				self.loading.hide();
 
+				self.transition.fadeIn();
 
-						setTimeout(function() {
 				// hide title after set amount of time
 				setTimeout(function() {
 					if (!self.hud.visible) {
 						self.title.hide();
 					}
 				}, holdTitleTime);
+			}
 
 			VRManager.onPageMeta = onPageMeta;
 
-					VRManager.onTabReady = onTabReady;
 			VRManager.onTabReady = onTabReady;
 
-					VRManager.load(url);
 			VRManager.load(url);
 
-				});
 			//VRManager.currentDemo.focus();
 
 		});
