@@ -260,7 +260,8 @@ VRHud.prototype.attachEvents = function(favorites) {
 				// scale = (base - travel) / base
 				// scale = 1 - travel / base
 
-				box.scale.z = ( 1 - mesh.position.z / button.options.longThrow );  // divide by 0 could be fun
+				box.scale.z = ( 1 - mesh.position.z / button.options.longThrow );
+				if (box.scale.z === 0) box.scale.z = 1e-7; // Prevent matrix inverse warning on 0-scale.
 
 				box.position.z = (button.options.longThrow + mesh.position.z) / 2;
 
