@@ -163,8 +163,6 @@ VRHud.prototype.hide = function(instantaneous) {
 
 				mesh.material.opacity = 1;
 
-				// should set interactable to false here
-
 				new TWEEN.Tween( mesh.material )
 					.to({ opacity: 0 }, 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
@@ -308,7 +306,6 @@ VRHud.prototype.setInteractable = function(state){
 		button = meshes[i].children[0].userData.button;
 		if (!button) continue;
 
-		console.log('s', state);
 		button.plane.safeSetInteractable(state)
 
 	}
@@ -334,6 +331,7 @@ VRHud.prototype.makeLayout = function(nodes) {
 			mesh.position.multiplyScalar(hudScale);
 			holder.positionRadially( hudRadius, mesh.position.x / hudRadius, mesh.position.y );
 			mesh.position.set(0,0,0);  // Remove initial positioning from d23
+			mesh.scale.z = 1; // Remove initial z scaling, which ensures that buttons get pushed correctly w/o flicker.
 
 			mesh.geometry.bend( hudRadius, mesh );
 
@@ -342,9 +340,6 @@ VRHud.prototype.makeLayout = function(nodes) {
 
 			holder.userData.position = holder.position.clone();
 			holder.userData.scale    = holder.scale.clone();
-
-			// here turn these in to interactable planes/buttons
-			// make them initially uninteractable
 		});
 
 
