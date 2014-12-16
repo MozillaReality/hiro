@@ -12,6 +12,7 @@ function VRHud() {
 	this.d23 = null;
 	this.enabled = false;
 	this.leapActivated = false;
+	this.activeTweens = [];
 
 	function loadJson(url) {
 		return new Promise( function(resolve, reject) {
@@ -75,6 +76,7 @@ VRHud.prototype.show = function() {
 		if (!self.visible) {
 			self.layout.visible = true;
 			self.visible = true;
+			var countCompleted = 0;
 
 			var buttonPlungers = self.d23.getNodesByClass('fav').map( function(node){return node.mesh;} );
 
@@ -85,32 +87,39 @@ VRHud.prototype.show = function() {
 				// this offsets appear to do.. nothing..
 				holder.position.set(holder.userData.position.x, holder.userData.position.y - 1, holder.userData.position.z + 1);
 
-				new TWEEN.Tween( holder.position )
+				var tween = new TWEEN.Tween( holder.position )
 					//.to( mesh.userData.position, 700 ) // For some reason, this seems to append NaN to the .position constructor method source. https://github.com/sole/tween.js/issues/175
 					.to( { x: holder.userData.position.x, y: holder.userData.position.y, z: holder.userData.position.z}, 700 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.onComplete(function(){
-						// on finish (these all take the same time), set interactable to true
+						countCompleted++;
+						if (countCompleted === buttonPlungers.length) self.setInteractable(true);
 					})
 					.start();
+
+				self.activeTweens.push(tween);
 
 				//mesh.scale.set(mesh.userData.scale.x * 0.75, mesh.userData.scale.y * 0.75, mesh.userData.scale.z);
 				holder.scale.copy(holder.userData.scale).multiplyScalar(0.75); // z scale should be no-op (unless used by bend?)
 
-				new TWEEN.Tween( holder.scale )
+				tween = new TWEEN.Tween( holder.scale )
 					.to( { x: holder.userData.scale.x, y: holder.userData.scale.y, z: holder.userData.scale.z} , 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
 
+				self.activeTweens.push(tween);
+
 				button.material.opacity = 0;
 
-				new TWEEN.Tween( button.material )
+				tween = new TWEEN.Tween( button.material )
 					.to({ opacity: 1 }, 300 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
 					.start();
+
+				self.activeTweens.push(tween);
 			}
 
 			self.layout.visible = true;
@@ -122,20 +131,28 @@ VRHud.prototype.show = function() {
 };
 
 VRHud.prototype.hide = function(instantaneous) {
-	instantaneous === undefined && (instantaneous = false
-	);
+	instantaneous === undefined && (instantaneous = false);
+
 	var self = this;
 	return new Promise( function(resolve, reject) {
 		if (self.visible) {
 
+			for (var i = 0; i < self.activeTweens.length; i++){
+				self.activeTweens[i].stop();
+			}
+
+			self.activeTweens = [];
+
 			var onComplete =  function() {
 				self.layout.visible = false;
 				self.visible = false;
+				self.setInteractable(false);
 				resolve();
 			};
 
 			if (instantaneous) return onComplete();
 
+			var countCompleted = 0;
 			var nodes = self.d23.getNodesByClass('fav');
 
 			nodes.reverse();
@@ -148,11 +165,14 @@ VRHud.prototype.hide = function(instantaneous) {
 
 				// should set interactable to false here
 
-				var tween = new TWEEN.Tween( mesh.material )
+				new TWEEN.Tween( mesh.material )
 					.to({ opacity: 0 }, 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
-					.onComplete(onComplete) // potential bug - hides on first mesh finished easing
+					.onComplete(function(){
+						countCompleted++;
+						if (countCompleted === nodes.length) onComplete();
+					})
 					.start();
 			}
 
@@ -230,6 +250,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 			);
 
 			mesh.receiveShadow = true;
+			button.plane.interactable = false;
 
 			button.on('press', function(){
 
@@ -276,7 +297,23 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 
 	});
-}
+};
+
+// This is simply a wrapper method for contained buttons.  It would be better served by a selector engine.
+VRHud.prototype.setInteractable = function(state){
+	var meshes = this.layout.children;
+	var button;
+
+	for (var i = 0; i < meshes.length; i++){
+		button = meshes[i].children[0].userData.button;
+		if (!button) continue;
+
+		console.log('s', state);
+		button.plane.safeSetInteractable(state)
+
+	}
+
+};
 
 VRHud.prototype.makeLayout = function(nodes) {
 	var hudScale = 0.15;
