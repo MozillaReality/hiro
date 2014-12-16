@@ -204,6 +204,10 @@ var DOM2three = (function() {
 
 			var rectangle = node.rectangle;
 
+			// Note that this generates some amount of waste, as the same texture is moved to the GPU several times
+			// with different mappings. It's unclear if there's a way to optimize here.
+			//var texture = self.texture;
+
 			var texture = self.texture.clone();
 			texture.repeat.x = rectangle.width / texture.image.width;
 			texture.repeat.y = rectangle.height / texture.image.height;

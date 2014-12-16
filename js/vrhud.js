@@ -52,6 +52,8 @@ function VRHud() {
 
 		self.makeLayout.call(self, meshNodes);
 		self.attachEvents.call(self, favorites);
+
+		self.show();
 	});
 
 	return this;
@@ -119,10 +121,21 @@ VRHud.prototype.show = function() {
 	});
 };
 
-VRHud.prototype.hide = function() {
+VRHud.prototype.hide = function(instantaneous) {
+	instantaneous === undefined && (instantaneous = false
+	);
 	var self = this;
 	return new Promise( function(resolve, reject) {
 		if (self.visible) {
+
+			var onComplete =  function() {
+				self.layout.visible = false;
+				self.visible = false;
+				resolve();
+			};
+
+			if (instantaneous) return onComplete();
+
 			var nodes = self.d23.getNodesByClass('fav');
 
 			nodes.reverse();
@@ -139,11 +152,7 @@ VRHud.prototype.hide = function() {
 					.to({ opacity: 0 }, 500 )
 					.easing(TWEEN.Easing.Exponential.Out)
 					.delay( i * 80 )
-					.onComplete(function() {
-						self.layout.visible = false;
-						self.visible = false;
-						resolve();
-					})
+					.onComplete(onComplete) // potential bug - hides on first mesh finished easing
 					.start();
 			}
 

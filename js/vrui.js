@@ -82,76 +82,79 @@ VRUi.prototype.load = function(url, opts) {
 	// hides transition
 	var noTransition = opts.noTransition || false;
 
-	this.hud.hide()
-		.then(function() {
-			self.cursor.disable();
+	self.cursor.disable();
 
-			self.transition.fadeOut(noTransition)
 				.then(function() {
+	self.transition.fadeOut(noTransition)
+		.then(function() {
 
-					self.backgroundShow();
 
-					// set title URL
 					self.title.setTitle('');
-					self.title.setCredits('');
-					self.title.setUrl(url);
+			// set title URL
+			self.title.setTitle('');
+			self.title.setCredits('');
+			self.title.setUrl(url);
 
-					if (noTitle) {
 						self.backgroundHide();
-					} else {
-						self.title.show();
-					}
+			if (noTitle) {
+				self.backgroundHide();
+			} else {
+				self.title.show();
+			}
 
-					self.currentUrl = url;
 
-					self.isHome = (url == self.homeUrl ? true : false );
 
-					if (self.isHome) {
 						self.hud.enable();
-					}
+			if (self.isHome) {
+				self.hud.enable();
+			}
 
-					if (!noLoading) {
 						self.loading.show();
-					}
+			if (!noLoading) {
+				self.loading.show();
+			}
 
-					function onPageMeta(tab) {
 						var title = tab.siteInfo.title;
-						var credits = tab.siteInfo.description;
+			function onPageMeta(tab) {
+				var title = tab.siteInfo.title;
+				var credits = tab.siteInfo.description;
 
-						if (title) {
 							self.title.setTitle(title);
-						}
-						if (credits) {
-							self.title.setCredits(credits);
-						}
-					}
+				if (title) {
+					self.title.setTitle(title);
+				}
+				if (credits) {
+					self.title.setCredits(credits);
+				}
+			}
 
-					function onTabReady() {
 						var holdTitleTime = 5000; // how long to hold title for before fading out.
+			function onTabReady() {
+				var holdTitleTime = 5000; // how long to hold title for before fading out.
 
-						self.backgroundHide(holdTitleTime);
 
-						self.loading.hide();
 
-						self.transition.fadeIn();
 
-						// hide title after set amount of time
 						setTimeout(function() {
-							if (!self.hud.visible) {
-								self.title.hide();
-							}
-						}, holdTitleTime);
+				// hide title after set amount of time
+				setTimeout(function() {
+					if (!self.hud.visible) {
+						self.title.hide();
 					}
+				}, holdTitleTime);
 
-					VRManager.onPageMeta = onPageMeta;
+			VRManager.onPageMeta = onPageMeta;
 
 					VRManager.onTabReady = onTabReady;
+			VRManager.onTabReady = onTabReady;
 
 					VRManager.load(url);
+			VRManager.load(url);
 
 				});
-		});
+			//VRManager.currentDemo.focus();
 
+		});
 
 };
 
@@ -162,7 +165,7 @@ VRUi.prototype.rerouteFocusEvents = function() {
 	window.addEventListener('focus', function (e) {
 		if (!( this.hud.visible && this.hud.enabled )) {
 			e.stopImmediatePropagation();
-			VRManager.currentDemo.focus();
+			VRManager.currentDemo && VRManager.currentDemo.focus();
 		}
 		return false;
 	}.bind(this));
@@ -170,7 +173,7 @@ VRUi.prototype.rerouteFocusEvents = function() {
 	window.addEventListener('blur', function (e) {
 		if (!( this.hud.visible && this.hud.enabled )) {
 			e.stopImmediatePropagation();
-			VRManager.currentDemo.blur();
+			VRManager.currentDemo && VRManager.currentDemo.blur();
 		}
 		return false;
 	}.bind(this));
@@ -530,7 +533,21 @@ VRUi.prototype.animate = function() {
 	TWEEN.update();
 
 	// three.js renderer and effects.
+	//console.time('render');
 	this.effect.render(this.scene, this.camera);
+	//console.timeEnd('render');
+
+	// By rendering the layout once outside of the camera frustum, we cut the HUD first-render time down from
+	// ~800ms to 200-300.
+	// This could be further taken down by:
+	//  - Sprited-texture-reuse in dom2three, as currently hud/index.png is loaded in to the GPU ~10 times.
+	//  - Possibly moving the layout to be viewable on-camera before hiding
+	if (this.hud.layout.visible && !this.hud.layout.userData.preloaded){
+
+		this.hud.layout.userData.preloaded = true;
+		this.hud.hide(true);
+
+	}
 
 	requestAnimationFrame(this.animate.bind(this));
 }
