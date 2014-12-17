@@ -242,9 +242,10 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 
 		if (Leap.loopController){
+
 			var button = mesh.userData.button = new PushButton(
 				new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} ),
-				{ locking: false }
+				{ locking: false, longThrow: -0.1 }
 			);
 
 			mesh.receiveShadow = true;
@@ -254,7 +255,8 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 				if ( !self.visible ) return;
 
-				mesh.dispatchEvent({type: 'click'});
+				//mesh.dispatchEvent({type: 'click'});
+				console.log('would be navigating :)');
 
 			} );
 
