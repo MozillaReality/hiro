@@ -371,7 +371,7 @@ VRUi.prototype.initRenderer = function() {
 
 	if (THREE.OrbitControls) window.orbitControls = new THREE.OrbitControls( this.camera );
 	//if (THREE.OrbitControls) this.camera.position.set( 0, 0, 0.1 );
-	if (THREE.OrbitControls) this.camera.position.set( 2.3831, 13.825, 6.1769 );
+	if (THREE.OrbitControls) this.camera.position.set( 2.3, 13.8, 6.2).divideScalar(16);
 	if (THREE.OrbitControls) this.camera.rotation.set( -1.1506, 0.15609, 0.3348 );
 
 	this.setRenderMode(this.mode);
@@ -512,7 +512,7 @@ VRUi.prototype.animate = function() {
 	var controls = this.controls;
 
 	// apply headset orientation and position to camera
-	if (controls) {
+	if (controls && !THREE.OrbitControls) {
 		this.controls.update();
 	}
 
