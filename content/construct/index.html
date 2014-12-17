@@ -849,10 +849,12 @@
 
 			var button = new PushButton(
 				new InteractablePlane(buttonMesh, Leap.loopController, {moveX: false, moveY: false}),
-				{locking: false}
+				{
+					locking: false,
+					longThrow: -35
+				}
 			);
 
-			button.longThrow = -35;
 			button.on('press', function(){
 				holder.dispatchEvent({type: 'click'});
 			});
