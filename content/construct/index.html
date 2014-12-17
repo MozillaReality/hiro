@@ -859,6 +859,11 @@
 				holder.dispatchEvent({type: 'click'});
 			});
 
+			button.plane.on('travel', function(plane, mesh){
+				var scaleFactor = (mesh.position.z / button.options.longThrow);
+				holder.userData.shadow.scale.set(1 + scaleFactor, 1 + scaleFactor, 1);
+			});
+
 			iconObject.rotateX( Math.PI / 2); // inverse the dolly rotation
 			buttonMesh.add(iconObject);
 
@@ -976,7 +981,9 @@
 				// create dropshadow
 				var shadow = makeIconShadow();
 				shadow.position.setY( -130 );
+				shadow.name = "sechelt-shadow";
 				holder.add( shadow );
+				holder.userData.shadow = shadow;
 
 				scene.add(holder)
 
@@ -994,7 +1001,9 @@
 				// create dropshadow
 				var shadow = makeIconShadow();
 				shadow.position.setY( -130 );
+				shadow.name = "polar-shadow";
 				holder.add( shadow );
+				holder.userData.shadow = shadow;
 
 				scene.add(holder)
 
@@ -1012,7 +1021,9 @@
 				// create dropshadow
 				var shadow = makeIconShadow();
 				shadow.position.setY( -130 );
+				shadow.name = "dive-shadow";
 				holder.add( shadow );
+				holder.userData.shadow = shadow;
 
 				holder.add( makeInfoDive() );
 
