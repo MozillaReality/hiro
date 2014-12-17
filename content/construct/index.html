@@ -253,7 +253,8 @@
 				})
 				.use('boneHand', {
 					scene: this.scene,
-					arm: true
+					arm: true,
+					opacity: 1
 				})
 				.use('proximity');
 
@@ -282,6 +283,19 @@
 
 				this.clear();
 			});
+
+			Leap.loopController.on('hand', function(hand){
+
+				var handMesh = hand.data('handMesh');
+				if (!handMesh) return;
+
+				handMesh.traverse(function(mesh){
+					if (!mesh.material) return;
+					mesh.material.opacity = hand.confidence;
+				});
+
+			});
+
 		}
 
 
