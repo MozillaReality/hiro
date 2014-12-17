@@ -333,7 +333,7 @@ VRHud.prototype.makeLayout = function(nodes) {
 			mesh.position.set(0,0,0);  // Remove initial positioning from d23
 			mesh.scale.z = 1; // Remove initial z scaling, which ensures that buttons get pushed correctly w/o flicker.
 
-			mesh.geometry.bend( hudRadius, mesh );
+			mesh.bend( hudRadius );
 
 			holder.add( mesh );
 			layout.add( holder );

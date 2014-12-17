@@ -44,8 +44,14 @@ function VRUi(container) {
 			self.scene.add(self.transition.object);
 
 			// title
-			self.bend(self.title.mesh, 2.5, true)
 			self.scene.add(self.title.mesh);
+			var titleRadius = 0.4;
+
+			// Bending one seems to bend them all -.-
+			setTimeout(function(){ // This quick setTimeout hack seems to fix tile bending weirdly/parabolically
+				self.title.mesh.children[0].bend( titleRadius );
+				self.title.mesh.positionRadially( titleRadius, 0, 0 );
+			});
 
 			self.scene.add(self.hud.layout);
 
@@ -267,28 +273,26 @@ THREE.Object3D.prototype.positionRadially = function(radius, angle, height){
 };
 
 
-THREE.PlaneGeometry.prototype.bend = function(radius, mesh ){
-	var vertices = this.vertices;
-	mesh.updateMatrixWorld();
+THREE.Object3D.prototype.bend = function(radius ){
+	var geometry = this.geometry;
+	var vertices = geometry.vertices;
+	this.updateMatrixWorld();
 
 	for (var i = 0; i < vertices.length; i++) {
 		var vertex = vertices[i];
-		var worldVertex = mesh.localToWorld(vertex);
-
-		//vertex.x = Math.sin( vertex.x / radius) * radius;
-		//vertex.z = - Math.cos( vertex.x / radius ) * radius;
+		var worldVertex = this.localToWorld(vertex);
 
 		vertex.set(
 			Math.sin( worldVertex.x / radius) * radius,
 			worldVertex.y,
 			- Math.cos( worldVertex.x / radius ) * radius
-		)
+		);
 		vertex.z += radius;
-		mesh.worldToLocal(vertex);
+		this.worldToLocal(vertex);
 	}
 
-	this.computeBoundingSphere();
-	this.verticesNeedUpdate = true;
+	geometry.computeBoundingSphere();
+	geometry.verticesNeedUpdate = true;
 }
 
 

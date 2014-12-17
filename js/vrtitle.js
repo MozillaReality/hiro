@@ -17,6 +17,8 @@ function VRTitle() {
 				var node = d23.getNodeById('current', true);
 				var mesh = node.mesh;
 
+				mesh.scale.multiplyScalar(0.25);
+
 				mesh.visible = self.visible;
 
 				self.mesh = mesh;
