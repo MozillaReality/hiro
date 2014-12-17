@@ -823,7 +823,16 @@
 		/*====================== Make icons ======================*/
 
 
-		function makeIconHolder( json, iconObject, scale ) {
+		function makeIconHolder( json, iconObject, iconAngle ) {
+
+
+			var iconRadius = 0.56; // same as tileRadius
+			var iconBasePos = {// base positioning of icons position.
+				x: 0,
+				y: (0.6 + userHeight) * masterScale,
+				z: -4.5 * masterScale
+			};
+			var iconBaseScale = 0.015 * masterScale;	// scale icons
 
 
 			// holder
@@ -939,7 +948,21 @@
 					.start();
 			})
 
-			holder.scale.multiplyScalar(scale);
+			holder.scale.multiplyScalar(iconBaseScale);
+
+
+
+			positionRadially(holder, iconRadius, iconAngle, iconBasePos.y);
+
+			// store original position for later use.
+			holder.userData.position = holder.position.clone();
+
+			// create dropshadow
+			var shadow = makeIconShadow();
+			shadow.position.setY( -130 );
+			holder.add( shadow );
+			holder.userData.shadow = shadow;
+
 
 			return holder;
 
@@ -959,31 +982,14 @@
 
 		function populateIcons() {
 
-			var iconRadius = 0.56; // same as tileRadius
 
 			var loader = new THREE.ObjectLoader();
-			var iconBasePos = {// base positioning of icons position.
-				x: 0,
-				y: (0.6 + userHeight) * masterScale,
-				z: -4.5 * masterScale
-			};
-			var iconBaseScale = 0.015 * masterScale;	// scale icons
+
 
 			loader.load( icons.sechelt.model, function ( object ) {
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.sechelt, object, iconBaseScale );
-				positionRadially(holder, iconRadius, -iconAngle, iconBasePos.y);
-
-				// store original position for later use.
-				holder.userData.position = holder.position.clone();
-
-				// create dropshadow
-				var shadow = makeIconShadow();
-				shadow.position.setY( -130 );
-				shadow.name = "sechelt-shadow";
-				holder.add( shadow );
-				holder.userData.shadow = shadow;
+				var holder = makeIconHolder( icons.sechelt, object, -iconAngle );
 
 				scene.add(holder)
 
@@ -992,18 +998,7 @@
 			loader.load( icons.polar.model, function ( object ) {
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.polar, object, iconBaseScale );
-				positionRadially(holder, iconRadius, 0, iconBasePos.y);
-
-				// store original position for later use.
-				holder.userData.position = holder.position.clone();
-
-				// create dropshadow
-				var shadow = makeIconShadow();
-				shadow.position.setY( -130 );
-				shadow.name = "polar-shadow";
-				holder.add( shadow );
-				holder.userData.shadow = shadow;
+				var holder = makeIconHolder( icons.polar, object, 0 );
 
 				scene.add(holder)
 
@@ -1012,20 +1007,7 @@
 			loader.load( icons.dive.model, function ( object ) {
 
 				// create parent holder object
-				var holder = makeIconHolder( icons.dive, object, iconBaseScale );
-				positionRadially(holder, iconRadius, iconAngle, iconBasePos.y);
-
-				// store original position for later use.
-				holder.userData.position = holder.position.clone();
-
-				// create dropshadow
-				var shadow = makeIconShadow();
-				shadow.position.setY( -130 );
-				shadow.name = "dive-shadow";
-				holder.add( shadow );
-				holder.userData.shadow = shadow;
-
-				holder.add( makeInfoDive() );
+				var holder = makeIconHolder( icons.dive, object, iconAngle );
 
 				scene.add(holder)
 
