@@ -60,7 +60,6 @@ function VRUi(container) {
 
 			// add cursor to scene
 			self.scene.add(self.cursor.layout);
-			self.cursor.enable();
 
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
 
@@ -184,29 +183,39 @@ VRUi.prototype.rerouteFocusEvents = function() {
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible && this.hud.enabled) {
 		// show
-		console.log('showing HUD');
 		this.background.visible = true;
 		this.backgroundShow();
 		this.hud.show();
 		this.title.show(1000);
-		this.cursor.enable();
-		this.cursor.show();
+		this.updateCursorState();
 		VRManager.currentDemo.blur();
 
 
 	} else if (this.hud.visible && this.hud.enabled) {
 		// hide
-		console.log('hiding HUD');
 		this.backgroundHide(1000);
-		this.hud.hide();
-		this.title.hide(1000);
 		this.cursor.disable();
+		this.hud.hide().then( function(){
+			// Disable a second time, in case the LMC began streaming during animation.
+			this.cursor.disable();
+		}.bind(this) );
+		this.title.hide(1000);
 		VRManager.currentDemo.focus();
-
 	} else {
 		this.hud.hide();
 	}
 };
+
+VRUi.prototype.updateCursorState = function(){
+
+	if (this.hud.visible && !Leap.loopController.streaming() ){
+		this.cursor.enable();
+		this.cursor.show();
+	} else {
+		this.cursor.disable();
+	}
+
+}
 
 
 VRUi.prototype.start = function(mode) {
@@ -417,6 +426,12 @@ VRUi.prototype.initLeapInteraction = function() {
 		});
 
 	Leap.loopController.setMaxListeners(100);  // Don't overload with many interactable planes
+
+	Leap.loopController.on('streamingStarted', function(){
+
+		this.updateCursorState();
+
+	}.bind(this) );
 
 	// Set initial Leap focus state. See LeapJS's browser.js L64
 	Leap.loopController.connection.windowVisible = this.hud.visible && this.hud.enabled;
