@@ -857,7 +857,12 @@
 			holder.add(dolly);
 
 			var button = new PushButton(
-				new InteractablePlane(buttonMesh, Leap.loopController, {moveX: false, moveY: false}),
+				new InteractablePlane(buttonMesh, Leap.loopController,
+						{
+							moveX: false,
+							moveY: false,
+							hoverBounds: [0, 30] // different units.
+						}),
 				{
 					locking: false,
 					longThrow: -35
@@ -926,7 +931,7 @@
 					.to( { opacity: 1 }, 100 )
 					.start();
 
-			})
+			});
 
 			holder.addEventListener('mouseout', function(e) {
 
@@ -946,7 +951,7 @@
 				new TWEEN.Tween( mesh.material )
 					.to( { opacity: 0 }, 100 )
 					.start();
-			})
+			});
 
 			holder.scale.multiplyScalar(iconBaseScale);
 
@@ -964,6 +969,36 @@
 			holder.userData.shadow = shadow;
 
 
+			var ring = new THREE.Mesh(
+				new THREE.LatheGeometry(
+						[new THREE.Vector3(0,79.5,0), new THREE.Vector3(0,88,0) ],
+						48
+				),
+				new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, wireframe: false, opacity: 0 } )
+			);
+
+			ring.rotation.set( Math.PI / 2, 0, 0 );
+			ring.position.copy(shadow.position);
+			ring.position.y -= 1;
+			holder.userData.ring = ring;
+			holder.add(ring);
+
+			// Note: It may be interesting to replace this with a fade based on position instead of time
+			// Would have to be distance from position of collider, to give gradual effect in all three dimensions.
+			var fadeSpeed = 200;
+			ring.userData.tweenIn  = new TWEEN.Tween( ring.material ).to( { opacity: shadow.material.opacity }, fadeSpeed );
+			ring.userData.tweenOut = new TWEEN.Tween( ring.material ).to( { opacity: 0 }, fadeSpeed );
+			button.plane.hover(
+				function(){
+					ring.userData.tweenOut.stop();
+					ring.userData.tweenIn.start();
+				},
+				function(){
+					ring.userData.tweenIn.stop();
+					ring.userData.tweenOut.start();
+				}
+			);
+
 			return holder;
 
 		}
@@ -974,7 +1009,7 @@
 				new THREE.CircleGeometry( 40, 60, 0, Math.PI * 2 ),
 				new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: false, transparent: true, opacity: 0.15 } )
 			);
-			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 )
+			shadow.rotation.set( 0 - Math.PI / 2, 0, 0 );
 
 			return shadow;
 		}
