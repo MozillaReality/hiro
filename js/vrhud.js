@@ -255,8 +255,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 
 				if ( !self.visible ) return;
 
-				//mesh.dispatchEvent({type: 'click'});
-				console.log('would be navigating :)');
+				mesh.dispatchEvent({type: 'click'});
 
 			} );
 
