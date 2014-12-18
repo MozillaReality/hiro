@@ -13,6 +13,7 @@ function VRHud() {
 	this.enabled = false;
 	this.leapActivated = false;
 	this.activeTweens = [];
+	this.leapEnabled = false;
 
 	function loadJson(url) {
 		return new Promise( function(resolve, reject) {
@@ -53,6 +54,14 @@ function VRHud() {
 
 		self.makeLayout.call(self, meshNodes);
 		self.attachEvents.call(self, favorites);
+
+		if ( Leap.loopController.streaming() ){
+			self.leapEnable.call(self, favorites);
+		} else {
+			Leap.loopController.on('streamingStarted', function() {
+				self.leapEnable.call(self, favorites);
+			});
+		}
 
 		self.show();
 	});
@@ -241,61 +250,77 @@ VRHud.prototype.attachEvents = function(favorites) {
 		});
 
 
-		if (Leap.loopController){
+	});
+};
 
-			var button = mesh.userData.button = new PushButton(
-				new InteractablePlane( mesh, Leap.loopController, {moveX: false, moveY: false} ),
-				{ locking: false, longThrow: -0.1 }
-			);
+// Note that for some reason, adding these boxes breaks the cursor raycast.
+// For now, we do either Leap or Mouse interaction.
+// TODO: This isin't great for people who go and unplug their controllers after starting.
+VRHud.prototype.leapEnable = function(favorites){
+	this.leapEnabled = true;
+	var self = this;
+	var d23 = this.d23;
 
-			mesh.receiveShadow = true;
-			button.plane.interactable = false;
+	favorites.forEach(function(favorite) {
+		var node = d23.getNodeById(favorite.id);
 
-			button.on('press', function(){
-
-				if ( !self.visible ) return;
-
-				mesh.dispatchEvent({type: 'click'});
-
-			} );
-
-			var box = new THREE.Mesh(
-				new THREE.BoxGeometry(mesh.geometry.parameters.width, mesh.geometry.parameters.height, button.options.longThrow),
-				new THREE.MeshPhongMaterial({transparent: true, opacity: 0.3, color: 0xccccff})
-			);
-			box.scale.copy(mesh.scale);
-			box.name = mesh.name + '-box';
-
-			box.border(new THREE.LineBasicMaterial({
-		    color: 0xffffff,
-		    linewidth: 2
-		  }));
-
-			var scaleBox = function( plane, mesh ){
-
-				// we can only change z by adjusting scale.
-				// base * scale = newZ
-				// newZ = base - travel
-				// base * scale = base - travel
-				// scale = (base - travel) / base
-				// scale = 1 - travel / base
-
-				box.scale.z = ( 1 - mesh.position.z / button.options.longThrow );
-				if (box.scale.z === 0) box.scale.z = 1e-7; // Prevent matrix inverse warning on 0-scale.
-
-				box.position.z = (button.options.longThrow + mesh.position.z) / 2;
-
-			};
-
-			scaleBox(button.plane, mesh);
-			button.plane.on('travel', scaleBox);
-
-			mesh.parent.add(box);
-
+		if (!node) {
+			console.error('No node with id ' + favorite.id);
+			return false;
 		}
 
+		var mesh = node.mesh;
 
+		var button = mesh.userData.button = new PushButton(
+			new InteractablePlane(mesh, Leap.loopController, {moveX: false, moveY: false}),
+			{locking: false, longThrow: -0.1}
+		);
+
+		mesh.receiveShadow = true;
+		button.plane.interactable = false;
+
+		button.on('press', function () {
+
+			if (!self.visible) return;
+
+			mesh.dispatchEvent({type: 'click'});
+
+		});
+
+		var box = new THREE.Mesh(
+			new THREE.BoxGeometry(mesh.geometry.parameters.width, mesh.geometry.parameters.height, button.options.longThrow),
+			new THREE.MeshPhongMaterial({transparent: true, opacity: 0.3, color: 0xccccff})
+		);
+		box.scale.copy(mesh.scale);
+		box.name = mesh.name + '-box';
+
+		box.border(new THREE.LineBasicMaterial({
+			color: 0xffffff,
+			linewidth: 2
+		}));
+
+		var scaleBox = function (plane, mesh) {
+
+			// we can only change z by adjusting scale.
+			// base * scale = newZ
+			// newZ = base - travel
+			// base * scale = base - travel
+			// scale = (base - travel) / base
+			// scale = 1 - travel / base
+
+			box.scale.z = ( 1 - mesh.position.z / button.options.longThrow );
+			if (box.scale.z === 0) box.scale.z = 1e-7; // Prevent matrix inverse warning on 0-scale.
+
+			box.position.z = (button.options.longThrow + mesh.position.z) / 2;
+
+		};
+
+		scaleBox(button.plane, mesh);
+		button.plane.on('travel', scaleBox);
+
+		mesh.parent.add(box);
 	});
+
 };
 
 // This is simply a wrapper method for contained buttons.  It would be better served by a selector engine.

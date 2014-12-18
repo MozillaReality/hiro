@@ -505,7 +505,7 @@ VRCursor.prototype.updateCursorIntersection = function() {
   }
 
 
-  var intersects = raycaster.intersectObjects( this.context.children );
+  var intersects = raycaster.intersectObjects( this.context.children, true );
 
   var intersected;
   var i;

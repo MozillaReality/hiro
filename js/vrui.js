@@ -62,6 +62,9 @@ function VRUi(container) {
 			self.scene.add(self.cursor.layout);
 
 			self.cursor.init(self.renderer.domElement, self.camera, self.hud.layout);
+			self.cursor.enable();
+			self.cursor.cursor.position.z = -0.22;
+			self.cursor.cursor.scale.multiplyScalar(0.2);
 
 			// Once all this is loaded, kick off start from VR
 			// self.start();
@@ -427,11 +430,9 @@ VRUi.prototype.initLeapInteraction = function() {
 
 	Leap.loopController.setMaxListeners(100);  // Don't overload with many interactable planes
 
-	Leap.loopController.on('streamingStarted', function(){
 
-		this.updateCursorState();
-
-	}.bind(this) );
+	Leap.loopController.on('streamingStarted', this.updateCursorState.bind(this) );
+	Leap.loopController.on('streamingStopped', this.updateCursorState.bind(this) );
 
 	// Set initial Leap focus state. See LeapJS's browser.js L64
 	Leap.loopController.connection.windowVisible = this.hud.visible && this.hud.enabled;
