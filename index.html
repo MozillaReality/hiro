@@ -19,59 +19,7 @@
     </div><!-- #container -->
 
     <div id="content" class="fit">
-      <div id="intro">
-        <span>We are the Mozilla Research VR team.</span><br>
-        <span>MozVR is our open lab, a VR website</span><br>
-        <span>about VR websites, where we share</span><br>
-        <span>experiments and code.</span><br>
-      </div>
-
-      <div id="entervr" class="">
-        <em>Configuration notes</em>
-        <p>
-          Windows: Configure your DK2 in "Extended Desktop" mode, with 90-degree ("Portrait") rotation, and a 60Hz refresh rate (not 75Hz). Support for Direct-to-Rift and 75Hz refresh is coming soon.<br>
-        </p>
-        <p>
-          Mac: Please configure your DK2 for a 60Hz refresh rate at 1080p, with 90-degree rotation.
-        </p>
-        <div id="launch" class="button-large">Enter VR</div>
-      </div>
-
-      <div id="vrDownload" class="is-hidden" >
-        <em>mozvr is a virtual reality website</em>
-        <p>
-          You will need a <a href="http://mozvr.com/downloads.html">VR-enabled build of Firefox</a> for Mac or PC, and an Oculus Rift headset. Support for additional devices coming soon. MozVR will also work with VR-enabled builds of <a href="https://drive.google.com/folderview?id=0BzudLt22BqGRbW9WTHMtOWMzNjQ&usp=sharing#list" target="_blank">Chromium</a>. Once you have your VR-enabled browser and Rift, check our quick <a href="http://mozvr.com/readme.html">Read Me</a> for configuration tips. On your first run, pressing "Enter VR" will prompt you to grant Fullscreen permission. Grant it and check the "Remember" option, if one is present. You will then be able to experience MozVR.
-        </p>
-        <a href="downloads.html"><button class="button-wire">Get Firefox VR</button></a>
-      </div>
-
-
-      <div id="navigation">
-        <div id="logo" class="float-left">mozvr.com</div>
-
-        <div id="links" class="float-left">
-          <ul class="flat-list group">
-            <li>
-              <a href="content/2014/11/10/mozvr-launches.html" target="_blank">About</a>
-            </li>
-            <li>
-              <a href="downloads.html" target="_blank">Downloads</a>
-            </li>
-            <li>
-              <a href="readme.html" target="_blank">Read Me</a>
-            </li>
-            <li>
-              <a href="https://github.com/MozVR" target="_blank">GitHub</a>
-            </li>
-          </ul>
-        </div>
-
-        <div id="issues">
-          <a href="https://github.com/MozVR/MozVR.com-issues" target="_blank">Report issues</a>
-        </div>
-
-      </div><!-- #navigation -->
-
+      <div id="launch" class="button-large">Enter VR</div>
     </div><!-- #content -->
 
     <div id="modes">
@@ -81,23 +29,22 @@
     </div><!-- #mode -->
 
 
-    <div id="fsPrompt" class="center is-hidden">
-      <div class="arrow-up"></div>
-
-      <h2>Allow Fullscreen:</h2>
-      <h3 class="lightgray">Don't forget to <u>check remember</u>!</h3>
-
-      <br/><br/>
-
-      <div class="delayed-animate-in center">
-        <div id="fsContinue" class="button-large white">ESC</div>
-
-        <span class='gamma'>TO CONTINUE</span>
+    <div id="fsPrompt" class="is-hidden">
+      <div style="width: 525px; margin: auto; " class="center">
+        <span class="arrow-up"></span>
       </div>
+      
+      <br/><br/><br/>
+      
+      <div style="width: 525px; margin: auto;">
+        <p class='gamma'>1. Check Remember decision option.</p>
 
-      <br/><br/>
+        <p class='gamma'>2. Click Allow.</p>
 
-      <p class="lightgray">(You will only have to do this once.)</p>
+        <p class='gamma'>3. Press ESC to exit fullscreen.</p>
+
+        <p class="lightgray">(You will only have to do this once.)</p>
+      </div>
 
     </div>
 
@@ -129,233 +76,178 @@
   ga('send', 'pageview');
   </script>
   <script>
-    window.DomUi = (function() {
-      function DomUi() {
+  var vrDetected = false;
 
-        this.initKeyboardControls();
+  var interval; // interval timer for gamepad
 
-        this.initGamepadControls();
+  var permissionInstructions = document.querySelector('#fsPrompt');
 
-        /*
-        fullscreen and pointerlock permissions show up on the rift display
-        making them inacessible rendering the site unsusable by the user.
-        Because of this, we will need to request fullscreen and pointer lock
-        permissions on the main desktop before the user enters the experience.
-        */
-        var fsPointerscreen = document.querySelector('#fsPrompt');
+  var enterVRButton = document.querySelector('#launch');
 
-        var fsContinueButton = document.querySelector('#fsContinue');
+  var statusDialogue = document.querySelector('#vrEnabled');
 
-        var enterVRButton = document.querySelector('#launch');
+  function show(el) {
+    el.classList.remove('is-hidden');
+  };
 
-        var configVr = document.querySelector('#entervr');
+  function hide(el) {
+    el.classList.add('is-hidden');
+  };
 
-        function fullscreenPrompt() {
-          var fs = document.body;
+  function requestFullscreen(el) {
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (el.mozRequestFullScreen) {
+      el.mozRequestFullScreen();
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    }
+  };
 
-          fsPointerscreen.classList.remove('is-hidden');
+  function requestPointerlock(el) {
+    el.requestPointerLock = el.requestPointerLock ||
+      el.mozRequestPointerLock ||
+      el.webkitRequestPointerLock;
 
-          if (fs.requestFullscreen) {
-            fs.requestFullscreen();
-          } else if (fs.mozRequestFullScreen) {
-            fs.mozRequestFullScreen();
-          } else if (fs.webkitRequestFullscreen) {
-            fs.webkitRequestFullscreen();
+    el.requestPointerLock();
+  }
+
+
+  function onFschange() {
+    var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
+    
+    if (!fullscreenElement) {
+      hide(permissionInstructions);
+      show(enterVRButton);
+    }
+  };
+
+  function setPermissionPromptedCookie() {
+    document.cookie = "fsPrompted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+  }
+  
+  function hasBeenPermissionPrompted() {
+    if (document.cookie.indexOf('fsPrompted=true') !== -1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function enterVr(useFullscreen) {
+    if (useFullscreen === false) {
+      hide(enterVRButton)
+      VRManager.enableVR({
+        fullscreen: false
+      });
+    } else {
+      if (hasBeenPermissionPrompted()) {
+        VRManager.enableVR();
+      } else {
+        setPermissionPromptedCookie();
+        
+        show(permissionInstructions)
+        
+        requestFullscreen(document.body);
+
+        requestPointerlock(document.body)
+
+        hide(enterVRButton)
+      }
+    }          
+  };
+
+  function disconnecthandler(e) {
+    clearInterval(interval);
+    console.log('Gamepad disconnected.');
+  }
+
+  function connecthandler(e) {
+    var gp = navigator.getGamepads()[e.gamepad.index];
+    console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+      gp.index, gp.id,
+      gp.buttons.length, gp.axes.length);
+
+    var pressed;
+
+    interval = setInterval(function() {
+      for (var i = 0; i < gp.buttons.length; i++) {
+        var b = gp.buttons[i];
+        if (i == 0) {
+          // select
+          if (pressed !== i && b.pressed) {
+            document.body.dispatchEvent(new MouseEvent('click', {
+              'view': window,
+              'bubbles': true,
+              'cancelable': true
+            }));
+
+            pressed = i;
+          } else if (pressed == i && !b.pressed) {
+            pressed = undefined;
           }
 
-          var bodyEl = document.body;
-          bodyEl.requestPointerLock = bodyEl.requestPointerLock ||
-            bodyEl.mozRequestPointerLock ||
-            bodyEl.webkitRequestPointerLock;
-
-          bodyEl.requestPointerLock();
-        };
-
-
-        // listen for fullscreen change events so we can hide the fs prompt.
-        document.addEventListener('mozfullscreenchange', onFschange);
-        document.addEventListener('webkitfullscreenchange', onFschange);
-        document.addEventListener('fullscreenchange', onFschange);
-
-        function onFschange() {
-          var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
-          var fs = fsPointerscreen;
-
-          if (!fullscreenElement) {
-            fs.classList.add('is-hidden');
-            enterVRButton.classList.remove('is-hidden');
+        } else if (i == 10) {
+          // menu
+          if (pressed !== i && b.pressed) {
+            VRManager.ui.toggleHud();
+            pressed = i;
+          } else if (pressed == i && !b.pressed) {
+            pressed = undefined;
           }
-        };
-
-
-        // enter VR button
-        function promptPermission() {
-
-          if (document.cookie.indexOf('fsPrompted=true') !== -1) {
-            // we've prompted the user before for fullscreen permissions.  let's go!
-            VRManager.enableVR();
-          } else {
-            document.cookie = "fsPrompted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
-            fullscreenPrompt();
-            enterVRButton.classList.add('is-hidden');
-          }
-        };
-
-
-
-        enterVRButton.addEventListener('click', function() {
-          promptPermission();
-        })
-
-
-
-
-
-
-
-        /*
-        detect wether or not we have a VR compatible browser.   If
-        they have a VR browser, just show a status that we have detected one.
-
-        Otherwise, display a dialogue prompt to download
-        */
-
-        // elements
-        var downloadDialogue = document.querySelector('#vrDownload');
-
-        var statusDialogue = document.querySelector('#vrEnabled');
-
-        var vrDetected = false;
-
-        VRManager.vrReady.then(function() {
-          // VR detected
-          vrDetected = 'true';
-
-          // hide entervr button
-          enterVRButton.classList.remove('is-hidden');
-
-          // hide download dialogue
-          downloadDialogue.classList.add('is-hidden');
-          statusDialogue.classList.remove('is-hidden');
-
-          // show config instruction
-          configVr.classList.remove('is-hidden');
-        }, function() {
-          // VR NOT detected
-          vrDetected = 'false';
-
-          // add entervr button
-          enterVRButton.classList.add('is-hidden');
-
-          // show download dialogue
-          statusDialogue.classList.add('is-hidden');
-
-          // download button
-          downloadDialogue.classList.remove('is-hidden');
-
-          // config instruction
-          configVr.classList.add('is-hidden');
-        });
-
-      };
-
-      DomUi.prototype.urlParams = (function () {
-        var parameters = {};
-        var parts = window.location.search.substr( 1 ).split( '&' );
-        for ( var i = 0; i < parts.length; i ++ ) {
-          var parameter = parts[ i ].split( '=' );
-          parameters[ parameter[ 0 ] ] = parameter[ 1 ];
         }
-        return parameters;
-      })();
-
-      DomUi.prototype.initGamepadControls = function() {
-        var interval;
-
-        function disconnecthandler(e) {
-          clearInterval(interval);
-          console.log('Gamepad disconnected.');
-        }
-
-        function connecthandler(e) {
-          var gp = navigator.getGamepads()[e.gamepad.index];
-          console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-            gp.index, gp.id,
-            gp.buttons.length, gp.axes.length);
-
-          var pressed;
-
-          interval = setInterval(function() {
-            for (var i = 0; i < gp.buttons.length; i++) {
-              var b = gp.buttons[i];
-              if (i == 0) {
-                // select
-                if (pressed !== i && b.pressed) {
-                  document.body.dispatchEvent(new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                  }));
-
-                  pressed = i;
-                } else if (pressed == i && !b.pressed) {
-                  pressed = undefined;
-                }
-
-              } else if (i == 10) {
-                // menu
-                if (pressed !== i && b.pressed) {
-                  VRManager.ui.toggleHud();
-                  pressed = i;
-                } else if (pressed == i && !b.pressed) {
-                  pressed = undefined;
-                }
-
-
-              }
-            }
-
-          }, 50)
-
-        }
-
-        window.addEventListener("gamepaddisconnected", disconnecthandler);
-        window.addEventListener("gamepadconnected", connecthandler)
       }
 
+    }, 50)
+
+  }
+
+  function onkey(event) {
+    //console.log(event.keyCode)
+
+    switch (event.keyCode) {
+      case 70: // f
+        enterVr(true);
+        break;
+
+      case 83: // s
+        enterVr(false);
+        break;
+
+      case 90: // z
+        VRManager.zeroSensor();
+        break;
+      case 32: // space
+        VRManager.ui.toggleHud();
+        break;
+    }
+  }
+
+  window.addEventListener("keydown", onkey, true);
+
+  window.addEventListener("gamepaddisconnected", disconnecthandler);
+  window.addEventListener("gamepadconnected", connecthandler);
+
+  document.addEventListener('mozfullscreenchange', onFschange);
+  document.addEventListener('webkitfullscreenchange', onFschange);
+  document.addEventListener('fullscreenchange', onFschange);
 
 
-      DomUi.prototype.initKeyboardControls = function() {
-        var self = this;
+  VRManager.vrReady.then(function() {
+    // VR detected
+    vrDetected = 'true';
 
-        function onkey(event) {
-          //console.log(event.keyCode)
+    show(enterVRButton)
+    
+    show(statusDialogue)
+  }, function() {
+    // VR NOT detected
+    vrDetected = 'false';
+  });
 
-          switch (event.keyCode) {
-            case 70: // f
-              VRManager.enableVR();
-              break;
+  enterVRButton.addEventListener('click', function() {
+    enterVr(true);
+  })
 
-            case 83: // s
-              VRManager.enableVR({
-                fullscreen: false
-              });
-              break;
-
-            case 90: // z
-              VRManager.zeroSensor();
-              break;
-            case 32: // space
-              VRManager.ui.toggleHud();
-              break;
-          }
-        }
-
-        window.addEventListener("keydown", onkey, true);
-      };
-
-
-      return new DomUi();
-    })();
   </script>
 </html>

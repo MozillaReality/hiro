@@ -59,99 +59,14 @@ em {
   height: 100%;
 }
 
-
-
-#intro {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-  font-size: 1rem;
-  line-height: 2.8rem;
+#content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#intro span {
-  font-size: 1.25rem;
-  padding: 0.5rem;
-  background: rgba( 0, 0, 0, 0.2 );
-  color: rgba( 0, 0, 0, 0.75 );
-}
-
-#entervr {
-  position: absolute;
-  bottom: 120px;
-  width: 100%;
-}
-
-#entervr .button-large {
-  margin: 1rem 0 0;
-  padding: 1.2rem;
-}
-
-#entervr .button-large:hover {
-  color: #fff;
-  background: rgba( 40, 40, 40, 1 );
-}
-
-#vrDownload, #entervr {
-  position: absolute;
-  left: 2rem;
-  /*transform: translateX(-50%);*/
-  bottom: 6rem;
-  letter-spacing: 0px;
-  font-size: 1rem;
-  line-height: 1.4rem;
-  max-width: 25rem;
-  border-top: 3px solid rgba( 0, 0, 0, 0.8 );
-  background: rgba( 40, 40, 40, 0 );
-  color: #333;
-  padding: 1.5rem 0;
-}
-
-#vrDownload em {
-  color: #171717;
-}
-
-#vrDownload p {
-  margin: 1rem 0;
-}
-
-#vrDownload button {
-  text-decoration: none;
-  font-family: 'Montserrat', sans-serif;
-  letter-spacing: 0.05rem;
-  background-color: rgba( 0, 0, 0, 0 );
-}
-
-#vrDownload button:hover {
-  color: #fff;
-  background: #161616;
-  font-weight: 400;
-}
-
-#vrDownload a {
-  color: #000;
-  text-decoration: underline;
-}
-
-#vrDownload p a:hover {
-  background: rgba( 194, 25, 131, 0.25 );
-}
-
-
-
-
-#splash {
-  font-size: 5rem;
-  width: 200rem;
-  position: absolute;
-  top: 40%;
-  left: 2rem;
-  /*color: rgba( 50, 50, 50, 1 );*/
-  color: rgba(194,25,131,.75);
-  text-shadow: -0.06em 0.06em 0px rgba( 34, 202, 240, .75 );
-  font-weight: 700;
-  text-transform: uppercase;
-  line-height: 4rem;
+#launch {
+  align-self: flex-end;
 }
 
 #fsPrompt {
@@ -205,106 +120,6 @@ em {
   cursor: pointer;
 }
 
-/* navigation */
-#navigation {
-  position: absolute;
-  width: 100%;
-  height: 4.5rem;
-  bottom: 0px;
-  left: 0px;
-  background-color: rgba( 40, 40, 40, 1);
-}
-
-#navigation > div {
-  height: 100%;
-  margin: 0 1.5rem 0 1.5rem;
-}
-
-#logo {
-  background: url('../landing/images/mozvr-logo-2.svg') center center no-repeat;
-  background-size: 85%;
-  width: 155px;
-  height: 100%;
-  font-size: 0px;
-}
-
-#viewing {
-  text-transform: uppercase;
-  color: rgba( 255, 255, 255, 0.7 );
-  font-size: 0.8rem;
-  padding-right: 1rem;
-}
-
-#links a {
-  color: rgba( 255, 255, 255, 0.8 );
-  text-decoration: none;
-  font-weight: 400;
-  font-size: 0.9em;
-  letter-spacing: 0.025rem;
-  padding: 0.5rem 0.7rem;
-  margin: 0 0.25rem 0 0;
-}
-
-#links a:hover {
-  color: rgba( 255, 255, 255, 1 );
-  background: rgba( 194, 25, 131, 0.25 );
-}
-
-#issues a {
-  position: absolute;
-  right: 1rem;
-  bottom: 1.1rem;
-  color: rgba( 255, 255, 255, 0.8 );
-  text-decoration: none;
-  font-weight: 400;
-  font-size: 0.9em;
-  letter-spacing: 0.025rem;
-  padding: 0.5rem;
-  color: rgba( 255, 255, 255, 1 );
-  background: rgba( 0, 0, 0, 0.1 );
-  border: 1px solid rbga( 255, 255, 255, 0.2 );
-}
-
-#issues a:hover {
-  color: rgba( 255, 255, 255, 1 );
-  background: rgba( 194, 25, 131, 0.25 );
-}
-
-.flat-list {
-  margin: 0;
-  padding: 0;
-  height: 4.5rem;
-  display: table-row;
-}
-.flat-list li {
-  list-style: none;
-  text-decoration: none;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.button-wire-small {
-  color: rgba( 255, 255, 255, 1 );
-  text-decoration: none;
-  font-size: 0.8em;
-  font-weight: 400;
-  padding: 0.3em 0.5em;
-  margin: 0 0.2em;
-  display: block;
-  letter-spacing: 0.1em;
-  border: 1px solid rgba( 255, 255, 255, 0.25 );
-  text-align: center;
-  text-transform: uppercase;
-}
-.button-wire-selected {
-  border: 1px solid rgba( 255, 255, 255, 1 );
-  background: rgba( 255, 255, 255, 0.25 );
-}
-
-.button-wire-small:hover {
-  border: 1px solid transparent;
-  background: rgba( 0,0,0, 0.25 );
-}
 
 .status {
   letter-spacing: 0px;
@@ -335,58 +150,6 @@ em {
   display: inline-block;
   margin-bottom: 0.5rem;
 
-}
-
-.button-wire {
-  border: 2px solid #333;
-  background: #fff;
-  font-size: 1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 0.6rem 0.7rem;
-  margin: 0rem;
-  color: #333;
-  cursor: pointer;
-}
-.button-wire:hover {
-  background: rgba( 0, 0, 0, 0.1 );
-  border: 2px solid #000;
-  color: #000;
-}
-
-.button-download {
-  background: #fff;
-  border: none;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 1rem;
-  margin: 0 0 0 1rem;
-  position: relative;
-  cursor: pointer;
-}
-
-.button-download:after {
-  content: ' ';
-  width: 0rem;
-  height: 0rem;
-  border-left: 0.4rem solid transparent;
-  border-right: 0.4rem solid transparent;
-  border-top: 0.4rem solid #333;
-  top: calc(50%);
-  left: 50%;
-  transform: translate(-50%,-50%);
-  position: absolute;
-}
-
-.button-download:before {
-  content: ' ';
-  width: 0.4rem;
-  height: 0.15rem;
-  background: #333;
-  position: absolute;
-  top: calc(50% + 0.2rem);
-  left: 50%;
-  transform: translate(-50%,-50%);
 }
 
 .delayed-animate-in {
