@@ -65,7 +65,6 @@
 
 			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
 
-
 			setRenderMode(VRClient.renderModes.mono);
 
 			effect.setSize( window.innerWidth, window.innerHeight );
@@ -89,11 +88,6 @@
 					console.log('VR mode');
 					controls = new THREE.VRControls( camera );
 					effect = new THREE.VREffect( renderer );
-
-					// load construct after entering vr mode
-					setTimeout(function() {
-						loadConstruct();
-					}, 5000);
 				}
 
 				effect.setSize( window.innerWidth, window.innerHeight );
@@ -394,17 +388,6 @@
 			//scene.add( mesh );
 
 		}
-
-
-		// VR button
-		function loadConstruct() {
-			VRClient.load('content/construct', {
-				noTitle: true,
-				noLoading: true
-			});
-		};
-
-
 
 		/*====================== Intro sequence ======================*/
 

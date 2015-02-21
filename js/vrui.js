@@ -12,8 +12,10 @@ function VRUi(container) {
 	var self = this;
 
 
+	this.landingUrl = 'content/landing'; 
 	this.homeUrl = 'content/construct';
-	this.landingUrl = 'content/landing'; // launch: make sure set to landing
+	this.homeUrlDelay = 5000; // delay before loading home from landing page when entering VR mode.
+	
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -153,29 +155,33 @@ VRUi.prototype.load = function(url, opts) {
 		});
 };
 
+VRUi.prototype.showHud = function() {
+	console.log('showing HUD');
+	this.background.visible = true;
+	this.backgroundShow();
+	this.hud.show();
+	this.title.show(1000);
+	this.cursor.enable();
+	this.cursor.show();
+	VRManager.currentDemo.blur();
+};
+
+VRUi.prototype.hideHud = function() {
+	console.log('hiding HUD');
+	this.backgroundHide(1000);
+	this.hud.hide();
+	this.title.hide(1000);
+	this.cursor.disable();
+	VRManager.currentDemo.focus();
+}
 
 VRUi.prototype.toggleHud = function() {
 	if (!this.hud.visible && this.hud.enabled) {
 		// show
-		console.log('showing HUD');
-		this.background.visible = true;
-		this.backgroundShow();
-		this.hud.show();
-		this.title.show(1000);
-		this.cursor.enable();
-		this.cursor.show();
-		VRManager.currentDemo.blur();
-
-
+		this.showHud();
 	} else if (this.hud.visible && this.hud.enabled) {
 		// hide
-		console.log('hiding HUD');
-		this.backgroundHide(1000);
-		this.hud.hide();
-		this.title.hide(1000);
-		this.cursor.disable();
-		VRManager.currentDemo.focus();
-
+		this.hideHud();
 	} else {
 		this.hud.hide();
 	}
@@ -186,16 +192,12 @@ VRUi.prototype.start = function(mode) {
 	var self = this;
 
 	this.ready.then(function() {
-
 		// start with hud
-		// self.toggleHud();
 		self.cursor.disable();
-
-		// start to home
-		//self.goHome(true);
 
 		// start with landing
 		VRManager.load(self.landingUrl);
+		self.isLanding = true;
 
 		// kick off animation loop
 		self.animate();
@@ -367,6 +369,7 @@ VRUi.modes = VRUi.prototype.modes = {
 };
 
 VRUi.prototype.setRenderMode = function(mode) {
+	var self = this;
 	this.mode = mode;
 
 	if (mode == VRUi.modes.mono) {
@@ -382,6 +385,14 @@ VRUi.prototype.setRenderMode = function(mode) {
 		this.effect = new THREE.VREffect( this.renderer );
 		this.controls = new THREE.VRControls( this.camera );
 		this.cursor.setMode('centered');
+
+		// load from landing onto home
+		if (this.isLanding && !QueryString.demo) {
+			setTimeout(function() {
+				self.load(self.homeUrl);
+			}, self.homeUrlDelay)
+			
+		}
 
 	} else if (mode == VRUi.modes.stereo) {
 		console.log('Stereo render mode');

@@ -47,6 +47,7 @@ function VRHud() {
 	this.ready = Promise.all([d23.loaded, jsonLoaded]).then(function(result) {
 		var meshNodes = result[0];
 		var favorites = result[1].favorites;
+		self.favorites = favorites;
 
 		self.attachEvents.call(self, favorites);
 		self.makeLayout.call(self, meshNodes);
@@ -63,6 +64,10 @@ VRHud.prototype.disable = function() {
 VRHud.prototype.enable = function() {
 	this.enabled = true;
 };
+
+VRHud.prototype.selectFavorite = function(name) {
+	console.log(this.favorites);
+}
 
 VRHud.prototype.show = function() {
 	var self = this;
@@ -191,14 +196,16 @@ VRHud.prototype.attachEvents = function(favorites) {
 			}
 		});
 
+
 		mesh.addEventListener('click', function(e) {
 			var target = e.target;
-
+			
 			if (self.enabled) {
 				VRManager.ui.load(target.userData.url);
 			}
 		});
 
+		favorite.mesh = mesh;
 	});
 }
 
@@ -206,9 +213,6 @@ VRHud.prototype.makeLayout = function(nodes) {
 	var self = this;
 
 	var layout = self.layout;
-
-	var favorites = [];
-	this.favorites = favorites;
 
 	return new Promise( function(resolve, reject) {
 		nodes.forEach( function(node) {

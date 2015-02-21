@@ -6,8 +6,9 @@ function VRTab(url) {
   self.handlers = [];
 
   self.iframe = iframe;
-  self.url = url + '?timestamp=' + Date.now();
-
+  
+  var prefix = (url.indexOf('?') > -1) ? '&' : '?';
+  self.url = url + prefix + 'timestamp=' + Date.now();
 
   self.getPageMeta = new Promise(function(resolve, reject) {
     /*
@@ -32,16 +33,21 @@ function VRTab(url) {
   });
 
 
-
-
   // listen for tab to tell us it's ready
   self.ready = new Promise(function(resolve, reject) {
     /*
     listen for ready message from VRClient
     */
+    
     self.listenFor('ready', function() {
       resolve();
     });
+
+    // if ready does not come, resolve anyways after some time.
+    setTimeout(function() {
+      console.log('----- resolving anwyays');
+      resolve();
+    }, 5000)
   });
 
 

@@ -199,6 +199,10 @@ window.VRManager = (function() {
        self.currentDemo.setRenderMode(self.ui.mode);
       };
 
+      if(QueryString.demo) {
+        VRDemo.start();  
+      }
+      
     } else {
       console.log('no vr mode available');
     }
@@ -238,38 +242,26 @@ window.VRManager = (function() {
   return new VRManager('#container');
 })();
 
+var QueryString = function () {
+  // This function is anonymous, is executed immediately and 
+  // the return value is assigned to QueryString!
+  var query_string = {};
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0;i<vars.length;i++) {
+    var pair = vars[i].split("=");
+        // If first entry with this name
+    if (typeof query_string[pair[0]] === "undefined") {
+      query_string[pair[0]] = pair[1];
+        // If second entry with this name
+    } else if (typeof query_string[pair[0]] === "string") {
+      var arr = [ query_string[pair[0]], pair[1] ];
+      query_string[pair[0]] = arr;
+        // If third or later entry with this name
+    } else {
+      query_string[pair[0]].push(pair[1]);
+    }
+  } 
+    return query_string;
+} ();
 
-/*
-for debug purposes.
-todo: need a better interface for this kind of thing
-*/
-window.t = (function() {
-  function t() {
-    this.ui = VRManager.ui;
-  }
-
-  t.prototype.ui = function() {
-    return this.ui;
-  }
-
-  t.prototype.transition = function() {
-    var self = this;
-    this.ui.transition.fadeOut().then(function() {
-      self.ui.transition.fadeIn();
-    })
-  }
-  t.prototype.loading = function() {
-    this.ui.transition.fadeOut();
-    this.ui.loading.show();
-  }
-
-  t.prototype.title = function() {
-    this.ui.backgroundShow();
-    this.ui.title.show();
-  }
-  t.prototype.enableHud = function() {
-    this.ui.hud.enable();
-  }
-
-  return new t();
-})();
