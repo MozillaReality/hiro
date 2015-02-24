@@ -417,13 +417,13 @@
 	  	tutorial.add( background2 );
 	  	diagram.add( globeCore );
 	  	diagram.add( globe );
-	  	diagram.add( mask );
+	  	// diagram.add( mask );
 	  	diagram.add( portal );
 	  	diagram.add( figure );
 	  	figure.add( hud );
 	  	tutorial.add( diagram );
 	  	diagram.add( outline );
-	  	diagram.add( tags );
+	  	// diagram.add( tags );
 
 	  	//set initial states
 
@@ -433,12 +433,12 @@
 			hud.position.set( 0, 0.33, 0 );
 			globe.visible = false;
 			figure.visible = false;
-			figure.position.set( 0, -0.6, 0 );
+			figure.position.set( 0, -0.18, 0 );
 			portal.visible = false;
 			portal.position.set( 0, -0.195, 0 );
 			portal.scale.set( 0.01, 0.01, 0.01 );
 			mask.position.set( 0, -0.4, 0 );
-			diagram.rotation.set( 0.9, 0, 0 )
+			diagram.rotation.set( 0.2, 0, 0 )
 			outline.position.set( 0, 0, 0.05 );
 			background2.visible = false;
 
@@ -481,27 +481,17 @@
 				// reveal figure
 
 				figure.visible = true;
-				figure.rotation.set( 0, 0 - Math.PI, 0 );
 
-				new TWEEN.Tween( figure.position )
-					.to( { y: -0.18 }, 2500 )
-					.delay( 200 )
-					.easing( TWEEN.Easing.Quadratic.InOut )
-					.start();
+				// new TWEEN.Tween( figure.position )
+				// 	.to( { y: -0.18 }, 2500 )
+				// 	.delay( 200 )
+				// 	.easing( TWEEN.Easing.Quadratic.InOut )
+				// 	.start();
 
-    		new TWEEN.Tween( figure.rotation )
-					.to( { y: 0 }, 2500 )
-					.delay( 200 )
-		   		.easing( TWEEN.Easing.Quadratic.InOut )
-		   		.onComplete( function(){
-		   			mask.visible = false;
-		   		} )
-					.start();
-
-				new TWEEN.Tween( mask.position )
-					.to( { y: -0.45 }, 1000 )
-					.delay( 900 )
-					.start();
+				// new TWEEN.Tween( mask.position )
+				// 	.to( { y: -0.45 }, 1000 )
+				// 	.delay( 900 )
+				// 	.start();
 
 				// reveal outline
 
@@ -611,48 +601,9 @@
 						.start();
 
 				}
-
-				//deprecated
-			  function animateBackground1() {
-
-			  	/*
-			  	new TWEEN.Tween( diagram.scale )
-			  		.to( { x:0.01, y:0.01, z:0.01 }, 2000 )
-			  		.onComplete( function(){
-
-			  			diagram.visible = false;
-
-			  		} )
-			  		//.start();
-					*/
-
-					for ( var i = 0; i < background.children.length; i ++ ) {
-
-					  var object = background.children[i];
-					  var delay = 200 + i * 7;
-
-					  var destZ = object.position.z;
-					  object.position.setZ( destZ + 0.2 );
-
-					  /*
-					  new TWEEN.Tween( object.position )
-					    .to( { z: destZ  }, 1000 )
-					    .delay( delay )
-					   	//.easing( TWEEN.Easing.Cubic.Out )
-					    .start();
-					  */
-
-					  new TWEEN.Tween( object.scale )
-					    .to( { x:0.01, y:0.01, z:0.01 }, 3000 )
-					    .delay( delay )
-					    //.easing( TWEEN.Easing.Cubic.Out )
-					    .start();
-				  }
-				}
+			  
 	  	}
 	  }
-
-
 
 
 
