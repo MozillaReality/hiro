@@ -2,45 +2,19 @@
   "favorites": [
     {
       "id": "home",
-      "title": "mozvr.com",
-      "credits": "Mozilla VR Research",
       "url": "content/construct"
     },
     {
-      "id": "Sechelt",
-      "title": "Sechelt",
-      "credits": "Josh Carpenter\nMr.doob\n—\nthree.js, Cinema 4D",
+      "id": "fav-sechelt.png",
       "url": "http://mozvr.github.io/sechelt"
     },
     {
-      "id": "polar",
-      "title": "Polar Sea",
-      "credits": "Deep Inc.\nELEVR\n—\neleVR Web Player",
-      "url": "http://mozvr.com/content/polar"
+      "id": "fav-xibalba.png",
+      "url": "content/xibalba"
     },
     {
-      "id": "diving",
-      "title": "Information Diving",
-      "credits": "Tony Parisi\nEric Levin\nJosh Carpenter\nTatiana Plakhova\n-\nVizi, Three.js",
-      "url": "http://mozvr.github.io/infodive"
-    },
-    {
-      "id": "pano",
-      "title": "Panorama",
-      "credits": "Josh Carpenter\n-\nthree.js",
-      "url": "http://mozvr.github.io/panorama-viewer"
-    },
-    {
-      "id": "leap",
-      "title": "Leap Motion",
-      "credits": "Peter Ehrlich\n-\nthree.js\nLeapJS",
-      "url": "content/leap"
-    },
-    {
-      "id": "elevr4",
-      "title": "ELEVR Talk chat show thing, EP.4",
-      "credits": "ELEVR\n-\neleVR Web Player",
-      "url": "http://mozvr.com/content/elevr4"
+      "id": "fav-polarsea.png",
+      "url": "content/polar"
     }
   ]
 }

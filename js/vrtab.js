@@ -38,16 +38,17 @@ function VRTab(url) {
     /*
     listen for ready message from VRClient
     */
-    
-    self.listenFor('ready', function() {
-      resolve();
-    });
+    var timeout;
 
     // if ready does not come, resolve anyways after some time.
-    setTimeout(function() {
-      console.log('----- resolving anwyays');
+    var timeout = setTimeout(function() {
       resolve();
     }, 5000)
+
+    self.listenFor('ready', function() {
+      window.clearTimeout(timeout)
+      resolve();
+    });
   });
 
 

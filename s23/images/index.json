@@ -1,0 +1,56 @@
+{
+  "hiro.sketch" : {
+    "hud" : {
+      "frame" : {
+        "frame.png" : {
+          "format" : "png",
+          "height" : 700,
+          "x" : 1400,
+          "y" : 80,
+          "width" : 1000,
+          "name" : "frame",
+          "scale" : 1
+        }
+      },
+      "z" : {
+        "z.png" : {
+          "format" : "png",
+          "height" : 300,
+          "x" : 1881,
+          "y" : 320,
+          "width" : 210,
+          "name" : "z",
+          "scale" : 1
+        }
+      },
+      "fav-sechelt" : {
+        "fav-sechelt.png" : {
+          "format" : "png",
+          "height" : 300,
+          "x" : 1641,
+          "y" : 321,
+          "width" : 210,
+          "name" : "fav-sechelt",
+          "scale" : 1
+        }
+      },
+      "fav-xibalba" : {
+        "fav-xibalba.png" : {
+          "format" : "png",
+          "height" : 300,
+          "x" : 1400,
+          "y" : 320,
+          "width" : 210,
+          "name" : "fav-xibalba",
+          "scale" : 1
+        }
+      }
+    },
+    "interface layer" : {
+
+    },
+    "looks and feel 1" : {
+
+    }
+  }
+}

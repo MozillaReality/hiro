@@ -97,6 +97,7 @@ window.VRManager = (function() {
           //self.NoVRstart();
         });
 
+    
     self.ui.start();
   }
 

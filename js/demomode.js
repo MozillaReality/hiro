@@ -6,6 +6,10 @@ var content = [
 		'playTime': 30
 	},
 	{
+		'url': 'content/animatic_test_3/index.html',
+		'playTime': 45
+	},
+	{
 		'url': 'content/xibalba/index.html',
 		'playTime': 45
 	},

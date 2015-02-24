@@ -18,6 +18,7 @@
   "homepage": "https://github.com/potch/javris",
   "dependencies": {
     "gulp": "~3.8.11",
-    "gulp-connect": "^2.0.6"
+    "gulp-connect": "^2.0.6",
+    "gulp-sketch": "0.0.9"
   }
 }
