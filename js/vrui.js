@@ -196,9 +196,9 @@ VRUi.prototype.start = function(mode) {
 		self.cursor.disable();
 
 		// start with landing
-		// VRManager.load(self.landingUrl);
-		// self.isLanding = true;
-		self.goHome(true);
+		VRManager.load(self.landingUrl);
+		self.isLanding = true;
+		//self.goHome(true);
 
 		// kick off animation loop
 		self.animate();
