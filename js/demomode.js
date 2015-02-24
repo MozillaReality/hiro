@@ -18,11 +18,7 @@ var content = [
 		'playTime': 45
 	},
 	{
-		'favorite': 'diving',
-		'playTime': 20
-	},
-	{
-		'url': 'content/couchknights/CouchKnights-s.html',
+		'favorite': 'fav-sechelt.png',
 		'playTime': 20
 	},
 	{
@@ -30,7 +26,7 @@ var content = [
 		'playTime': 20
 	},
 	{
-		'favorite': 'polar',
+		'favorite': 'fav-polarsea.png',
 		'playTime': 20
 	}
 ]
@@ -50,6 +46,7 @@ var VRDemo = (function() {
 
 	VRDemo.prototype.stop = function() {
 		window.clearTimeout(this.interval);
+		console.alert('Demo canceled!');
 	}
 
 	VRDemo.prototype.load = function(index) {
@@ -61,16 +58,16 @@ var VRDemo = (function() {
 		function loadHudFavorite(id) {
 			ui.showHud();
 
-			var favorite = hud.favorites.filter(function(fav) {
+			var favorite = hud.favorites.find(function(fav) {
 				return fav.id == id;
 			});
 
-			setTimeout(function() {
-				ui.load(favorite[0].url)
-			}, 2000);
-			
+			if (favorite) {
+				setTimeout(function() {
+					ui.load(favorite.url)
+				}, 2000);
+			}
 		}
-
 
 		if (demo.favorite) {
 			loadHudFavorite(demo.favorite);

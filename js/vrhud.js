@@ -63,7 +63,7 @@ function VRHud() {
 
 	};
 
-	var opts = { pixelScale: 0.003, artboardWidth: 3600, artboardHeight: 300, depth: 1 }
+	var opts = { pixelScale: 0.003, artboardWidth: 3600, artboardHeight: 900, depth: 1, exclude: ['frame.png'] }
 	
 	this.ready = Promise.all([loadSketch('s23/images/index.json', opts), jsonLoaded]).then(function(result) {
 		var meshes = result[0];
@@ -71,7 +71,6 @@ function VRHud() {
 		self.favorites = favorites;
 
 		self.attachEvents.call(self, favorites);
-		
 	});
 
 	return this;
@@ -93,6 +92,10 @@ VRHud.prototype.show = function() {
 		if (!self.visible) {
 			self.layout.visible = self.visible = true
 			
+			// this is where you add your animation.
+			var ar = Sketch2three.getMeshes('fav');
+			console.log(ar);
+
 			resolve();
 		}
 	});
@@ -103,6 +106,8 @@ VRHud.prototype.hide = function() {
 	return new Promise( function(resolve, reject) {
 		if (self.visible) {
 			self.layout.visible = self.visible = false;
+
+			// this is wher eyou add your animation
 
 			resolve();
 		} else {
@@ -151,15 +156,18 @@ VRHud.prototype.attachEvents = function(favorites) {
 			// 			}
 			// 		}
 			// 	});
+	
 			
 			mesh.addEventListener('click', function(e) {
+
 				var target = e.target;
+
 				if (self.enabled) {
 					VRManager.ui.load(target.userData.url);
 				}
 			});
 
-			// 	favorite.mesh = mesh;
+			//favorite.mesh = mesh;
 		}
 	});
 }

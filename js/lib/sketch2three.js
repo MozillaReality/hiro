@@ -2,6 +2,7 @@ var Sketch2three = (function() {
   function Sketch2three() {
     var self = this;
     self.slices = [];
+    self.meshes = [];
     self.opts = {};
     self.url = null;
 
@@ -34,6 +35,13 @@ var Sketch2three = (function() {
       
       return mesh;
     }
+
+    this.getMeshes = function(search) {
+      return self.meshes.filter(function(meshes) {
+        return meshes.name.indexOf(search) > -1
+      });
+    }
+
 
     this.getPath = function() {
       return self.url.substring(0, self.url.lastIndexOf('/'));
@@ -96,11 +104,13 @@ var Sketch2three = (function() {
               return (exclude.indexOf(slice.name) === -1) ? true : false;
             });
 
-            var slices = filtered.map(function(slice) {
+
+            self.meshes = filtered.map(function(slice) {
               return self.makeMesh(slice);
             });
 
-            resolve(slices)
+            resolve(self.meshes);
+            
           })
 
       })
