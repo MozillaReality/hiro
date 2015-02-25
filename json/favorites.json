@@ -5,16 +5,32 @@
       "url": "content/construct"
     },
     {
-      "id": "fav-sechelt.png",
-      "url": "content/sechelt/index.html?mode=vr"
-    },
-    {
       "id": "fav-xibalba.png",
       "url": "content/xibalba"
     },
     {
+      "id": "fav-sechelt.png",
+      "url": "content/sechelt/index.html?mode=vr"
+    },
+    {
       "id": "fav-polarsea.png",
-      "url": "content/polar"
+      "url": "content/polarsea"
+    },
+    {
+      "id": "fav-rex.png",
+      "url": "content/rex/super-trex.html"
+    },
+    {
+      "id": "fav-couchknights.png",
+      "url": "content/couchknights/CouchKnights.html"
+    },
+    {
+      "id": "fav-rainbow.png",
+      "url": "content/rainbow"
+    },
+    {
+      "id": "fav-nickycase.png",
+      "url": "content/nickycase/animatic_test_3"
     }
   ]
 }

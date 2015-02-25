@@ -93,7 +93,12 @@ function VRHud() {
 
 	};
 
-	var opts = { pixelScale: 0.003, artboardWidth: 3600, artboardHeight: 900, depth: 1, exclude: ['frame.png'] }
+	var opts = { 
+		pixelScale: 0.003, 
+		artboardWidth: 3600, 
+		artboardHeight: 900, 
+		depth: 1
+	}
 
 	this.ready = Promise.all([loadSketch('s23/images/index.json', opts), jsonLoaded]).then(function(result) {
 		var meshes = result[0];
@@ -123,8 +128,8 @@ VRHud.prototype.show = function() {
 			self.layout.visible = self.visible = true
 			
 			// this is where you add your animation.
-			var ar = Sketch2three.getMeshes('fav-sechelt');
-			console.log(ar);
+			//var ar = Sketch2three.getMeshes('fav-sechelt');
+			//console.log(ar);
 
 			resolve();
 		}

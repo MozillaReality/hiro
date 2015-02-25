@@ -2,33 +2,34 @@
 
 var content = [
 	{
-		'url': 'content/construct',
-		'playTime': 30
-	},
-	{
-		'url': 'content/animatic_test_3/index.html',
-		'playTime': 45
-	},
-	{
-		'url': 'content/xibalba/index.html',
-		'playTime': 45
-	},
-	{
-		'url': 'http://dev.aerys.in/oculus-rex/release/super-trex.html',
-		'playTime': 45
+		'favorite': 'fav-xibalba.png',
+		'playTime': 20
 	},
 	{
 		'favorite': 'fav-sechelt.png',
 		'playTime': 20
 	},
 	{
-		'url': 'content/sechelt/index.html?mode=vr',
+		'favorite': 'fav-polarsea.png',
 		'playTime': 20
 	},
 	{
-		'favorite': 'fav-polarsea.png',
+		'favorite': 'fav-rex.png',
 		'playTime': 20
-	}
+	},
+	{
+		'favorite': 'fav-couchknights.png',
+		'playTime': 20
+	},
+	{
+		'favorite': 'fav-rainbow.png',
+		'playTime': 20
+	},
+	{
+		'favorite': 'fav-nickycase.png',
+		'playTime': 20
+	},
+	
 ]
 
 var VRDemo = (function() {
