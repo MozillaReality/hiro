@@ -38,8 +38,6 @@ function VRHud() {
 			return parsed;
 		})
 
-	var objects = [];
-
 	function loadSketch(url, opts) {
 		var xOffset = -(opts.artboardWidth / 2 * opts.pixelScale);
 		var yOffset = (opts.artboardHeight / 2 * opts.pixelScale);
@@ -54,11 +52,7 @@ function VRHud() {
 
 				self.layout.add(mesh);
 
-				objects.push(mesh);
-
-
 				if( mesh.name.indexOf("fav") !== -1 ) {
-
 	        mesh.position.setY( mesh.position.y + 1 );
 	        var tween = new TWEEN.Tween( mesh.position )
 	          .to( { y:"0" }, 2500 )
@@ -68,22 +62,13 @@ function VRHud() {
 				}
 
 				if( mesh.name.indexOf("frame") !== -1 ) {
-
 					var tween = new TWEEN.Tween( mesh.position )
 	          .to( { z:-1.1 }, 2500 )
 	          .easing(TWEEN.Easing.Cubic.Out)
 	          .delay( 2000 )
 	          .start();
-
 				}
-
-
-
-
 			});
-
-			// var frame = objects[]
-
 
 		}, function(err) {
 			console.log(err);
