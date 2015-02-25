@@ -200,9 +200,6 @@ VRUi.prototype.start = function(mode) {
 		// self.isLanding = true;
 		self.goHome(true);
 
-		// self.goHome(true);
-
-
 		// kick off animation loop
 		self.animate();
 	});

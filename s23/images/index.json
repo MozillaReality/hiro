@@ -14,7 +14,7 @@
         "fav-couchknights.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 2020,
+          "x" : 2360,
           "y" : 320,
           "width" : 210,
           "name" : "fav-couchknights",
@@ -36,7 +36,7 @@
         "fav-nickycase.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 2500,
+          "x" : 2840,
           "y" : 320,
           "width" : 210,
           "name" : "fav-nickycase",
@@ -47,7 +47,7 @@
         "fav-rainbow.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 2260,
+          "x" : 2600,
           "y" : 320,
           "width" : 210,
           "name" : "fav-rainbow",
@@ -58,7 +58,7 @@
         "fav-polarsea.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1540,
+          "x" : 1880,
           "y" : 320,
           "width" : 210,
           "name" : "fav-polarsea",
@@ -69,7 +69,7 @@
         "fav-xibalba.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1060,
+          "x" : 1400,
           "y" : 320,
           "width" : 210,
           "name" : "fav-xibalba",
@@ -80,7 +80,7 @@
         "fav-rex.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1780,
+          "x" : 2120,
           "y" : 320,
           "width" : 210,
           "name" : "fav-rex",
@@ -91,7 +91,7 @@
         "bookmarks-frame.png" : {
           "format" : "png",
           "height" : 36,
-          "x" : 1060,
+          "x" : 1400,
           "y" : 261,
           "width" : 930,
           "name" : "bookmarks-frame",
@@ -102,7 +102,7 @@
         "fav-sechelt.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1300,
+          "x" : 1640,
           "y" : 320,
           "width" : 210,
           "name" : "fav-sechelt",
