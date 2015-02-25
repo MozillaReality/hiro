@@ -17,50 +17,7 @@
 
     },
     "landing" : {
-      "frame" : {
-        "frame.png" : {
-          "format" : "png",
-          "height" : 700,
-          "x" : 1400,
-          "y" : 80,
-          "width" : 1000,
-          "name" : "frame",
-          "scale" : 1
-        }
-      },
-      "Rectangle 59" : {
-        "Rectangle 59.png" : {
-          "format" : "png",
-          "height" : 6,
-          "x" : 886,
-          "y" : 420,
-          "width" : 595,
-          "name" : "Rectangle 59",
-          "scale" : 1
-        }
-      },
-      "Rectangle 61" : {
-        "Rectangle 61.png" : {
-          "format" : "png",
-          "height" : 206,
-          "x" : 786,
-          "y" : 320,
-          "width" : 795,
-          "name" : "Rectangle 61",
-          "scale" : 1
-        }
-      },
-      "fav-xibalba" : {
-        "fav-xibalba.png" : {
-          "format" : "png",
-          "height" : 300,
-          "x" : 640,
-          "y" : 420,
-          "width" : 210,
-          "name" : "fav-xibalba",
-          "scale" : 1
-        }
-      }
+
     },
     "hud" : {
       "bookmarks-frame" : {
