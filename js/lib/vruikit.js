@@ -24,8 +24,10 @@ VRUIKit.TextLabel = function(text, opts) {
   // https://developer.mozilla.org/en-US/docs/Web/CSS/font
 
   var fontPosition = opts.hasOwnProperty('fontPosition') ? opts['fontPosition'] : { x: 0, y: 0 };
-  var textBaseline = opts.hasOwnProperty('textBaseline') ? opts['textBaseline'] : 'middle';
+  var textBaseline = opts.hasOwnProperty('textBaseline') ? opts['textBaseline'] : 'alphabetic';
   var textAlign = opts.hasOwnProperty('textAlign') ? opts['textAlign'] : 'start';
+  var verticalAlign = opts.hasOwnProperty('verticalAlign') ? opts['verticalAlign'] : 'top';
+  var lineHeight = opts.hasOwnProperty('lineHeight') ? opts['lineHeight'] : 30;
   var fillStyle = opts.hasOwnProperty('fillStyle') ? opts['fillStyle'] : 'rgba(255,255,255,255)';
   var showBounds = opts.hasOwnProperty('showBounds') ? opts['showBounds'] : false;
   var canvas = document.createElement('canvas');
@@ -40,19 +42,27 @@ VRUIKit.TextLabel = function(text, opts) {
     context.fillRect(0, 0, width, height);
   }
 
-  context.textBaseline = textBaseline;
-  if (textBaseline == 'middle') {
-    fontPosition.y = height/2;
-  }
-
   context.textAlign = textAlign;
+
   if (textAlign == 'center') {
     fontPosition.x += width/2;
   }
 
   context.fillStyle = fillStyle;
-  context.fillText(text, fontPosition.x, fontPosition.y);
 
+  var textLines = text.split('\n');
+
+  if (verticalAlign === 'top') {
+    fontPosition.y = lineHeight;
+  } else if (verticalAlign === 'middle') {
+    fontPosition.y = (height/2) - ((lineHeight * textLines.length) / 2) + lineHeight;
+  }
+
+  context.textBaseline = textBaseline;
+
+  textLines.forEach(function(textLine, i) {
+    context.fillText(textLine, fontPosition.x, fontPosition.y + (lineHeight * i));
+  })
 
   var texture = new THREE.Texture(canvas);
   texture.needsUpdate = true;
@@ -62,24 +72,9 @@ VRUIKit.TextLabel = function(text, opts) {
     transparent: true
   });
 
-
   var geometry = new THREE.PlaneGeometry( width, height, 10, 10 );
 
-
-  // ---------------
-
-  var group = new THREE.Group();
-
-  // var geo = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
-  // var mat = new THREE.MeshBasicMaterial({color: 0x0000ff, wireframe: true });
-  // var cube = new THREE.Mesh( geo, mat );
-  // group.add(cube);
-
-  var label = new THREE.Mesh( geometry, material );
-
-  group.add(label)
-
-  return group;
+  return new THREE.Mesh( geometry, material );
 }
 
 
