@@ -5,12 +5,16 @@ var VRUIKit = {};
 
 VRUIKit.TextLabel = function(text, opts) {
 
-// var label = VRUI.TextLabel('Test Text', {
+// var label = VRUIKit.TextLabel('Test Text\nLine 2\nline 3', {
 //        width: 300,
-//        height: 50
+//        height: 300,
+//        showBounds: true,
+//        verticalAlign: 'middle',
+//        textAlign: 'center'
 //       });
-//       label.scale.set(0.5, 0.5, 0.5);
-//       label.position.z = -200;
+//       label.scale.x *= 0.001;
+//       label.scale.y *= 0.001;
+//       label.position.z = -1;
 
 //       self.scene.add(label);
 
@@ -53,7 +57,7 @@ VRUIKit.TextLabel = function(text, opts) {
   var textLines = text.split('\n');
 
   if (verticalAlign === 'top') {
-    fontPosition.y = lineHeight;
+    fontPosition.y += lineHeight;
   } else if (verticalAlign === 'middle') {
     fontPosition.y = (height/2) - ((lineHeight * textLines.length) / 2) + lineHeight;
   }

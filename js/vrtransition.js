@@ -1,76 +1,47 @@
 function VRTransition() {
-
-  var self = this;
   this.visible = false;
 
   //create object
-  self.object = new THREE.Object3D();
-  self.object.visible = this.visible;
+  this.object3d = new THREE.Object3D();
+  this.object3d.visible = this.visible;
 
-  var geometry = new THREE.IcosahedronGeometry( 700, 1 );
-  var material = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    wireframe: false,
-    side: THREE.DoubleSide });
 
-  //fragment function: returns a group of meshes created from the faces of the geometry that is passed in
-  function fragment( geometry, material ) {
+  var geometry = new THREE.SphereGeometry( 199, 20, 20, 0, 360 * Math.PI/180, 0, 90 * Math.PI/180 );
 
-    var group = new THREE.Group();
+  var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true,  opacity: 1 });
 
-    for ( var i = 0; i < geometry.faces.length; i ++ ) {
+  // load texture
+  new THREE.TextureLoader().load("images/eyelid-gradient.png", function(texture) {
+    texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.repeat.set( 1, 1 );
+    texture.offset.set( 0, -1 );
+    material.map = texture; // assign texture to material
+    material.needsUpdate = true;
+  });
 
-      var face = geometry.faces[ i ];
+  // load alphamap
+  new THREE.TextureLoader().load("images/alpha-2pxblack-topbottom.png", function(alphamap) {
+    material.alphaMap = alphamap;
+    material.needsUpdate = true;
+  });
 
-      var vertexA = geometry.vertices[ face.a ].clone();
-      var vertexB = geometry.vertices[ face.b ].clone();
-      var vertexC = geometry.vertices[ face.c ].clone();
+  var top = new THREE.Mesh(geometry, material);
+  var bottom = new THREE.Mesh(geometry, material);
 
-      var geometry2 = new THREE.Geometry();
-      geometry2.vertices.push( vertexA, vertexB, vertexC );
-      geometry2.faces.push( new THREE.Face3( 0, 1, 2 ) );
+  bottom.rotation.set(0, 0, 1 * Math.PI)
 
-      var mesh = new THREE.Mesh( geometry2, material );
-      mesh.position.sub( geometry2.center() );
+  this.object3d.add(top);
+  this.object3d.add(bottom);
 
-      var wireframe = new THREE.Mesh(
-        geometry2,
-        new THREE.MeshBasicMaterial( { color: 0xCCCCCC, wireframe: true, wireframeLinewidth: 3 } )
-      )
-      wireframe.position.sub( geometry2.center() );
+  this.material = material;
 
-      mesh.add( wireframe );
-      group.add( mesh );
-
-    }
-    return group;
-  }
-
-  //fragment the geometry
-  var pieces = fragment( geometry, material );
-
-  //sort the pieces
-  pieces.children.sort( function ( a, b ) {
-
-    return a.position.z - b.position.z;
-    //return a.position.x - b.position.x;     // sort x
-    //return b.position.y - a.position.y;   // sort y
-
-  } );
-
-  pieces.rotation.set( 0, 0, 0 )
-
-  //add pieces to holder object
-  self.object.add( pieces );
-
+  return this;
 }
 
-VRTransition.prototype.update = function() {
-  // update loop
-}
-
-VRTransition.prototype.fadeOut = function (noTransition) {
+VRTransition.prototype.fadeOut = function(noTransition) { // hide content
+  console.log('FADEOUT');
   var self = this;
+  var mesh = self.object3d;
 
   self.noTransition = noTransition || false;
 
@@ -80,74 +51,32 @@ VRTransition.prototype.fadeOut = function (noTransition) {
       return false;
     };
 
-    self.object.visible = true;
-    self.visible = true;
+    mesh.visible = self.visible = true;
 
-    var pieces = self.object.children[0];
+    new TWEEN.Tween( self.material.map.offset )
+      .to( { y: 0 }, 800 )
+      .easing( TWEEN.Easing.Sinusoidal.Out )
+      .onComplete(function() {
+        resolve();
+      })
+      .start();
 
-    for ( var i = 0; i < pieces.children.length; i ++ ) {
-
-      var object = pieces.children[i];
-      var delay = i * 18;
-
-      var destZ = object.position.z;
-      object.position.setZ( destZ - 5 );
-      new TWEEN.Tween( object.position )
-        .to( { z: destZ  }, 600 )
-        .delay( delay )
-        //.easing( TWEEN.Easing.Cubic.Out )
-        .start();
-
-      /*
-      object.rotation.set( 0, 0, 0.5 );
-      new TWEEN.Tween( object.rotation )
-        .to( { z:0  }, 800 )
-        .delay( delay )
-        //.easing( TWEEN.Easing.Cubic.Out )
-        .start();
-      */
-
-      object.scale.set( 0.0001, 0.0001, 0.0001 )
-      new TWEEN.Tween( object.scale )
-        .to( { x:0.99, y:0.99, z:0.99  }, 600 )
-        .delay( delay )
-        //.easing( TWEEN.Easing.Cubic.Out )
-        .start();
-
-    }
-
-    //set this long enough to allow for the full number of pieces to play, with their delays
-    setTimeout(function() {
-      resolve();
-    },2250)
+    resolve();
 
   });
 };
 
 VRTransition.prototype.fadeIn = function () {
+  console.log('FADEIN');
   var self = this;
 
-  var pieces = self.object.children[0];
-
-  for ( var i = 0; i < pieces.children.length; i ++ ) {
-
-    var object = pieces.children[i];
-    //var delay = i * 0.15;
-    //var destY = object.position.y + 100;
-
-    new TWEEN.Tween( object.scale )
-      .to( { x:0.0001, y:0.0001, z:0.0001  }, 500 )
-      .easing( TWEEN.Easing.Cubic.In )
-      //.delay(50)
-      .start();
-
-      setTimeout(function() {
-        self.object.visible = false;
-        self.visible = false;
-      },1200)
-
-  }
-
+  new TWEEN.Tween( self.material.map.offset )
+    .to( { y: -1 }, 800 )
+    .easing( TWEEN.Easing.Sinusoidal.Out )
+    .onComplete(function() {
+      self.object3d.visible = self.visible = false;
+    })
+    .start();
 };
 
 

@@ -37,7 +37,7 @@ function VRUi(container) {
 			self.scene.add(self.background());
 
 			// add transition mesh to scene
-			self.scene.add(self.transition.object);
+			self.scene.add(self.transition.object3d);
 
 			// title
 			self.scene.add(self.title.object3d);
@@ -84,7 +84,7 @@ VRUi.prototype.load = function(url, opts) {
 		.then(function() {
 			self.cursor.disable();
 
-			self.transition.fadeOut(noTransition)
+			self.transition.fadeOut(noTransition) // hide content
 				.then(function() {
 
 					self.backgroundShow();
@@ -406,8 +406,6 @@ VRUi.prototype.animate = function() {
 	if (controls) {
 		this.controls.update();
 	}
-
-	this.transition.update();
 
 	this.loading.update();
 
