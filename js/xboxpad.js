@@ -7,7 +7,7 @@
      "RT", "Back", "Start", "LS",
     "RS", "Up", "Down", "Left", "Right", "XBox"];
   var buttonStatus = [];
-  var pollInterval = 50;
+  var pollInterval = 200;
   var pad;
 
   window.addEventListener("gamepadconnected", connecthandler);
@@ -22,17 +22,19 @@
 
   function pollState() {
     var gp = remapGamepad(pad);
+    var pressedButtons = [];
     for (var i = 0; i < gp.buttons.length; i++) {
       var b = gp.buttons[i];
       var pressed = b.pressed;
       if (b.pressed) {
         if (!buttonStatus[i]) {
+          pressedButtons.push(buttonMapping[i]);
           //console.log("BUTTON PRESSED " + i + " NAME " + buttonMapping[i]);
-          xBoxPad.fire('click', buttonMapping[i]);
         }
       }
       buttonStatus[i] = pressed;
     }
+    xBoxPad.fire('pressed', pressedButtons);
   }
 
   function disconnecthandler(e) {
