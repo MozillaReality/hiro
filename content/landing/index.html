@@ -21,8 +21,9 @@
 	</head>
 	<body>
 	</body>
-	<script src="../../js/vendor/three.min.js"></script>
+	<script src="js/three.min.js"></script>
 	<script src="../../js/vendor/tween.min.js"></script>
+	<script src="../../js/lib/vruikit.js"></script>
 	<script src="../../js/vendor/VRControls.js"></script>
 	<script src="../../js/vendor/VREffect.js"></script>
 	<script src="../../js/vendor/DeviceOrientationControls.js"></script>
@@ -113,6 +114,90 @@
 
 			// Announce to Javris that everything is ready to go and we can reveal content.
 			VRClient.ready();
+
+
+			//create cylinder band
+			//create texture
+				//width-height ratio must match that of target mesh to avoid stretching textures.
+				//for cylinders, degrees of thetaLength corresponds to width.
+				//for cylinders, radius must also be taken into account. Using 0.5, and matching width-height ratio to thetaLength/height ratio works. Using different radius does not.
+					//soltion A: use 0.5 radius and then scale mesh evenly on xyz to resize it without stretching the texture
+					//soltion B: take radius into account when creating cylinder band, and work out some sort of automatic formula that does matches everything up automatically. This approach would be more useful.
+				//use textPosition and other layout values to nudge into place
+				//todo: add option to define magFilter and minFilter of texture?
+				
+			//create test text
+			var label = VRUIKit.TextLabel('WHEREVER YOU GO, THERE YOU ARE', {
+       width: 900, //width-height ratio must match that of target mesh to avoid stretching textures. For cylinders, degrees of thetaLength corresponds to width.
+       height: 150,	
+       font: "normal 43px montserrat",
+       textAlign: 'left',
+       fillStyle: 'rgba( 255, 255, 255, 1 )',
+       showBounds: false,
+       fontPosition: { x: 20, y: 20 }
+      });
+
+			//create geometry
+			var radiusTop = radiusBottom = 0.5;
+			var height = 0.15; // Height of the cylinder. Default is 100.
+			var radiusSegments = 60; // Number of segmented faces around the circumference of the cylinder. Default is 8
+			var heightSegments = 1; // Number of rows of faces along the height of the cylinder. Default is 1.
+			var openEnded = true; // A Boolean indicating whether the ends of the cylinder are open or capped. Default is false, meaning capped.
+			var thetaStart = 90 * Math.PI/180;
+			var thetaLength = 90 * Math.PI/180;
+			var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, height, radiusSegments, heightSegments, openEnded, thetaStart, thetaLength );
+			geometry.applyMatrix(new THREE.Matrix4().makeScale( -1, 1, 1 ) ); //flip the cylinder so texture faces inside (optional, obviously)
+
+			//create materials
+			var text_material = new THREE.MeshBasicMaterial( { side: THREE.DoubleSide, transparent: true, opacity: 1, map: label.material.map } );		
+			var base_material = new THREE.MeshBasicMaterial( { side: THREE.DoubleSide, transparent: true, opacity: 0.8, color: 0x333333 } );
+			materials = [ base_material, text_material ];
+
+			//create mesh
+			var mesh = THREE.SceneUtils.createMultiMaterialObject( geometry, materials );
+			mesh.position.set( 0, 0, -1 )
+			scene.add( mesh );
+
+			//animate in
+
+			mesh.scale.set( 1, 0, 1 );
+			label.material.map.offset.set( 1, 0);
+
+			new TWEEN.Tween( mesh.scale )
+				.to( { y: 1 }, 300 )
+				.delay( 600 )
+				.onComplete( function(){
+
+					new TWEEN.Tween( label.material.map.offset )
+		      	.to( {x:0}, 800 )
+		      	.easing( TWEEN.Easing.Quadratic.Out )
+		      	.start()
+				})
+				.start();
+
+			
+
+			// mesh.rotation.set( 0, 3.57, 0 )
+		   //    new TWEEN.Tween( mesh.rotation )
+		   //    	.to( { y:0.1 }, 5500 )
+		   //    	.delay( 800 )
+		   //    	.easing( TWEEN.Easing.Quadratic.Out )
+		   //    	// .start()
+
+		   //    mesh.scale.set( 2, 2, 2 )
+		   //    new TWEEN.Tween( mesh.scale )
+		   //    	.to( { x:1, y:1, z:1 }, 5500 )
+		   //    	.delay( 800 )
+		   //    	.easing( TWEEN.Easing.Quadratic.Out )
+		   //    	.start()
+ 
+      
+
+
+
+      // scene.add(label);
+
+
 		}
 
 
