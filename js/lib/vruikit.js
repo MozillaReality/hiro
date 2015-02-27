@@ -1,16 +1,19 @@
 
-// var label = TextLabel('Test Text', {
-//  width: 300,
-//  height: 50
-// });
-// label.scale.set(0.5, 0.5, 0.5);
-// label.position.z = -200;
-
-// scene.add(label);
 
 
+var VRUIKit = {};
 
-function TextLabel(text, opts) {
+VRUIKit.TextLabel = function(text, opts) {
+
+// var label = VRUI.TextLabel('Test Text', {
+//        width: 300,
+//        height: 50
+//       });
+//       label.scale.set(0.5, 0.5, 0.5);
+//       label.position.z = -200;
+
+//       self.scene.add(label);
+
   if (!opts) opts = {};
   var width = opts.hasOwnProperty('width') ? opts.width : 100;
   var height = opts.hasOwnProperty('height') ? opts.height : 100;
@@ -77,5 +80,6 @@ function TextLabel(text, opts) {
   group.add(label)
 
   return group;
-
 }
+
+

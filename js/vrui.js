@@ -30,7 +30,7 @@ function VRUi(container) {
 
 	//self.scene.add(self.gridlines());
 
-	this.ready = Promise.all([this.hud.ready, this.title.ready, this.cursor.ready])
+	this.ready = Promise.all([this.hud.ready, this.cursor.ready])
 		.then(function() {
 
 			// hud background
@@ -40,8 +40,7 @@ function VRUi(container) {
 			self.scene.add(self.transition.object);
 
 			// title
-			self.bend(self.title.mesh, 2.5, true)
-			self.scene.add(self.title.mesh);
+			self.scene.add(self.title.object3d);
 
 			// add hud layout to scene
 			self.bend(self.hud.layout, 2, false)
@@ -57,6 +56,8 @@ function VRUi(container) {
 
 			// Once all this is loaded, kick off start from VR
 			// self.start();
+
+
 		});
 
 	return this;
@@ -88,11 +89,6 @@ VRUi.prototype.load = function(url, opts) {
 
 					self.backgroundShow();
 
-					// set title URL
-					self.title.setTitle('');
-					self.title.setCredits('');
-					self.title.setUrl(url);
-
 					if (noTitle) {
 						self.backgroundHide();
 					} else {
@@ -113,14 +109,10 @@ VRUi.prototype.load = function(url, opts) {
 
 					function onPageMeta(tab) {
 						var title = tab.siteInfo.title;
-						var credits = tab.siteInfo.description;
+						var description = tab.siteInfo.description;
 
-						if (title) {
-							self.title.setTitle(title);
-						}
-						if (credits) {
-							self.title.setCredits(credits);
-						}
+						// self.title.setTitle();
+						// self.title.setDescription();
 					}
 
 					function onTabReady() {
@@ -159,7 +151,7 @@ VRUi.prototype.showHud = function() {
 	this.background.visible = true;
 	this.backgroundShow();
 	this.hud.show();
-	this.title.show(1000);
+	this.title.show();
 	this.cursor.enable();
 	this.cursor.show();
 	VRManager.currentDemo.blur();
@@ -169,7 +161,7 @@ VRUi.prototype.hideHud = function() {
 	console.log('hiding HUD');
 	this.backgroundHide(1000);
 	this.hud.hide();
-	this.title.hide(1000);
+	this.title.hide();
 	this.cursor.disable();
 	VRManager.currentDemo.focus();
 }
