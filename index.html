@@ -49,6 +49,7 @@
     </div>
 
   </body>
+  <script src="js/vendor/gamepadmapping.js"></script>
   <script src="js/vendor/three.min.js"></script>
   <script src="js/vendor/VRControls.js"></script>
   <script src="js/vendor/DeviceOrientationControls.js"></script>
@@ -59,7 +60,8 @@
   <script src="js/lib/dom2three.js"></script>
   <script src="js/lib/sketch2three.js"></script>
   <script src="js/lib/vruikit.js"></script>
-
+  <script src="js/vendor/evt.js"></script>
+  <script src="js/xboxpad.js"></script>
   <script src="js/vrutils.js"></script>
   <script src="js/vrtab.js"></script>
   <script src="js/vrtransition.js"></script>
@@ -120,7 +122,6 @@
     el.requestPointerLock();
   }
 
-
   function onFschange() {
     var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement;
 
@@ -165,51 +166,6 @@
     }
   };
 
-  function disconnecthandler(e) {
-    clearInterval(interval);
-    console.log('Gamepad disconnected.');
-  }
-
-  function connecthandler(e) {
-    var gp = navigator.getGamepads()[e.gamepad.index];
-    console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-      gp.index, gp.id,
-      gp.buttons.length, gp.axes.length);
-
-    var pressed;
-
-    interval = setInterval(function() {
-      for (var i = 0; i < gp.buttons.length; i++) {
-        var b = gp.buttons[i];
-        if (i == 0) {
-          // select
-          if (pressed !== i && b.pressed) {
-            document.body.dispatchEvent(new MouseEvent('click', {
-              'view': window,
-              'bubbles': true,
-              'cancelable': true
-            }));
-
-            pressed = i;
-          } else if (pressed == i && !b.pressed) {
-            pressed = undefined;
-          }
-
-        } else if (i == 10) {
-          // menu
-          if (pressed !== i && b.pressed) {
-            VRManager.ui.toggleHud();
-            pressed = i;
-          } else if (pressed == i && !b.pressed) {
-            pressed = undefined;
-          }
-        }
-      }
-
-    }, 50)
-
-  }
-
   function onkey(event) {
     //console.log(event.keyCode)
 
@@ -233,13 +189,28 @@
 
   window.addEventListener("keydown", onkey, true);
 
-  window.addEventListener("gamepaddisconnected", disconnecthandler);
-  window.addEventListener("gamepadconnected", connecthandler);
-
   document.addEventListener('mozfullscreenchange', onFschange);
   document.addEventListener('webkitfullscreenchange', onFschange);
   document.addEventListener('fullscreenchange', onFschange);
 
+  xBoxPad.on('pressed', function(buttons) {
+    if (buttons.length === 2) {
+      if (buttons[0] === 'LT' && buttons[1] === 'RT' ||
+          buttons[0] === 'RT' && buttons[1] === 'LT' ) {
+        VRManager.ui.toggleHud();
+      }
+      return;
+    }
+    if (buttons.length === 1 && buttons[0] === 'A') {
+      document.body.dispatchEvent(
+        new MouseEvent('click', {
+          'view': window,
+          'bubbles': true,
+          'cancelable': true
+      }));
+      return;
+    }
+  });
 
   VRManager.vrReady.then(function() {
     // VR detected
