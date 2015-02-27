@@ -2,11 +2,11 @@
   "favorites": [
     {
       "id": "home",
-      "url": "content/construct"
+      "url": "content/construct/"
     },
     {
       "id": "fav-xibalba.png",
-      "url": "content/xibalba"
+      "url": "content/xibalba/"
     },
     {
       "id": "fav-sechelt.png",
@@ -14,7 +14,7 @@
     },
     {
       "id": "fav-polarsea.png",
-      "url": "content/polarsea"
+      "url": "content/polarsea/"
     },
     {
       "id": "fav-rex.png",
@@ -26,11 +26,11 @@
     },
     {
       "id": "fav-rainbow.png",
-      "url": "content/rainbow"
+      "url": "content/rainbow/"
     },
     {
       "id": "fav-nickycase.png",
-      "url": "content/nickycase/animatic_test_3"
+      "url": "content/nickycase/animatic_test_3/"
     }
   ]
 }

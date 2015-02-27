@@ -11,11 +11,10 @@ VRUi
 function VRUi(container) {
 	var self = this;
 
-
-	this.landingUrl = 'content/landing'; 
+	this.landingUrl = 'content/landing';
 	this.homeUrl = 'content/construct';
 	this.homeUrlDelay = 5000; // delay before loading home from landing page when entering VR mode.
-	
+
 	this.container = container;
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
@@ -392,7 +391,7 @@ VRUi.prototype.setRenderMode = function(mode) {
 			setTimeout(function() {
 				self.load(self.homeUrl);
 			}, self.homeUrlDelay)
-			
+
 		}
 
 	} else if (mode == VRUi.modes.stereo) {
