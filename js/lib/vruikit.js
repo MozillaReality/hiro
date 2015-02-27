@@ -53,7 +53,7 @@ VRUIKit.TextLabel = function(text, opts) {
   var textLines = text.split('\n');
 
   if (verticalAlign === 'top') {
-    fontPosition.y = lineHeight;
+    fontPosition.y += lineHeight;
   } else if (verticalAlign === 'middle') {
     fontPosition.y = (height/2) - ((lineHeight * textLines.length) / 2) + lineHeight;
   }
