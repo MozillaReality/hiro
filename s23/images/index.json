@@ -21,14 +21,25 @@
           "scale" : 1
         }
       },
-      "instructions" : {
-        "instructions.png" : {
+      "frame" : {
+        "frame.png" : {
           "format" : "png",
-          "height" : 43,
-          "x" : 1500,
-          "y" : 717,
-          "width" : 378,
-          "name" : "instructions",
+          "height" : 146,
+          "x" : 1520,
+          "y" : 154,
+          "width" : 201,
+          "name" : "frame",
+          "scale" : 1
+        }
+      },
+      "titlebar" : {
+        "titlebar.png" : {
+          "format" : "png",
+          "height" : 169,
+          "x" : 1520,
+          "y" : 600,
+          "width" : 560,
+          "name" : "titlebar",
           "scale" : 1
         }
       },
@@ -84,17 +95,6 @@
           "y" : 320,
           "width" : 210,
           "name" : "fav-rex",
-          "scale" : 1
-        }
-      },
-      "bookmarks-frame" : {
-        "bookmarks-frame.png" : {
-          "format" : "png",
-          "height" : 36,
-          "x" : 1400,
-          "y" : 261,
-          "width" : 930,
-          "name" : "bookmarks-frame",
           "scale" : 1
         }
       },
