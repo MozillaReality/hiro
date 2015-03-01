@@ -1,13 +1,12 @@
 function VRTransition() {
+
   this.visible = false;
 
-  //create object
+  //create eyelids
   this.object3d = new THREE.Object3D();
   this.object3d.visible = this.visible;
 
-
   var geometry = new THREE.SphereGeometry( 199, 20, 20, 0, 360 * Math.PI/180, 0, 90 * Math.PI/180 );
-
   var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true,  opacity: 1 });
 
   // load texture
@@ -27,18 +26,17 @@ function VRTransition() {
 
   var top = new THREE.Mesh(geometry, material);
   var bottom = new THREE.Mesh(geometry, material);
-
   bottom.rotation.set(0, 0, 1 * Math.PI)
 
   this.object3d.add(top);
   this.object3d.add(bottom);
-
   this.material = material;
-
   return this;
 }
 
+//fadeOut: closes the "eyelids" and completely darkens the background
 VRTransition.prototype.fadeOut = function(noTransition) { // hide content
+
   console.log('FADEOUT');
   var self = this;
   var mesh = self.object3d;
@@ -66,6 +64,7 @@ VRTransition.prototype.fadeOut = function(noTransition) { // hide content
   });
 };
 
+//fadeOut: opens the "eyelids" and reveals the new site
 VRTransition.prototype.fadeIn = function () {
   console.log('FADEIN');
   var self = this;

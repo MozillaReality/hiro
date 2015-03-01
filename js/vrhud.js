@@ -1,6 +1,7 @@
 'use strict';
 
 function VRHud() {
+
 	var self = this;
 
 	this.layout = new THREE.Group();
@@ -52,29 +53,19 @@ function VRHud() {
 
 				self.layout.add(mesh);
 
-				if( mesh.name.indexOf("fav") !== -1 ) {
-	        mesh.position.setY( mesh.position.y + 1 );
-	        var tween = new TWEEN.Tween( mesh.position )
-	          .to( { y:"0" }, 2500 )
-	          .easing(TWEEN.Easing.Cubic.Out)
-	          .delay( 2000 )
-	          .start();
-				}
-
-				if( mesh.name.indexOf("frame") !== -1 ) {
-					var tween = new TWEEN.Tween( mesh.position )
-	          .to( { z:-1.1 }, 2500 )
-	          .easing(TWEEN.Easing.Cubic.Out)
-	          .delay( 2000 )
-	          .start();
-				}
+				// if( mesh.name.indexOf("fav") !== -1 ) {
+	   //      mesh.position.setY( mesh.position.y + 1 );
+	   //      var tween = new TWEEN.Tween( mesh.position )
+	   //        .to( { y:"0" }, 500 )
+	   //        .easing(TWEEN.Easing.Cubic.Out)
+	   //        .delay( 2000 )
+	   //        .start();
+				// }
 			});
 
 		}, function(err) {
 			console.log(err);
 		})
-
-
 
 	};
 
@@ -86,11 +77,29 @@ function VRHud() {
 	}
 
 	this.ready = Promise.all([loadSketch('s23/images/index.json', opts), jsonLoaded]).then(function(result) {
+
 		var meshes = result[0];
 		var favorites = result[1].favorites;
 		self.favorites = favorites;
-
 		self.attachEvents.call(self, favorites);
+
+
+    var test = new THREE.Mesh(
+			new THREE.SphereGeometry( 0.09, 20, 20 ),
+			new THREE.MeshBasicMaterial( { color: 0xff0000 } )
+		);
+		test.position.set( 0, 0.5, -0.75 );
+		self.layout.add(test);
+
+		var ar = Sketch2three.getMeshes('titlebar')[0];
+
+    var pivot = new THREE.Object3D();
+    console.log( pivot );
+    // pivot.add( mesh );
+    // self.layout.add(pivot);
+    // pivot.scale.set( 0.9, 0.9, 0.9 );
+
+
 	});
 
 	return this;
@@ -113,7 +122,7 @@ VRHud.prototype.show = function() {
 			self.layout.visible = self.visible = true
 
 			// this is where you add your animation.
-			//var ar = Sketch2three.getMeshes('fav-sechelt');
+			//var ar = Sketch2three.getMeshes('fav-sechelt')[0];
 			//console.log(ar);
 
 			resolve();
