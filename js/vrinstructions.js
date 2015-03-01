@@ -20,9 +20,20 @@ VRInstructions.prototype.makeLayout = function() {
 	var radius = 0.6;
 	var leftEdge = 215;
 
-
 	// instructions
+	var r = 3.5;
+	var C = 2 * Math.PI * r;
 
+	this.instructionsPanel = VRUIKit.makeCurvedPlane( C/2, 1.5, r, 0xffffff);
+	this.instructionsPanel.material.wireframe = true;
+	this.instructionsPanel.rotation.y = Math.PI/2;
+
+	holder.add(this.instructionsPanel);
+
+	//var instructionsMesh = VRUIKit.makeCurvedPlane( opts.width, opts.height, opts.radius, 0x333333);
+	var b = VRUIKit.makeBorder( 3, 1.5, 0.01, 270, 180, 0, 0xFFFFFF, 0.2 );
+	b.position.set( 0, 0, 0 );
+	holder.add( b );
 
 	//make loading animation frames
 	var b1Pivot = new THREE.Object3D();
@@ -81,9 +92,13 @@ VRInstructions.prototype.makeLayout = function() {
 	return holder;
 }
 
-VRInstructions.prototype.show = function() {
+VRInstructions.prototype.show = function(instructionsImage) {
 	if (!this.visible) {
 		this.object3d.visible = this.visible = true;
+
+		var texture = THREE.ImageUtils.loadTexture( instructionsImage, THREE.UVMapping);
+		this.instructionsPanel.material.wireframe = false;
+		this.instructionsPanel.material.map = texture;
 	}
 }
 

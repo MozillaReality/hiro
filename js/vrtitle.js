@@ -97,36 +97,40 @@ VRTitle.prototype.makeLayout = function() {
 
 
 
-	this.descriptionLabel = makeCurvedLabel('Site Description', {
-		width: 0.3,
-		height: 0.1,
-		radius: 0.6,
+	this.descriptionLabel = makeCurvedLabel('Site Description\nNew Line', {
+		width: 0.3, height: 0.1, radius: 0.6,
 		background: 'black',
 		color: 'white'
 	})
 	this.descriptionLabel.mesh.position.y = 0.1;
 	holder.add(this.descriptionLabel.mesh);
 
-
-	this.titleLabel = makeCurvedLabel('Site Name', {
-		width: 0.3,
-		height: 0.05,
-		radius: 0.6,
-		background: 'red'
-	})
-	holder.add(this.titleLabel.mesh);
-
-
-	this.urlLabel = makeCurvedLabel('Site URL', {
-		width: 0.3,
-		height: 0.05,
-		radius: 0.6,
+	var titleGroup = new THREE.Group();
+	var r = 0.8;
+	var w = 0.7;
+	this.titleLabel = makeCurvedLabel('MOZVR.COM', {
+		width: w, height: 0.12, radius: r,
+		fontPosition: { x: 15, y: 15 },
+		font: 'normal 32px montserrat',
 		background: 'white',
 		color: 'black'
 	})
+	titleGroup.add(this.titleLabel.mesh);
 
-	this.urlLabel.mesh.position.y = -0.05;
-	holder.add(this.urlLabel.mesh);
+	this.urlLabel = makeCurvedLabel('www.mozilla.com', {
+		width: w, height: 0.07, radius: r,
+		fontPosition: { x: 15, y: 12 },
+		font: 'normal 21px montserrat',
+		background: 'black',
+		color: 'white'
+	})
+
+	this.urlLabel.mesh.position.y = -0.10;
+	titleGroup.add(this.urlLabel.mesh);
+
+	titleGroup.position.y = -0.28;
+	titleGroup.rotation.y = Utils.toRad(28);
+	holder.add(titleGroup);
 
 
 
@@ -174,7 +178,7 @@ VRTitle.prototype.hide = function() {
 };
 
 VRTitle.prototype.setTitle = function(title) {
-	this.titleLabel.set(title);
+	this.titleLabel.set(title.toUpperCase());
 }
 
 VRTitle.prototype.setDescription = function(description) {
@@ -182,7 +186,7 @@ VRTitle.prototype.setDescription = function(description) {
 }
 
 VRTitle.prototype.setUrl = function(url) {
-	this.urlLabel.set(url);
+	this.urlLabel.set(url.toUpperCase());
 }
 
 // var titleUrl = value;

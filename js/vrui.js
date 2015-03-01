@@ -75,6 +75,8 @@ VRUi.prototype.load = function(url, opts) {
 
 	var opts = opts || {};
 
+	var instructions = opts.instructions || false;
+
 	// hides loading progress animation
 	var noLoading = opts.noLoading || false;
 
@@ -108,7 +110,7 @@ VRUi.prototype.load = function(url, opts) {
 					}
 
 					if (!noLoading) {
-						self.instructions.show();
+						self.instructions.show(instructions);
 					}
 
 					function onPageMeta(tab) {

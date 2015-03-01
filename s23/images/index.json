@@ -32,17 +32,6 @@
           "scale" : 1
         }
       },
-      "titlebar" : {
-        "titlebar.png" : {
-          "format" : "png",
-          "height" : 169,
-          "x" : 1520,
-          "y" : 600,
-          "width" : 560,
-          "name" : "titlebar",
-          "scale" : 1
-        }
-      },
       "fav-nickycase" : {
         "fav-nickycase.png" : {
           "format" : "png",

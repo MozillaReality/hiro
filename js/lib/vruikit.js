@@ -5,18 +5,6 @@ var VRUIKit = {};
 
 VRUIKit.TextLabel = function(text, opts) {
   this.text = text;
-// var label = VRUIKit.TextLabel('Test Text\nLine 2\nline 3', {
-//        width: 300,
-//        height: 300,
-//        showBounds: true,
-//        verticalAlign: 'middle',
-//        textAlign: 'center'
-//       });
-//       label.scale.x *= 0.001;
-//       label.scale.y *= 0.001;
-//       label.position.z = -1;
-
-//       self.scene.add(label);
 
   if (!opts) opts = {};
   this.width = opts.hasOwnProperty('width') ? opts.width : 1; // three js units
@@ -227,6 +215,43 @@ VRUIKit.makeCurvedPlane = function( width, height, radius, color ) {
   return new THREE.Mesh( g, m );
 
 }
+
+
+//make border
+  //makes flat cylindrical "outline" planes that face the user
+VRUIKit.makeBorder = function( radius, height, thickness, thetaStart, thetaLength, y, color, opacity ) {
+  var sideGeometry = new THREE.PlaneGeometry( thickness, height+thickness, 1, 1 );
+  var material = new THREE.MeshBasicMaterial( {
+    color: color,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: opacity
+  } );
+
+  var top = VRUIKit.makeBand( radius, thickness, thetaStart, thetaLength, 0+height/2, color, opacity );
+  var bottom = VRUIKit.makeBand( radius, thickness, thetaStart, thetaLength, 0-height/2, color, opacity );
+
+  var left = new THREE.Mesh( sideGeometry, material );
+  left.position.set( 0, 0-thickness/2, radius );
+  var leftPivot = new THREE.Object3D();
+  leftPivot.rotation.set( 0, thetaStart*Math.PI/180, 0 );
+  leftPivot.add( left );
+
+  var right = new THREE.Mesh( sideGeometry, material );
+  right.position.set( 0, 0-thickness/2, radius );
+  var rightPivot = new THREE.Object3D();
+  rightPivot.rotation.set( 0, (thetaStart-thetaLength)*Math.PI/180, 0 );
+  rightPivot.add( right );
+
+  var border = new THREE.Object3D();
+  border.add( top );
+  border.add( bottom );
+  border.add( leftPivot );
+  border.add( rightPivot );
+
+  return border;
+}
+
 
 VRUIKit.makeBand = function( radius, height, thetaStart, thetaLength, y, color, opacity, flipNormals ) {
 
