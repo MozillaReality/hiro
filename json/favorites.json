@@ -10,7 +10,8 @@
     },
     {
       "id": "fav-sechelt.png",
-      "url": "content/sechelt/index.html?mode=vr"
+      "url": "content/sechelt/index.html?mode=vr",
+      "instructions": "content/instructions/instructions.gif"
     },
     {
       "id": "fav-polarsea.png",

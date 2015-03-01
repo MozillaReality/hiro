@@ -97,7 +97,7 @@ window.VRManager = (function() {
           //self.NoVRstart();
         });
 
-    
+
     self.ui.start();
   }
 
@@ -127,6 +127,9 @@ window.VRManager = (function() {
       if (pageMeta) {
         description = pageMeta.data.description;
         title = pageMeta.data.title;
+      } else {
+        description = "";
+        title = "";
       }
 
       newTab.siteInfo = {};
@@ -201,9 +204,9 @@ window.VRManager = (function() {
       };
 
       if(QueryString.demo) {
-        VRDemo.start();  
+        VRDemo.start();
       }
-      
+
     } else {
       console.log('no vr mode available');
     }
@@ -230,7 +233,7 @@ window.VRManager = (function() {
       console.log('zeroing sensor');
 
       // reset sensor on UI
-      self.ui.controls.zeroSensor();
+      self.positionDevice.zeroSensor();
 
       // reset sensor on vrtab content
       if (self.currentDemo) {
@@ -244,7 +247,7 @@ window.VRManager = (function() {
 })();
 
 var QueryString = function () {
-  // This function is anonymous, is executed immediately and 
+  // This function is anonymous, is executed immediately and
   // the return value is assigned to QueryString!
   var query_string = {};
   var query = window.location.search.substring(1);
@@ -262,7 +265,7 @@ var QueryString = function () {
     } else {
       query_string[pair[0]].push(pair[1]);
     }
-  } 
+  }
     return query_string;
 } ();
 

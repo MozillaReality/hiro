@@ -11,7 +11,7 @@ function VRTransition() {
   var material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true,  opacity: 1 });
 
   // load texture
-  new THREE.TextureLoader().load("images/eyelid-gradient.png", function(texture) {
+  new THREE.TextureLoader().load("images/transition/eyelid-gradient.png", function(texture) {
     texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.repeat.set( 1, 1 );
     texture.offset.set( 0, -1 );
@@ -20,7 +20,7 @@ function VRTransition() {
   });
 
   // load alphamap
-  new THREE.TextureLoader().load("images/alpha-2pxblack-topbottom.png", function(alphamap) {
+  new THREE.TextureLoader().load("images/transition/alpha-2pxblack-topbottom.png", function(alphamap) {
     material.alphaMap = alphamap;
     material.needsUpdate = true;
   });

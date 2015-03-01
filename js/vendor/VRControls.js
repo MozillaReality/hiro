@@ -45,7 +45,7 @@ THREE.VRControls = function ( object, callback ) {
 	// the Rift SDK returns the position in meters
 	// this scale factor allows the user to define how meters
 	// are converted to scene units.
-	this.scale = 2;
+	this.scale = 1;
 
 	this.update = function () {
 

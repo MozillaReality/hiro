@@ -11,7 +11,7 @@ VRUi
 function VRUi(container) {
 	var self = this;
 
-	this.landingUrl = 'content/landing';
+	this.landingUrl = 'content/sechelt';
 	this.homeUrl = 'content/construct';
 	this.homeUrlDelay = 5000; // delay before loading home from landing page when entering VR mode.
 
@@ -19,8 +19,9 @@ function VRUi(container) {
 	this.hud = new VRHud();
 	this.mode = this.modes.mono;
 	this.cursor = new VRCursor('mono');
-	this.loading = new VRLoading();
+	// this.loading = new VRLoading();
 	this.title = new VRTitle();
+	this.instructions = new VRInstructions();
 	this.transition = new VRTransition();
 
 	// three.js
@@ -42,12 +43,16 @@ function VRUi(container) {
 			// title
 			self.scene.add(self.title.object3d);
 
+			// loading
+			//self.scene.add(self.loading.object3d);
+
+			// instructions
+			self.scene.add(self.instructions.object3d);
+
 			// add hud layout to scene
 			self.bend(self.hud.layout, 2, false)
+			self.hud.layout.scale.set(0.5,0.5,0.5);
 			self.scene.add(self.hud.layout);
-
-			// loading progress
-			self.scene.add(self.loading.mesh);
 
 			// add cursor to scene
 			self.scene.add(self.cursor.layout);
@@ -56,7 +61,6 @@ function VRUi(container) {
 
 			// Once all this is loaded, kick off start from VR
 			// self.start();
-
 
 		});
 
@@ -104,23 +108,24 @@ VRUi.prototype.load = function(url, opts) {
 					}
 
 					if (!noLoading) {
-						self.loading.show();
+						self.instructions.show();
 					}
 
 					function onPageMeta(tab) {
 						var title = tab.siteInfo.title;
 						var description = tab.siteInfo.description;
 
-						// self.title.setTitle();
-						// self.title.setDescription();
+						self.title.setTitle(title);
+						self.title.setDescription(description);
 					}
+
 
 					function onTabReady() {
 						var holdTitleTime = 5000; // how long to hold title for before fading out.
 
 						self.backgroundHide(holdTitleTime);
 
-						self.loading.hide();
+						//self.loading.hide();
 
 						self.transition.fadeIn();
 
@@ -131,10 +136,15 @@ VRUi.prototype.load = function(url, opts) {
 
 						self.titleTimeout = window.setTimeout(function() {
 							if (!self.hud.visible) {
+								self.instructions.hide();
 								self.title.hide();
 							}
 						}, holdTitleTime);
 					}
+
+					self.title.setDescription('');
+					self.title.setTitle('');
+					self.title.setUrl(url);
 
 					VRManager.onPageMeta = onPageMeta;
 
@@ -147,7 +157,6 @@ VRUi.prototype.load = function(url, opts) {
 };
 
 VRUi.prototype.showHud = function() {
-	console.log('showing HUD');
 	this.background.visible = true;
 	this.backgroundShow();
 	this.hud.show();
@@ -158,7 +167,6 @@ VRUi.prototype.showHud = function() {
 };
 
 VRUi.prototype.hideHud = function() {
-	console.log('hiding HUD');
 	this.backgroundHide(1000);
 	this.hud.hide();
 	this.title.hide();
@@ -342,7 +350,7 @@ VRUi.prototype.initRenderer = function() {
 	this.renderer.sortObjects = false;
   this.renderer.setClearColor( 0x000000, 0 );
   this.scene = new THREE.Scene();
-  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+  this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.001, 10000 );
 
 	this.setRenderMode(this.mode);
 
@@ -378,12 +386,11 @@ VRUi.prototype.setRenderMode = function(mode) {
 		this.controls = new THREE.VRControls( this.camera );
 		this.cursor.setMode('centered');
 
-		// load from landing onto home
+		//load from landing onto home
 		if (this.isLanding && !QueryString.demo) {
 			setTimeout(function() {
 				self.load(self.homeUrl);
 			}, self.homeUrlDelay)
-
 		}
 
 	} else if (mode == VRUi.modes.stereo) {
@@ -407,7 +414,7 @@ VRUi.prototype.animate = function() {
 		this.controls.update();
 	}
 
-	this.loading.update();
+	//this.loading.update();
 
 	this.cursor.update();
 

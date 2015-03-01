@@ -78,10 +78,10 @@ function VRHud() {
 
 	};
 
-	var opts = { 
-		pixelScale: 0.003, 
-		artboardWidth: 3600, 
-		artboardHeight: 900, 
+	var opts = {
+		pixelScale: 0.0035,
+		artboardWidth: 3600,
+		artboardHeight: 900,
 		depth: 1
 	}
 
@@ -111,7 +111,7 @@ VRHud.prototype.show = function() {
 	return new Promise( function(resolve, reject) {
 		if (!self.visible) {
 			self.layout.visible = self.visible = true
-			
+
 			// this is where you add your animation.
 			//var ar = Sketch2three.getMeshes('fav-sechelt');
 			//console.log(ar);
@@ -139,11 +139,12 @@ VRHud.prototype.hide = function() {
 
 VRHud.prototype.attachEvents = function(favorites) {
 	var self = this;
-	
+
 	favorites.forEach(function(favorite) {
 		var mesh = self.meshes.find(function(mesh) { return mesh.name === favorite.id })
-		
+
 		if (mesh) {
+			mesh.userData.instructions = favorite.instructions;
 			mesh.userData.url = favorite.url;
 
 			// 	mesh.addEventListener('mouseover', function(e) {
@@ -176,14 +177,16 @@ VRHud.prototype.attachEvents = function(favorites) {
 			// 			}
 			// 		}
 			// 	});
-	
-			
+
+
 			mesh.addEventListener('click', function(e) {
 
 				var target = e.target;
 
 				if (self.enabled) {
-					VRManager.ui.load(target.userData.url);
+					VRManager.ui.load(target.userData.url, {
+						instructions: target.userData.instructions
+					});
 				}
 			});
 
