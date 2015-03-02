@@ -95,20 +95,18 @@ VRTitle.prototype.makeLayout = function() {
 		return label;
 	}
 
-
-
 	this.descriptionLabel = makeCurvedLabel('Site Description\nNew Line', {
-		width: 0.3, height: 0.08, radius: 0.6,
+		width: 0.3, height: 0.08, radius: 0.8,
 		background: 'black',
 		color: 'white',
 		fontPosition: { x: 10, y: 0 },
-		font: 'normal 16px montserrat',
+		font: 'normal 24px montserrat',
 		lineHeight: 22,
 		verticalAlign: 'top'
 	})
-	this.descriptionLabel.mesh.position.y = 0.1;
+	this.descriptionLabel.mesh.position.y = 0.2;
 	this.descriptionLabel.mesh.rotation.y = Utils.toRad(28);
-	holder.add(this.descriptionLabel.mesh);
+	// holder.add(this.descriptionLabel.mesh);
 
 	var titleGroup = new THREE.Group();
 	var r = 0.8;

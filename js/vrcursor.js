@@ -63,7 +63,7 @@ function VRCursor(mode) {
       self.layout.visible = self.enabled;
 
       // set the depth of cursor
-      self.cursor.position.z = -0.6;
+      self.cursor.position.z = -0.72;
 
       self.cursorPivot.add(self.cursor);
 

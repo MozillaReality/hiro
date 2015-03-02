@@ -198,7 +198,7 @@ VRUIKit.makeCurvedPlane = function( width, height, radius, color ) {
     radius, // radius top
     radius, // radius bottom
     height, // height
-    10, // y segments
+    30, // y segments
     10, // x segments
     true, // openended
     0,  // theta start
