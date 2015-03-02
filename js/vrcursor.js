@@ -56,14 +56,14 @@ function VRCursor(mode) {
       // cursor (line)
 
       var material = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 3 } );
-      var geometry = new THREE.CircleGeometry( 0.03, 64 );
+      var geometry = new THREE.CircleGeometry( 0.015, 64 );
       geometry.vertices.shift(); // remove center vertex
       self.cursor = new THREE.Line( geometry, material );
 
       self.layout.visible = self.enabled;
 
       // set the depth of cursor
-      self.cursor.position.z = -2;
+      self.cursor.position.z = -0.75;
 
       self.cursorPivot.add(self.cursor);
 
