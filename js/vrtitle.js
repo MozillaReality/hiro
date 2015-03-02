@@ -106,7 +106,7 @@ VRTitle.prototype.makeLayout = function() {
 	})
 	this.descriptionLabel.mesh.position.y = 0.2;
 	this.descriptionLabel.mesh.rotation.y = Utils.toRad(28);
-	holder.add(this.descriptionLabel.mesh);
+	// holder.add(this.descriptionLabel.mesh);
 
 	var titleGroup = new THREE.Group();
 	var r = 0.8;

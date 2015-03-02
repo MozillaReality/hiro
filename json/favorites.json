@@ -21,7 +21,7 @@
     {
       "id": "fav-xibalba.png",
       "title": "Xibala",
-      "description": "PhobosLab\nImpact Game Engine",
+      "description": "PHOBOSLAB\nIMPACT GAME ENGINE",
       "url": "content/xibalba/",
       "niceurl": "phoboslab.org/xibalba/",
       "instructions": "images/instructions/xibalba.png"
@@ -64,7 +64,7 @@
       "description": "NICKY CASE",
       "url": "content/nickycase/animatic_test_4/",
       "niceurl": "ncase.me",
-      "instructions": "images/instructions/iamink.png"
+      "instructions": "images/instructions/nickycase.png"
     }
   ]
 }

@@ -47,7 +47,7 @@ VRInstructions.prototype.makeLayout = function() {
 	b1.position.set( 0, 0, 0-radius );
 	b1Pivot.add( b1 );
 	// bracketPivot.rotation.set( 0, -20*Math.PI/180, 0 );
-	holder.add( b1Pivot );
+	// holder.add( b1Pivot );
 
 	var b2Pivot = new THREE.Object3D();
 	var b2 = VRUIKit.makeFrame( 2, 1, 0.1, false, false, true, 0.0015 );
@@ -67,7 +67,7 @@ VRInstructions.prototype.makeLayout = function() {
 	      tex.repeat.set( 5, 0.1 );
 	      tex.offset.set( 0, 0 );
 		});
-	holder.add( progress );
+	// holder.add( progress );
 
 
 	// Make loading indicator frame
