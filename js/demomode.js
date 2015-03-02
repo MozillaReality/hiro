@@ -39,7 +39,7 @@ var VRDemo = (function() {
 
 	VRDemo.prototype.stop = function() {
 		window.clearTimeout(this.interval);
-		console.alert('Demo canceled!');
+		console.alert('--- Demo canceled!');
 	}
 
 	VRDemo.prototype.load = function(index) {
@@ -73,7 +73,7 @@ var VRDemo = (function() {
 			if (next) {
 				self.load(index);
 			}	else {
-				console.log('Demo done!')
+				console.log('--- Demo done!')
 			}
 		}, demo.playTime * 1000)
 

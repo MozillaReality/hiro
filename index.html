@@ -168,7 +168,7 @@
   };
 
   function onkey(event) {
-    //console.log(event.keyCode)
+    console.log(event.keyCode)
 
     switch (event.keyCode) {
       case 70: // f
@@ -211,6 +211,10 @@
       }));
       return;
     }
+    if (buttons.length === 1 && buttons[0] === 'Start') {
+      VRDemo.stop();
+      return;
+    };
   });
 
   VRManager.vrReady.then(function() {

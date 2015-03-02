@@ -18,6 +18,7 @@ function VRHud() {
 		var yOffset = (opts.artboardHeight / 2 * opts.pixelScale);
 
 		return Sketch2three.load(url, opts)
+
 		.then(function(meshes) {
 			self.meshes = meshes;
 			meshes.forEach(function(mesh) {
@@ -60,7 +61,7 @@ function VRHud() {
 		self.selection = selection;
 	}
 
-	makeSelectionBox();
+	//makeSelectionBox();
 
 	return this;
 };
