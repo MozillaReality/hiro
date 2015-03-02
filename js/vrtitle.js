@@ -98,11 +98,12 @@ VRTitle.prototype.makeLayout = function() {
 
 
 	this.descriptionLabel = makeCurvedLabel('Site Description\nNew Line', {
-		width: 0.3, height: 0.1, radius: 0.6,
+		width: 0.3, height: 0.08, radius: 0.6,
 		background: 'black',
 		color: 'white',
 		fontPosition: { x: 10, y: 0 },
 		font: 'normal 16px montserrat',
+		lineHeight: 22,
 		verticalAlign: 'top'
 	})
 	this.descriptionLabel.mesh.position.y = 0.1;

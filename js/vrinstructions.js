@@ -29,6 +29,7 @@ VRInstructions.prototype.makeLayout = function() {
 
 	this.instructionsPanel = VRUIKit.makeCurvedPlane( C/2, 1.5, r, 0xffffff);
 	this.instructionsPanel.material.wireframe = true;
+	this.instructionsPanel.material.transparent = true;
 	this.instructionsPanel.rotation.y = Math.PI/2;
 	holder.add(this.instructionsPanel);
 
