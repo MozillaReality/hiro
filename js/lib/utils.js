@@ -20,3 +20,41 @@ Utils.toRad = function(deg) {
 Utils.toDeg = function(rad) {
   return rad * (180/Math.PI);
 }
+
+
+Utils.xhr = function(url) {
+  return new Promise( function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onload = function() { resolve(xhr.response) }
+    xhr.onerror = function() { reject(new Error('Some kind of network error, XHR failed.')) }
+
+    xhr.open('GET', url);
+    xhr.send();
+  })
+};
+
+
+Utils.loadJson = function(url) {
+  return new Promise(function(resolve,reject) {
+    Utils.xhr(url)
+      .then( function(response) {
+        return JSON.parse(response)
+      }, function(err) {
+        reject(new Error('Error parsing JSON ' + err));
+      })
+      .then ( function(parsed) {
+        return resolve(parsed);
+      })
+  });
+}
+
+Utils.querystring = (function() {
+    var parameters = {};
+    var parts = window.location.search.substr( 1 ).split( '&' );
+    for ( var i = 0; i < parts.length; i ++ ) {
+      var parameter = parts[ i ].split( '=' );
+      parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+    }
+    return parameters;
+})();

@@ -3,33 +3,25 @@
 var content = [
 	{
 		'favorite': 'fav-xibalba.png',
-		'playTime': 20
+		'playTime': 40
 	},
 	{
 		'favorite': 'fav-sechelt.png',
-		'playTime': 20
+		'playTime': 30
 	},
 	{
 		'favorite': 'fav-polarsea.png',
-		'playTime': 20
-	},
-	{
-		'favorite': 'fav-rex.png',
-		'playTime': 20
-	},
-	{
-		'favorite': 'fav-couchknights.png',
-		'playTime': 20
+		'playTime': 40
 	},
 	{
 		'favorite': 'fav-rainbow.png',
-		'playTime': 20
+		'playTime': 35
 	},
 	{
 		'favorite': 'fav-nickycase.png',
-		'playTime': 20
+		'playTime': 30
 	},
-	
+
 ]
 
 var VRDemo = (function() {
@@ -42,7 +34,7 @@ var VRDemo = (function() {
 		var self = this;
 		setTimeout(function() {
 			self.load(self.currentIndex);
-		},5000)	
+		},5000)
 	}
 
 	VRDemo.prototype.stop = function() {
@@ -65,7 +57,7 @@ var VRDemo = (function() {
 
 			if (favorite) {
 				setTimeout(function() {
-					ui.load(favorite.url)
+					ui.load(favorite.url, favorite)
 				}, 2000);
 			}
 		}
@@ -84,8 +76,8 @@ var VRDemo = (function() {
 				console.log('Demo done!')
 			}
 		}, demo.playTime * 1000)
-		
-		
+
+
 	}
 
 
