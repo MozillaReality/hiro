@@ -1,19 +1,21 @@
 {
   "favorites": [
     {
-      "id": "fav-xibalba.png",
-      "title": "Xibala",
-      "description": "Author 1\nAuthor 2",
-      "url": "content/xibalba/",
-      "niceurl": "www.github.io/demourl"
-    },
-    {
+      "home": true,
+      "landing": true,
       "id": "fav-sechelt.png",
       "title": "Sechelt",
       "description": "Author 1\nAuthor 2",
       "url": "content/sechelt/index.html?mode=vr",
       "niceurl": "www.github.io/demourl",
       "instructions": "content/instructions/instructions.gif"
+    },
+    {
+      "id": "fav-xibalba.png",
+      "title": "Xibala",
+      "description": "Author 1\nAuthor 2",
+      "url": "content/xibalba/",
+      "niceurl": "www.github.io/demourl"
     },
     {
       "id": "fav-polarsea.png",

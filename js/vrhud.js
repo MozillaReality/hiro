@@ -12,33 +12,7 @@ function VRHud() {
 
 	this.layout.visible = this.visible;
 
-	function loadJson(url) {
-		return new Promise( function(resolve, reject) {
-			var xhr = new XMLHttpRequest();
-
-			xhr.onload = function() {
-				resolve(xhr.response);
-			}
-
-			xhr.onerror = function() {
-				reject(new Error('Some kind of network error, XHR failed.'))
-			}
-
-			xhr.open('GET', url);
-			xhr.send();
-		})
-	};
-
-	var jsonLoaded = loadJson('json/favorites.json')
-		.then( function(response) {
-			return JSON.parse(response)
-		}, function(err) {
-			reject(new Error('Error parsing JSON ' + err));
-		})
-		.then ( function(parsed) {
-			return parsed;
-		})
-
+	// sketch
 	function loadSketch(url, opts) {
 		var xOffset = -(opts.artboardWidth / 2 * opts.pixelScale);
 		var yOffset = (opts.artboardHeight / 2 * opts.pixelScale);
@@ -57,8 +31,8 @@ function VRHud() {
 		}, function(err) {
 			console.log(err);
 		})
-
 	};
+
 
 	var opts = {
 		pixelScale: 0.0035,
@@ -67,12 +41,26 @@ function VRHud() {
 		depth: 1
 	}
 
-	this.ready = Promise.all([loadSketch('s23/images/index.json', opts), jsonLoaded]).then(function(result) {
+	this.ready = Promise.all([loadSketch('s23/images/index.json', opts), Utils.loadJson('json/favorites.json')]).then(function(result) {
 		var meshes = result[0];
 		var favorites = result[1].favorites;
 		self.favorites = favorites;
 		self.attachEvents.call(self, favorites);
 	});
+
+
+	function makeSelectionBox() {
+		var size = 0.1;
+		var geometry = new THREE.BoxGeometry(0.8,1.2,0.1);
+		var material = new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: true } );
+		var selection = new THREE.Mesh( geometry, material );
+		self.layout.add(selection);
+		selection.position.z = -0.5;
+		selection.position.y = -0.12;
+		self.selection = selection;
+	}
+
+	makeSelectionBox();
 
 	return this;
 };
@@ -166,6 +154,12 @@ VRHud.prototype.attachEvents = function(favorites) {
 		if (mesh) {
 			mesh.userData = favorite;
 
+
+			mesh.addEventListener('mouseover', function(e) {
+				var target = e.target;
+
+				//console.log(target);
+			});
 			// 	mesh.addEventListener('mouseover', function(e) {
 			// 		var mesh = e.target;
 
