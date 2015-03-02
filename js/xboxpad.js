@@ -7,7 +7,7 @@
      "RT", "Back", "Start", "LS",
     "RS", "Up", "Down", "Left", "Right", "XBox"];
   var buttonStatus = [];
-  var pollInterval = 200;
+  var pollInterval = 50;
   var pad;
 
   window.addEventListener("gamepadconnected", connecthandler);

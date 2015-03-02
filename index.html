@@ -73,7 +73,10 @@
   <script src="js/vrinstructions.js"></script>
   <!-- <script src="js/vrloading.js"></script> -->
   <script src="js/vrui.js"></script>
-  <script src="js/demomode.js"></script> <!--- DEMO MODE! -->
+
+  <script src="json/demoscript.js"></script> <!--- DEMO MODE! -->
+  <script src="js/demomode.js"></script> <!--- DEMO MODE! run by using ?demo=true querystring -->
+
   <script src="js/vrmanager.js"></script>
 
 
@@ -168,8 +171,6 @@
   };
 
   function onkey(event) {
-    console.log(event.keyCode)
-
     switch (event.keyCode) {
       case 70: // f
         enterVr(true);
@@ -178,7 +179,12 @@
       case 83: // s
         enterVr(false);
         break;
-
+      case 37: // <- arrow
+        VRDemo.prev();
+        break;
+      case 39: // -> arrow
+        VRDemo.next();
+        break;
       case 90: // z
         VRManager.zeroSensor();
         break;
@@ -221,9 +227,9 @@
     // VR detected
     vrDetected = 'true';
 
-    show(enterVRButton)
+    show(enterVRButton);
 
-    show(statusDialogue)
+    show(statusDialogue);
   }, function() {
     // VR NOT detected
     vrDetected = 'false';

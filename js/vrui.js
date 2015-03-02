@@ -183,6 +183,10 @@ VRUi.prototype.hideHud = function() {
 }
 
 VRUi.prototype.toggleHud = function() {
+	if (VRDemo.running) {
+		VRDemo.stop();
+		return false;
+	}
 	if (!this.hud.visible && this.hud.enabled) {
 		// show
 		this.showHud();
