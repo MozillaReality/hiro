@@ -100,9 +100,13 @@ VRTitle.prototype.makeLayout = function() {
 	this.descriptionLabel = makeCurvedLabel('Site Description\nNew Line', {
 		width: 0.3, height: 0.1, radius: 0.6,
 		background: 'black',
-		color: 'white'
+		color: 'white',
+		fontPosition: { x: 10, y: 0 },
+		font: 'normal 16px montserrat',
+		verticalAlign: 'top'
 	})
 	this.descriptionLabel.mesh.position.y = 0.1;
+	this.descriptionLabel.mesh.rotation.y = Utils.toRad(28);
 	holder.add(this.descriptionLabel.mesh);
 
 	var titleGroup = new THREE.Group();
@@ -120,7 +124,7 @@ VRTitle.prototype.makeLayout = function() {
 	this.urlLabel = makeCurvedLabel('www.mozilla.com', {
 		width: w, height: 0.07, radius: r,
 		fontPosition: { x: 15, y: 12 },
-		font: 'normal 21px montserrat',
+		font: 'normal 24px montserrat',
 		background: 'black',
 		color: 'white'
 	})

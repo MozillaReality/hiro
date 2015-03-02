@@ -5,52 +5,58 @@
       "landing": true,
       "id": "fav-sechelt.png",
       "title": "Sechelt",
-      "description": "Author 1\nAuthor 2",
+      "description": "JOSH CARPENTER\nMR DOOB",
       "url": "content/sechelt/index.html?mode=vr",
-      "niceurl": "www.github.io/demourl",
-      "instructions": "content/instructions/instructions.gif"
+      "niceurl": "mozvr.github.io/sechelt",
+      "instructions": "images/instructions/sechelt.png"
     },
     {
       "id": "fav-xibalba.png",
       "title": "Xibala",
-      "description": "Author 1\nAuthor 2",
+      "description": "PhobosLab\nImpact Game Engine",
       "url": "content/xibalba/",
-      "niceurl": "www.github.io/demourl"
+      "niceurl": "phoboslab.org/xibalba/",
+      "instructions": "images/instructions/xibalba.png"
     },
     {
       "id": "fav-polarsea.png",
       "title": "Polarsea",
-      "description": "Author 1\nAuthor 2",
+      "description": "DEEP & ARTE\nELEVR WEB PLAYER",
       "url": "content/polarsea/",
-      "niceurl": "www.github.io/demourl"
+      "niceurl": "mozvr.github.io/polarsea",
+      "instructions": "images/instructions/polarsea.png"
     },
     {
       "id": "fav-rex.png",
-      "title": "VR Rex",
-      "description": "Author 1\nAuthor 2",
+      "title": "Oculus Rex",
+      "description": "AERYS\nMINKO",
       "url": "content/rex/super-trex.html",
-      "niceurl": "www.github.io/demourl"
+      "niceurl": "oculus-rex.com",
+      "instructions": "images/instructions/oculusrex.png"
     },
     {
       "id": "fav-couchknights.png",
       "title": "Couch Knights",
-      "description": "Author 1\nAuthor 2",
+      "description": "EPIC\nUNREAL ENGINE 4.7\nHTML EXPORTER BETA",
       "url": "content/couchknights/CouchKnights.html",
-      "niceurl": "www.github.io/demourl"
+      "niceurl": "mozvr.github.io/couchknights",
+      "instructions": "images/instructions/couchknights.png"
     },
     {
       "id": "fav-rainbow.png",
-      "title": "Rainbow",
-      "description": "Author 1\nAuthor 2",
+      "title": "Rainbow Membrane",
+      "description": "CABBIBO\nLEAP MOTION",
       "url": "content/rainbow/",
-      "niceurl": "www.github.io/demourl"
+      "niceurl": "www.github.io/demourl",
+      "instructions": "images/instructions/rainbowmembrane.png"
     },
     {
       "id": "fav-nickycase.png",
-      "title": "Nickycase",
-      "description": "Author 1\nAuthor 2",
+      "title": "I Am Ink",
+      "description": "NICKY CASE",
       "url": "content/nickycase/animatic_test_4/",
-      "niceurl": "www.github.io/demourl"
+      "niceurl": "ncase.me",
+      "instructions": "images/instructions/iamink.png"
     }
   ]
 }

@@ -16,18 +16,20 @@ function VRInstructions() {
 VRInstructions.prototype.makeLayout = function() {
 	var holder = new THREE.Object3D();
 
-	// setup size variables that will be used for most HUD elements
+	// Setup size variables that will be used for most HUD elements
+
 	var radius = 0.6;
 	var leftEdge = 215;
 
-	// instructions
+
+	// Make instructions
+
 	var r = 3.5;
 	var C = 2 * Math.PI * r;
 
 	this.instructionsPanel = VRUIKit.makeCurvedPlane( C/2, 1.5, r, 0xffffff);
 	this.instructionsPanel.material.wireframe = true;
 	this.instructionsPanel.rotation.y = Math.PI/2;
-
 	holder.add(this.instructionsPanel);
 
 	//var instructionsMesh = VRUIKit.makeCurvedPlane( opts.width, opts.height, opts.radius, 0x333333);
@@ -35,7 +37,9 @@ VRInstructions.prototype.makeLayout = function() {
 	b.position.set( 0, 0, 0 );
 	holder.add( b );
 
-	//make loading animation frames
+	
+	// Make loading animation details
+
 	var b1Pivot = new THREE.Object3D();
 	var b1 = VRUIKit.makeFrame( 0.1, 0.1, 0.1, false, false, true, 0.0015 );
 	Utils.shuffleArray( b1.children );
@@ -53,7 +57,8 @@ VRInstructions.prototype.makeLayout = function() {
 	holder.add( b2Pivot );
 
 
-	// make progress bar
+	// Make progress bar
+
 	var progress = VRUIKit.makeBand( radius, 0.0075, leftEdge, 30, 0, null, 0.5 );
 	progress.material.map = THREE.ImageUtils.loadTexture( 'images/instructions/progressbar-1.png', THREE.UVMapping, function( tex )
 		{
@@ -64,7 +69,7 @@ VRInstructions.prototype.makeLayout = function() {
 	holder.add( progress );
 
 
-	// make loading indicator frame
+	// Make loading indicator frame
 
 	var loading_pivot = new THREE.Object3D();
 	var loading = VRUIKit.makeFrame( 0.15, 0.15, 0.15, true, true, true, 0.0015 );
@@ -75,7 +80,7 @@ VRInstructions.prototype.makeLayout = function() {
 	holder.add( loading_pivot );
 
 
-	// make loading indicator sphere
+	// Make loading indicator sphere
 
 	var geometry = new THREE.SphereGeometry( 0.065, 20, 10 );
 	var material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: true } );
@@ -92,7 +97,7 @@ VRInstructions.prototype.makeLayout = function() {
 	return holder;
 }
 
-VRInstructions.prototype.show = function(instructionsImage, duration, delay) {
+VRInstructions.prototype.show = function( instructionsImage, duration, delay ) {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 		if (!self.visible) {

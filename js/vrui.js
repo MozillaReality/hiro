@@ -99,7 +99,7 @@ VRUi.prototype.load = function(url, opts) {
 	var showInstructions = function() {
 			var delay = 1000;	// time before showing instructions
 			var duration = 4000;
-			return self.instructions.show(instructions, duration, delay);
+			return self.instructions.show( instructions, duration, delay );
 		}
 	var hideInstructions = function() {
 		self.instructions.hide();

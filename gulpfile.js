@@ -13,10 +13,9 @@ gulp.task('sketchtool', function() {
     .pipe(
       sketch({
         export: 'slices',
-        formats: 'png',
         outputJSON: 'index.json',
         saveForWeb: true,
-        groupConentsOnly: true
+        groupContentsOnly: true
       })
     )
     .pipe(gulp.dest('./s23/images'));
