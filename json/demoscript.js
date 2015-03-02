@@ -6,19 +6,19 @@ var DemoScript = [
   },
   {
     'favorite': 'fav-polarsea.png',
-    'playTime': 50
+    'playTime': 65
   },
   {
     'favorite': 'fav-rainbow.png',
-    'playTime': 40
+    'playTime': 50
   },
   {
     'favorite': 'fav-xibalba.png',
-    'playTime': 40
+    'playTime': 50
   },
   {
     'favorite': 'fav-nickycase.png',
-    'playTime': 35
-  },
+    'playTime': 62
+  }
 
 ]
