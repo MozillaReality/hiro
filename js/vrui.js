@@ -50,7 +50,7 @@ function VRUi(container) {
 			self.scene.add(self.instructions.object3d);
 
 			// add hud layout to scene
-			self.bend(self.hud.layout, 2, false)
+			VRUIKit.bend(self.hud.layout, 2, false)
 			self.hud.layout.scale.set(0.5, 0.5, 0.5);
 			self.hud.enable();
 			self.scene.add(self.hud.layout);
@@ -237,55 +237,6 @@ VRUi.prototype.reset = function() {
 };
 
 
-VRUi.prototype.bend = function( group, amount, multiMaterialObject ) {
-	function bendVertices( mesh, amount, parent ) {
-		var vertices = mesh.geometry.vertices;
-
-		if (!parent) {
-			parent = mesh;
-		}
-
-		for (var i = 0; i < vertices.length; i++) {
-			var vertex = vertices[i];
-
-			// apply bend calculations on vertexes from world coordinates
-			parent.updateMatrixWorld();
-
-			var worldVertex = parent.localToWorld(vertex);
-
-			var worldX = Math.sin( worldVertex.x / amount) * amount;
-			var worldZ = - Math.cos( worldVertex.x / amount ) * amount;
-			var worldY = worldVertex.y 	;
-
-			// convert world coordinates back into local object coordinates.
-			var localVertex = parent.worldToLocal(new THREE.Vector3(worldX, worldY, worldZ));
-			vertex.x = localVertex.x;
-			vertex.z = localVertex.z;
-			vertex.y = localVertex.y;
-		};
-
-		mesh.geometry.computeBoundingSphere();
-		mesh.geometry.verticesNeedUpdate = true;
-	}
-
-	for ( var i = 0; i < group.children.length; i ++ ) {
-		var element = group.children[ i ];
-
-		if (element.geometry.vertices) {
-			if (multiMaterialObject) {
-				bendVertices( element, amount, group);
-			} else {
-				bendVertices( element, amount);
-			}
-		}
-
-		// if (element.userData.position) {
-		// 	element.position.x = Math.sin( element.userData.position.x / amount ) * amount;
-		// 	element.position.z = - Math.cos( element.userData.position.x / amount ) * amount;
-		// 	element.lookAt( vector.set( 0, element.position.y, 0 ) );
-		// }
-	}
-}
 
 /*
 todo: move backgrounds off to seperate module
