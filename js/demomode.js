@@ -1,50 +1,48 @@
 'use strict';
 
-var content = [
-	{
-		'favorite': 'fav-xibalba.png',
-		'playTime': 40
-	},
-	{
-		'favorite': 'fav-sechelt.png',
-		'playTime': 30
-	},
-	{
-		'favorite': 'fav-polarsea.png',
-		'playTime': 40
-	},
-	{
-		'favorite': 'fav-rainbow.png',
-		'playTime': 35
-	},
-	{
-		'favorite': 'fav-nickycase.png',
-		'playTime': 30
-	},
-
-]
-
 var VRDemo = (function() {
 	function VRDemo() {
 		this.currentIndex = 0;
 		this.interval = null;
+		this.running = false;
 	}
 
 	VRDemo.prototype.start = function() {
+		var startDelay = 5000;
 		var self = this;
+
+		if (this.currentIndex >= DemoScript.length) {
+			this.reset();
+		}
+
+		this.running = true;
+		console.log('--- Demo mode started! Running in ' + startDelay + 'ms');
 		setTimeout(function() {
 			self.load(self.currentIndex);
-		},5000)
+		}, startDelay) // time before starting demo.
 	}
 
 	VRDemo.prototype.stop = function() {
+		this.running = false;
+
+		this.clearCurrentDemo();
+
+		console.log('--- Demo canceled!');
+	}
+
+	VRDemo.prototype.clearCurrentDemo = function() {
 		window.clearTimeout(this.interval);
-		console.alert('--- Demo canceled!');
+	}
+
+	VRDemo.prototype.reset = function() {
+		this.currentIndex = 0;
+		this.running = false;
+		this.clearCurrentDemo();
 	}
 
 	VRDemo.prototype.load = function(index) {
 		var self = this;
-		var demo = content[index];
+		var demo = DemoScript[index];
 		var ui = VRManager.ui;
 		var hud = ui.hud;
 
@@ -68,16 +66,36 @@ var VRDemo = (function() {
 			VRManager.ui.load(demo.url);
 		}
 
-		this.interval = setTimeout(function() {
-			var next = content[++index];
-			if (next) {
-				self.load(index);
-			}	else {
-				console.log('--- Demo done!')
-			}
-		}, demo.playTime * 1000)
+		this.interval = setTimeout(function() { self.next() }, demo.playTime * 1000)
+	}
 
+	VRDemo.prototype.next = function() {
+		if (!this.running) return false;
 
+		this.clearCurrentDemo();
+
+		var next = DemoScript[++this.currentIndex];
+
+		if (next) {
+			this.load(this.currentIndex);
+		}	else {
+			console.log('--- Demo done!')
+			this.reset();
+		}
+	}
+
+	VRDemo.prototype.prev = function() {
+		if (!this.running) return false;
+
+		this.clearCurrentDemo();
+
+		var next = DemoScript[--this.currentIndex];
+
+		if (next && this.currentIndex > -1) {
+			this.load(this.currentIndex);
+		}	else {
+			console.log('--- Demo done!')
+		}
 	}
 
 

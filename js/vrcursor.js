@@ -276,8 +276,6 @@ VRCursor.prototype.onMouseClicked = function(e) {
   };
 
   if (this.objectMouseOver) {
-    console.log(this.objectMouseOver);
-
     this.objectMouseOver.dispatchEvent(this.events.clickEvent);
   };
 

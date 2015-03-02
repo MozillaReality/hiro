@@ -6,7 +6,7 @@ function VRTab(url) {
   self.handlers = [];
 
   self.iframe = iframe;
-  
+
   var prefix = (url.indexOf('?') > -1) ? '&' : '?';
   self.url = url + prefix + 'timestamp=' + Date.now();
 
