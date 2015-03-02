@@ -109,6 +109,7 @@ window.VRManager = (function() {
     }
   };
 
+  // load another demo
   VRManager.prototype.load = function(url) {
     var self = this;
 

@@ -92,14 +92,29 @@ VRInstructions.prototype.makeLayout = function() {
 	return holder;
 }
 
-VRInstructions.prototype.show = function(instructionsImage) {
-	if (!this.visible) {
-		this.object3d.visible = this.visible = true;
+VRInstructions.prototype.show = function(instructionsImage, duration, delay) {
+	var self = this;
+	return new Promise(function(resolve, reject) {
+		if (!self.visible) {
+			var texture = THREE.ImageUtils.loadTexture( instructionsImage, THREE.UVMapping);
+			self.instructionsPanel.material.wireframe = false;
+			self.instructionsPanel.material.map = texture;
 
-		var texture = THREE.ImageUtils.loadTexture( instructionsImage, THREE.UVMapping);
-		this.instructionsPanel.material.wireframe = false;
-		this.instructionsPanel.material.map = texture;
-	}
+			function makeVisible() {
+				self.object3d.visible = self.visible = true;
+			}
+
+			if (delay) {
+				setTimeout(makeVisible, delay);
+				setTimeout(function() {
+					resolve();
+				}, delay+duration)
+			} else {
+				makeVisible();
+				resolve();
+			}
+		}
+	})
 }
 
 VRInstructions.prototype.hide = function() {

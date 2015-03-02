@@ -51,7 +51,8 @@ function VRUi(container) {
 
 			// add hud layout to scene
 			self.bend(self.hud.layout, 2, false)
-			self.hud.layout.scale.set(0.5,0.5,0.5);
+			self.hud.layout.scale.set(0.5, 0.5, 0.5);
+			self.hud.enable();
 			self.scene.add(self.hud.layout);
 
 			// add cursor to scene
@@ -78,84 +79,89 @@ VRUi.prototype.load = function(url, opts) {
 	var instructions = opts.instructions || false;
 
 	// hides loading progress animation
-	var noLoading = opts.noLoading || false;
+	var disableLoading = opts.noLoading || false;
 
-	// hides title frame
-	var noTitle = opts.noTitle || false;
+	// hides titling and instructions
+	var disableTitle = opts.noTitle || false;
 
 	// hides transition
 	var noTransition = opts.noTransition || false;
 
-	this.hud.hide()
+	var hideHud = self.hud.hide();
+
+
+	var coverContentTransition = function() { self.transition.fadeOut(noTransition) }
+	var showContentTransition = function() { self.transition.fadeIn() }
+	var fadeContentToBlack = function() { self.backgroundShow(1) }
+	var fadeInContent = function() { self.backgroundHide() }
+	var showTitle = function() { self.title.show() }
+	var hideTitle = function() { self.title.hide() }
+	var disableCursor = function() { self.cursor.disable() }
+	var unloadCurrentDemo = function() {  VRManager.unloadCurrent() }
+	var showInstructions = function() {
+			var delay = 1000;	// time before showing instructions
+			var duration = 4000;
+			return self.instructions.show(instructions, duration, delay);
+		}
+	var hideInstructions = function() {
+		self.instructions.hide();
+	}
+	var onPageMeta = function(tab) {
+			var title = tab.siteInfo.title;
+			var description = tab.siteInfo.description;
+
+			self.title.setTitle(title);
+			self.title.setDescription(description);
+		}
+	var loadContent = function() {
+			return new Promise(function(resolve, reject) {
+				VRManager.load(url);
+				// disabled onPageMeta for GDC demos.   meta loads only when page loads, so that happens too late for the demos.
+				//VRManager.onPageMeta = onPageMeta;
+				VRManager.onTabReady = function() {
+					resolve()
+				};
+			});
+		}
+
+
+
+	// main loading sequence
+	self.currentUrl = url;
+	self.isHome = (url == self.homeUrl ? true : false );
+	disableCursor();
+
+	if (opts.hasOwnProperty('description')) self.title.setDescription(opts.description);
+	if (opts.hasOwnProperty('title')) self.title.setTitle(opts.title);
+	if (opts.hasOwnProperty('niceurl')) self.title.setUrl(opts.niceurl);
+
+	hideHud
 		.then(function() {
-			self.cursor.disable();
+				coverContentTransition();
+				fadeContentToBlack();
+			})
+		.then(function() {
+			setTimeout(function() { unloadCurrentDemo() }, 1000);
 
-			self.transition.fadeOut(noTransition) // hide content
-				.then(function() {
+			if (disableTitle) { // don't show titling or instructions.
+				fadeInContent();
+				loadContent();
+			} else {
+				showTitle();
+				showInstructions()
+					.then(loadContent)
+					.then(function() {
+						hideTitle();
+						hideInstructions();
+						setTimeout(function() {
+							fadeInContent();
+							showContentTransition();
+						}, 1000)
+					})
+			}
 
-					self.backgroundShow();
+		})
 
-					if (noTitle) {
-						self.backgroundHide();
-					} else {
-						self.title.show();
-					}
-
-					self.currentUrl = url;
-
-					self.isHome = (url == self.homeUrl ? true : false );
-
-					if (self.isHome) {
-						self.hud.enable();
-					}
-
-					if (!noLoading) {
-						self.instructions.show(instructions);
-					}
-
-					function onPageMeta(tab) {
-						var title = tab.siteInfo.title;
-						var description = tab.siteInfo.description;
-
-						self.title.setTitle(title);
-						self.title.setDescription(description);
-					}
-
-
-					function onTabReady() {
-						var holdTitleTime = 5000; // how long to hold title for before fading out.
-
-						self.backgroundHide(holdTitleTime);
-
-						//self.loading.hide();
-
-						self.transition.fadeIn();
-
-						if (self.titleTimeout) {
-							window.clearTimeout(self.titleTimeout);
-							delete self.titleTimeout;
-						};
-
-						self.titleTimeout = window.setTimeout(function() {
-							if (!self.hud.visible) {
-								self.instructions.hide();
-								self.title.hide();
-							}
-						}, holdTitleTime);
-					}
-
-					self.title.setDescription('');
-					self.title.setTitle('');
-					self.title.setUrl(url);
-
-					VRManager.onPageMeta = onPageMeta;
-
-					VRManager.onTabReady = onTabReady;
-
-					VRManager.load(url);
-
-				});
-		});
 };
 
 VRUi.prototype.showHud = function() {
@@ -169,7 +175,7 @@ VRUi.prototype.showHud = function() {
 };
 
 VRUi.prototype.hideHud = function() {
-	this.backgroundHide(1000);
+	this.backgroundHide();
 	this.hud.hide();
 	this.title.hide();
 	this.cursor.disable();
@@ -306,7 +312,7 @@ VRUi.prototype.background = function() {
 	return background;
 }
 
-VRUi.prototype.backgroundHide = function(delay) {
+VRUi.prototype.backgroundHide = function(delay, opacity) {
 	var background = this.background;
 
 	var tween = new TWEEN.Tween( background.material )
@@ -323,12 +329,14 @@ VRUi.prototype.backgroundHide = function(delay) {
 	tween.start();
 };
 
-VRUi.prototype.backgroundShow = function() {
+VRUi.prototype.backgroundShow = function(opacity) {
+	if (!opacity) opacity = 0.6;
+
 	var background = this.background;
 	background.visible = true;
 
 	var tween = new TWEEN.Tween( background.material )
-		.to({ opacity: 0.6 }, 800 )
+		.to({ opacity: opacity }, 800 )
 		.easing(TWEEN.Easing.Exponential.Out)
 		.onComplete(function() {
 

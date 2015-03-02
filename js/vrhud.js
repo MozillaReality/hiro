@@ -91,7 +91,7 @@ VRHud.prototype.show = function() {
 
 	return new Promise( function(resolve, reject) {
 		if (!self.visible) {
-			var offsetTime = 50;
+			var offsetTime = 50; // time between each element being animated.
 
 			self.layout.visible = self.visible = true
 
@@ -127,13 +127,29 @@ VRHud.prototype.show = function() {
 
 VRHud.prototype.hide = function() {
 	var self = this;
+
 	return new Promise( function(resolve, reject) {
 		if (self.visible) {
-			self.layout.visible = self.visible = false;
+			var offsetTime = 50; // time between each element being animated.
 
-			// this is wher eyou add your animation
+			var meshes = self.meshes.filter(function(mesh) { return mesh.name.indexOf('fav') !== -1 });
 
-			resolve();
+			meshes.sort(function(a, b) {
+				return a.position.x > b.position.x;
+			})
+
+			meshes.forEach(function(mesh, i) {
+        var tween = new TWEEN.Tween( mesh.material )
+          .to( { opacity: 0 }, 200 )
+          .easing(TWEEN.Easing.Cubic.Out)
+          .delay(offsetTime * i)
+          .onComplete(function() {
+          	resolve();
+          	self.layout.visible = self.visible = false;
+          })
+          .start();
+      })
+
 		} else {
 			// already hidden, so resolve.
 			resolve();
@@ -148,8 +164,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 		var mesh = self.meshes.find(function(mesh) { return mesh.name === favorite.id })
 
 		if (mesh) {
-			mesh.userData.instructions = favorite.instructions;
-			mesh.userData.url = favorite.url;
+			mesh.userData = favorite;
 
 			// 	mesh.addEventListener('mouseover', function(e) {
 			// 		var mesh = e.target;
@@ -188,9 +203,7 @@ VRHud.prototype.attachEvents = function(favorites) {
 				var target = e.target;
 
 				if (self.enabled) {
-					VRManager.ui.load(target.userData.url, {
-						instructions: target.userData.instructions
-					});
+					VRManager.ui.load(target.userData.url, target.userData);
 				}
 			});
 
