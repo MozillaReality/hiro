@@ -14,88 +14,88 @@
         "fav-couchknights.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1935,
+          "x" : 1700,
           "y" : 320,
           "width" : 210,
           "name" : "fav-couchknights",
-          "scale" : 1
+          "scale" : 3
         }
       },
       "frame" : {
         "frame.png" : {
           "format" : "png",
-          "height" : 146,
-          "x" : 1520,
-          "y" : 154,
-          "width" : 201,
+          "height" : 36,
+          "x" : 1521,
+          "y" : 254,
+          "width" : 560,
           "name" : "frame",
-          "scale" : 1
+          "scale" : 2
         }
       },
       "fav-nickycase" : {
         "fav-nickycase.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 2415,
+          "x" : 2180,
           "y" : 320,
           "width" : 210,
           "name" : "fav-nickycase",
-          "scale" : 1
+          "scale" : 3
         }
       },
       "fav-rainbow" : {
         "fav-rainbow.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 2175,
+          "x" : 1940,
           "y" : 320,
           "width" : 210,
           "name" : "fav-rainbow",
-          "scale" : 1
+          "scale" : 3
         }
       },
       "fav-polarsea" : {
         "fav-polarsea.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1455,
+          "x" : 1460,
           "y" : 320,
           "width" : 210,
           "name" : "fav-polarsea",
-          "scale" : 1
+          "scale" : 3
         }
       },
       "fav-xibalba" : {
         "fav-xibalba.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 975,
+          "x" : 980,
           "y" : 320,
           "width" : 210,
           "name" : "fav-xibalba",
-          "scale" : 1
+          "scale" : 3
         }
       },
       "fav-rex" : {
         "fav-rex.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1695,
+          "x" : 2420,
           "y" : 320,
           "width" : 210,
           "name" : "fav-rex",
-          "scale" : 1
+          "scale" : 3
         }
       },
       "fav-sechelt" : {
         "fav-sechelt.png" : {
           "format" : "png",
           "height" : 300,
-          "x" : 1215,
+          "x" : 1220,
           "y" : 320,
           "width" : 210,
           "name" : "fav-sechelt",
-          "scale" : 1
+          "scale" : 3
         }
       }
     },
