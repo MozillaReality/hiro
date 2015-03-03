@@ -97,7 +97,7 @@ VRUi.prototype.load = function(url, opts) {
 	var disableCursor = function() { self.cursor.disable() }
 	var unloadCurrentDemo = function() {  VRManager.unloadCurrent() }
 	var showInstructions = function() {
-			var delay = 1000;	// time before showing instructions
+			var delay = 0;	// time before showing instructions
 			var duration = 4000;
 			return self.instructions.show( instructions, duration, delay );
 		}

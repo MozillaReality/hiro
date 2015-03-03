@@ -108,10 +108,13 @@ VRTitle.prototype.makeLayout = function() {
 	this.descriptionLabel.mesh.rotation.y = Utils.toRad(28);
 	// holder.add(this.descriptionLabel.mesh);
 
+
+
+
 	var titleGroup = new THREE.Group();
 	var r = 0.8;
 	var w = 0.7;
-	this.titleLabel = makeCurvedLabel('MOZVR.COM', {
+	var TL = this.titleLabel = makeCurvedLabel('MOZVR.COM', {
 		width: w, height: 0.12, radius: r,
 		fontPosition: { x: 15, y: 15 },
 		font: 'normal 32px montserrat',
@@ -119,6 +122,29 @@ VRTitle.prototype.makeLayout = function() {
 		color: 'black'
 	})
 	titleGroup.add(this.titleLabel.mesh);
+
+	// var alpha;
+	new THREE.TextureLoader().load(
+    "images/alpha-2pxblack-leftright.png",
+    function( tex )
+    {
+
+    	// alpha = tex;
+      // tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+      // tex.repeat.set( 1, 1 );
+      // tex.offset.set( -0.5, -0.5 );
+      tex.magFilter = tex.minFilter = THREE.NearestFilter;
+      TL.mesh.material.alphaMap = tex;
+      TL.mesh.material.transparent = true;
+      TL.mesh.material.needsUpdate = true;
+
+    // 	new TWEEN.Tween( tex.offset )
+				// .to( { x: 0 }, 1000 )
+				// .easing( TWEEN.Easing.Sinusoidal.Out )
+				// .start();
+
+    } );
+
 
 	this.urlLabel = makeCurvedLabel('www.mozilla.com', {
 		width: w, height: 0.07, radius: r,
@@ -174,6 +200,35 @@ VRTitle.prototype.show = function() {
 	if (!this.visible) {
 		this.object3d.visible = this.visible = true;
 	}
+
+	// this.titleLabel.mesh.position.setY( -0.1 );
+	// new TWEEN.Tween( this.titleLabel.mesh.position )
+	// 	.to( { y: 0 }, 400 )
+	// 	.easing( TWEEN.Easing.Cubic.Out )
+	// 	.start()
+
+	this.titleLabel.mesh.material.map.offset.set( 1, 0 );
+	new TWEEN.Tween( this.titleLabel.mesh.material.map.offset ) // wipe the title label in from left to right
+		.to( { x: 0 }, 500 )
+		.easing( TWEEN.Easing.Cubic.Out )
+		.start();
+
+
+	var urlLabel_delay = 300;
+
+	this.urlLabel.mesh.material.visible = false;
+	new TWEEN.Tween( this.urlLabel.mesh.material ) // hide the urlLabel until the title label has mostly slid in
+		.to( { visible: true }, 1 )
+		.delay( urlLabel_delay )
+		.start()
+
+	this.urlLabel.mesh.position.set( 0, 0, -0.001 )
+	new TWEEN.Tween( this.urlLabel.mesh.position ) // slide the urlLabel down from behind the title
+		.to( { y: -0.10 }, 400 )
+		.easing( TWEEN.Easing.Cubic.Out )
+		.delay( urlLabel_delay )
+		.start();
+
 }
 
 VRTitle.prototype.hide = function() {

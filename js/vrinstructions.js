@@ -72,21 +72,21 @@ VRInstructions.prototype.makeLayout = function() {
 
 	// Make loading indicator frame
 
-	var loading_pivot = new THREE.Object3D();
-	var loading = VRUIKit.makeFrame( 0.15, 0.15, 0.15, true, true, true, 0.0015 );
+	this.load_pivot = new THREE.Object3D();
+	this.load_frame = VRUIKit.makeFrame( 0.15, 0.15, 0.15, true, true, true, 0.0015 );
 	// shuffle( loading.children ); // shuffles order in which the frame pieces draw in
-	loading.position.set( 0, -0.15, 0-radius );
-	loading_pivot.add( loading );
-	loading_pivot.rotation.set( 0, -30*Math.PI/180, 0 );
-	holder.add( loading_pivot );
+	this.load_frame.position.set( 0, -0.28, -0.8 );
+	this.load_pivot.add( this.load_frame );
+	this.load_pivot.rotation.set( 0, -30*Math.PI/180, 0 );
+	holder.add( this.load_pivot );
 
 
 	// Make loading indicator sphere
 
 	var geometry = new THREE.SphereGeometry( 0.065, 20, 10 );
 	var material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe: true } );
-	var loading_indicator = new THREE.Mesh( geometry, material );
-	loading.add( loading_indicator );
+	this.load_sphere = new THREE.Mesh( geometry, material );
+	this.load_frame.add( this.load_sphere );
 
 
 	// var geo = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
@@ -101,10 +101,28 @@ VRInstructions.prototype.makeLayout = function() {
 VRInstructions.prototype.show = function( instructionsImage, duration, delay ) {
 	var self = this;
 	return new Promise(function(resolve, reject) {
+
 		if (!self.visible) {
 			var texture = THREE.ImageUtils.loadTexture( instructionsImage, THREE.UVMapping);
 			self.instructionsPanel.material.wireframe = false;
 			self.instructionsPanel.material.map = texture;
+
+			self.load_sphere.position.setY( 0 );
+			new TWEEN.Tween( self.load_sphere.position )
+				.to( { y: 1 }, 2000 )
+				.start();
+
+			for( var i = 0; i < self.load_frame.children.length; i++ ) {
+
+				var edge = self.load_frame.children[i];
+				edge.scale.z = 0;
+
+				new TWEEN.Tween( edge.scale )
+					.to( { z: 1  }, 2000 )
+					.delay( i * 50 )	
+					.easing( TWEEN.Easing.Sinusoidal.Out )
+					.start();
+			}
 
 			function makeVisible() {
 				self.object3d.visible = self.visible = true;
@@ -119,6 +137,9 @@ VRInstructions.prototype.show = function( instructionsImage, duration, delay ) {
 				makeVisible();
 				resolve();
 			}
+
+
+
 		}
 	})
 }
