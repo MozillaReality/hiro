@@ -56,7 +56,7 @@ var VRDemo = (function() {
 			if (favorite) {
 				setTimeout(function() {
 					ui.load(favorite.url, favorite)
-				}, 2000);
+				}, 4000);
 			}
 		}
 
