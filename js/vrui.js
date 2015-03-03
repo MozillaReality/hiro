@@ -97,7 +97,7 @@ VRUi.prototype.load = function(url, opts) {
 	var disableCursor = function() { self.cursor.disable() }
 	var unloadCurrentDemo = function() {  VRManager.unloadCurrent() }
 	var showInstructions = function() {
-			var delay = 0;	// time before showing instructions
+			var delay = 500;	// time before showing instructions
 			var duration = 4000;
 			return self.instructions.show( instructions, duration, delay );
 		}
@@ -132,6 +132,8 @@ VRUi.prototype.load = function(url, opts) {
 
 	disableCursor();
 
+	hideTitle();
+
 	hideHud
 		.then(function() {
 				coverContentTransition();
@@ -147,7 +149,7 @@ VRUi.prototype.load = function(url, opts) {
 				fadeInContent();
 				loadContent();
 			} else {
-				showTitle();
+				setTimeout( function() { showTitle(); }, 1000);
 				showInstructions()
 					.then(loadContent)
 					.then(function() {

@@ -38,7 +38,7 @@ VRInstructions.prototype.makeLayout = function() {
 	b.position.set( 0, 0, 0 );
 	holder.add( b );
 
-	
+
 	// Make loading animation details
 
 	var b1Pivot = new THREE.Object3D();
@@ -59,7 +59,6 @@ VRInstructions.prototype.makeLayout = function() {
 
 
 	// Make progress bar
-
 	var progress = VRUIKit.makeBand( radius, 0.0075, leftEdge, 30, 0, null, 0.5 );
 	progress.material.map = THREE.ImageUtils.loadTexture( 'images/instructions/progressbar-1.png', THREE.UVMapping, function( tex )
 		{
@@ -107,28 +106,34 @@ VRInstructions.prototype.show = function( instructionsImage, duration, delay ) {
 			self.instructionsPanel.material.wireframe = false;
 			self.instructionsPanel.material.map = texture;
 
-			self.load_sphere.position.setY( 0 );
-			new TWEEN.Tween( self.load_sphere.position )
-				.to( { y: 1 }, 2000 )
-				.start();
+			// self.load_sphere.position.setY( 0 );
+			// new TWEEN.Tween( self.load_sphere.position )
+			// 	.to( { y: 1 }, 2000 )
+			// 	.start();
 
-			for( var i = 0; i < self.load_frame.children.length; i++ ) {
+			// for( var i = 0; i < self.load_frame.children.length; i++ ) {
 
-				var edge = self.load_frame.children[i];
-				edge.scale.z = 0;
+			// 	var edge = self.load_frame.children[i];
+			// 	edge.scale.z = 0;
 
-				new TWEEN.Tween( edge.scale )
-					.to( { z: 1  }, 2000 )
-					.delay( i * 50 )	
+			// 	new TWEEN.Tween( edge.scale )
+			// 		.to( { z: 1  }, 2000 )
+			// 		.delay( i * 50 )
+			// 		.easing( TWEEN.Easing.Sinusoidal.Out )
+			// 		.start();
+			// }
+
+			function makeVisible() {
+				self.object3d.visible = self.visible = true;
+
+				self.instructionsPanel.material.opacity = 0;
+				new TWEEN.Tween( self.instructionsPanel.material )
+					.to( { opacity: 1  }, 1500 )
 					.easing( TWEEN.Easing.Sinusoidal.Out )
 					.start();
 			}
 
-			function makeVisible() {
-				self.object3d.visible = self.visible = true;
-			}
-
-			if (delay) {
+			if (delay !== undefined && duration !== undefined) {
 				setTimeout(makeVisible, delay);
 				setTimeout(function() {
 					resolve();
@@ -137,9 +142,6 @@ VRInstructions.prototype.show = function( instructionsImage, duration, delay ) {
 				makeVisible();
 				resolve();
 			}
-
-
-
 		}
 	})
 }
