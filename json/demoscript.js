@@ -20,5 +20,4 @@ var DemoScript = [
     'favorite': 'fav-nickycase.png',
     'playTime': 62
   }
-
 ]
