@@ -100,10 +100,10 @@ em {
 .button-large {
   display: inline-block;
   margin: 1rem;
-  border: 0.45rem solid rgba( 40, 40, 40, 1);
+  border: 0.45rem solid rgba( 255, 255, 255, 1);
   padding: 0.5rem 1rem;
-  color: rgba( 40, 40, 40, 1);
-  box-shadow: 0px -16px 0px -8px rgba(50, 50, 50, 0.15);
+  color: rgba( 255, 255, 255, 1);
+  box-shadow: 0px -16px 0px -8px rgba(144, 144, 144, 0.15);
   background-color: rgba( 0, 0, 0, 0 );
   text-align: center;
   font-size: 2rem;
