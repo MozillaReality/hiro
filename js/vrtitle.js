@@ -14,6 +14,7 @@ function VRTitle() {
 
 
 VRTitle.prototype.makeLayout = function() {
+	var self = this;
 	var holder = new THREE.Object3D();
 
 	// setup size variables that will be used for most HUD elements
@@ -63,22 +64,18 @@ VRTitle.prototype.makeLayout = function() {
 	// this.titleLabel.mesh.position.z = -0.5;
 	// holder.add(this.titleLabel.mesh);
 
-	// this.descriptionLabel = new VRUIKit.TextLabel('Site Description', {
-	// 	width: 400, height: 50,
-	// 	fillStyle: 'black',
-	// 	showBounds: true
-	// });
-	// VRUIKit.scaleMesh(this.descriptionLabel.mesh, 0.001);
-	// this.descriptionLabel.mesh.position.z = -0.5;
-	// this.descriptionLabel.mesh.position.y = -0.05;
+	this.descriptionLabel = new VRUIKit.TextLabel('Site Description', {
+		width: 400, height: 50,
+		fillStyle: 'black',
+		showBounds: true
+	});
+	VRUIKit.scaleMesh(this.descriptionLabel.mesh, 0.001);
+	this.descriptionLabel.mesh.position.z = -0.5;
+	this.descriptionLabel.mesh.position.y = -0.05;
 	// holder.add(this.descriptionLabel.mesh);
 
 
-
-
-
-
-
+	
 
 
 	//var name = VRUIKit.makeBand( radius, 0.15, 215, 50, -0.1, 0xFFFFFF, 1, true );
@@ -95,64 +92,65 @@ VRTitle.prototype.makeLayout = function() {
 		return label;
 	}
 
-	this.descriptionLabel = makeCurvedLabel('Site Description\nNew Line', {
-		width: 0.3, height: 0.08, radius: 0.8,
-		background: 'black',
-		color: 'white',
-		fontPosition: { x: 10, y: 0 },
-		font: 'normal 24px montserrat',
-		lineHeight: 22,
-		verticalAlign: 'top'
-	})
-	this.descriptionLabel.mesh.position.y = 0.2;
-	this.descriptionLabel.mesh.rotation.y = Utils.toRad(28);
+	var tex_loader = new THREE.TextureLoader() // texture loader object that we reuse a few times
+
+	// this.descriptionLabel = makeCurvedLabel('Site Description\nNew Line', {
+	// 	width: 0.3, height: 0.08, radius: 0.8,
+	// 	background: 'black',
+	// 	color: 'white',
+	// 	fontPosition: { x: 10, y: 0 },
+	// 	font: 'normal 24px montserrat',
+	// 	lineHeight: 22,
+	// 	verticalAlign: 'top'
+	// })
+	// this.descriptionLabel.mesh.position.y = 0.2;
+	// this.descriptionLabel.mesh.rotation.y = Utils.toRad(28);
 	// holder.add(this.descriptionLabel.mesh);
 
 
-
+	// Make site title label
 
 	var titleGroup = new THREE.Group();
 	var r = 0.8;
 	var w = 0.7;
-	var TL = this.titleLabel = makeCurvedLabel('MOZVR.COM', {
+	this.titleLabel = makeCurvedLabel('MOZVR', {
 		width: w, height: 0.12, radius: r,
 		fontPosition: { x: 15, y: 15 },
 		font: 'normal 32px montserrat',
 		background: 'white',
 		color: 'black'
 	})
+	
+	tex_loader.load( "images/alpha-2pxblack-leftright.png", function( tex ){  // load and apply alpha map
+
+    tex.magFilter = tex.minFilter = THREE.NearestFilter;
+    self.titleLabel.mesh.material.alphaMap = tex;
+    self.titleLabel.mesh.material.transparent = true;
+    self.titleLabel.mesh.material.needsUpdate = true;
+
+	} );
+	
 	titleGroup.add(this.titleLabel.mesh);
 
-	// var alpha;
-	new THREE.TextureLoader().load(
-    "images/alpha-2pxblack-leftright.png",
-    function( tex )
-    {
 
-    	// alpha = tex;
-      // tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-      // tex.repeat.set( 1, 1 );
-      // tex.offset.set( -0.5, -0.5 );
-      tex.magFilter = tex.minFilter = THREE.NearestFilter;
-      TL.mesh.material.alphaMap = tex;
-      TL.mesh.material.transparent = true;
-      TL.mesh.material.needsUpdate = true;
+	// Make site URL label
 
-    // 	new TWEEN.Tween( tex.offset )
-				// .to( { x: 0 }, 1000 )
-				// .easing( TWEEN.Easing.Sinusoidal.Out )
-				// .start();
-
-    } );
-
-
-	this.urlLabel = makeCurvedLabel('www.mozilla.com', {
+	this.urlLabel = makeCurvedLabel('MOZVR.COM', {
 		width: w, height: 0.07, radius: r,
 		fontPosition: { x: 15, y: 12 },
 		font: 'normal 24px montserrat',
 		background: 'black',
 		color: 'white'
 	})
+	
+	tex_loader.load( "images/alpha-2pxblack-leftright.png", function( tex ){  // load and apply alpha map
+
+    tex.magFilter = tex.minFilter = THREE.NearestFilter;
+    self.urlLabel.mesh.material.alphaMap = tex;
+    self.urlLabel.mesh.material.transparent = true;
+    self.urlLabel.mesh.material.needsUpdate = true;
+
+	} );
 
 	this.urlLabel.mesh.position.y = -0.10;
 	titleGroup.add(this.urlLabel.mesh);
@@ -160,8 +158,6 @@ VRTitle.prototype.makeLayout = function() {
 	titleGroup.position.y = -0.28;
 	titleGroup.rotation.y = Utils.toRad(28);
 	holder.add(titleGroup);
-
-
 
 
 	//mesh.material.map.repeat.x = 2;
@@ -198,41 +194,53 @@ VRTitle.prototype.makeLayout = function() {
 
 VRTitle.prototype.show = function() {
 	if (!this.visible) {
-		this.object3d.visible = this.visible = true;
+		this.object3d.visible = this.visible = true; // if the title is already visible (eg: the HUD is open), don't do the intro animations
+
+		this.titleLabel.mesh.material.map.offset.set( 1, 0 );
+		new TWEEN.Tween( this.titleLabel.mesh.material.map.offset ) // wipe the title label in from left to right
+			.to( { x: 0 }, 500 )
+			.easing( TWEEN.Easing.Cubic.Out )
+			.start();
+
+		var urlLabel_delay = 300;
+		this.urlLabel.mesh.material.map.offset.set( 0, 0 )
+
+		this.urlLabel.mesh.material.visible = false;
+		new TWEEN.Tween( this.urlLabel.mesh.material ) // hide the urlLabel until the title label has mostly slid in
+			.to( { visible: true }, 1 )
+			.delay( urlLabel_delay )
+			.start()
+
+		this.urlLabel.mesh.position.set( 0, 0, -0.001 )
+		new TWEEN.Tween( this.urlLabel.mesh.position ) // slide the urlLabel down from behind the title
+			.to( { y: -0.10 }, 300 )
+			.easing( TWEEN.Easing.Cubic.Out )
+			.delay( urlLabel_delay )
+			.start();
+
+	} else {
+
 	}
-
-	// this.titleLabel.mesh.position.setY( -0.1 );
-	// new TWEEN.Tween( this.titleLabel.mesh.position )
-	// 	.to( { y: 0 }, 400 )
-	// 	.easing( TWEEN.Easing.Cubic.Out )
-	// 	.start()
-
-	this.titleLabel.mesh.material.map.offset.set( 1, 0 );
-	new TWEEN.Tween( this.titleLabel.mesh.material.map.offset ) // wipe the title label in from left to right
-		.to( { x: 0 }, 500 )
-		.easing( TWEEN.Easing.Cubic.Out )
-		.start();
-
-
-	var urlLabel_delay = 300;
-
-	this.urlLabel.mesh.material.visible = false;
-	new TWEEN.Tween( this.urlLabel.mesh.material ) // hide the urlLabel until the title label has mostly slid in
-		.to( { visible: true }, 1 )
-		.delay( urlLabel_delay )
-		.start()
-
-	this.urlLabel.mesh.position.set( 0, 0, -0.001 )
-	new TWEEN.Tween( this.urlLabel.mesh.position ) // slide the urlLabel down from behind the title
-		.to( { y: -0.10 }, 400 )
-		.easing( TWEEN.Easing.Cubic.Out )
-		.delay( urlLabel_delay )
-		.start();
-
 }
 
 VRTitle.prototype.hide = function() {
-	this.object3d.visible = this.visible = false;
+	
+	var self = this;
+
+	// this.titleLabel.mesh.material.map.offset.set( 0, 0 );
+	new TWEEN.Tween( self.titleLabel.mesh.material.map.offset ) // wipe the title label in from left to right
+		.to( { x: 1 }, 300 )
+		.easing( TWEEN.Easing.Cubic.In )
+		.onComplete( function(){ 
+			self.object3d.visible = self.visible = false;
+		})
+		.start();
+
+	new TWEEN.Tween( self.urlLabel.mesh.material.map.offset ) // wipe the title label in from left to right
+		.to( { x: 1 }, 300 )
+		.easing( TWEEN.Easing.Cubic.In )
+		.start();
+
 };
 
 VRTitle.prototype.setTitle = function(title) {

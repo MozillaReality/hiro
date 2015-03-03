@@ -88,9 +88,8 @@ VRUi.prototype.load = function(url, opts) {
 	var hideHud = self.hud.hide();
 
 
-	var coverContentTransition = function() { self.transition.fadeOut(noTransition) }
 	var showContentTransition = function() { self.transition.fadeIn() }
-	var fadeContentToBlack = function() { self.backgroundShow(1) }
+
 	var fadeInContent = function() { self.backgroundHide() }
 	var showTitle = function() { self.title.show() }
 	var hideTitle = function() { self.title.hide() }
@@ -134,8 +133,8 @@ VRUi.prototype.load = function(url, opts) {
 
 	hideHud
 		.then(function() {
-				coverContentTransition();
-				fadeContentToBlack();
+				self.transition.fadeOut(noTransition) // cover Content Transition
+				self.backgroundShow(1) // tween background opacity to 1 (fades to black)
 			})
 		.then(function() {
 			setTimeout(function() {
@@ -295,7 +294,7 @@ VRUi.prototype.backgroundHide = function(delay, opacity) {
 	tween.start();
 };
 
-VRUi.prototype.backgroundShow = function(opacity) {
+VRUi.prototype.backgroundShow = function(opacity, delay) {
 	if (!opacity) opacity = 0.6;
 
 	var background = this.background;
@@ -304,10 +303,12 @@ VRUi.prototype.backgroundShow = function(opacity) {
 	var tween = new TWEEN.Tween( background.material )
 		.to({ opacity: opacity }, 800 )
 		.easing(TWEEN.Easing.Exponential.Out)
-		.onComplete(function() {
 
-		})
-		.start();
+		if (delay) {
+			tween.delay(delay)	
+		}
+
+		tween.start();
 };
 
 VRUi.prototype.initRenderer = function() {

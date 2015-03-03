@@ -88,7 +88,6 @@ VRInstructions.prototype.makeLayout = function() {
 	this.load_sphere = new THREE.Mesh( geometry, material );
 	this.load_frame.add( this.load_sphere );
 
-
 	// var geo = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
 	// var mat = new THREE.MeshBasicMaterial( {color: 0xff0000} );
 	// var cube = new THREE.Mesh( geo, mat );
@@ -102,48 +101,59 @@ VRInstructions.prototype.show = function( instructionsImage, duration, delay ) {
 	var self = this;
 	return new Promise(function(resolve, reject) {
 
-		if (!self.visible) {
-			var texture = THREE.ImageUtils.loadTexture( instructionsImage, THREE.UVMapping);
-			self.instructionsPanel.material.wireframe = false;
-			self.instructionsPanel.material.map = texture;
+		if (!self.visible) { 
+			
+ 			function makeVisible() { // make instructions visible once texture has loaded. Goal being to avoid animation and loading textures at same time.
 
-			self.load_sphere.position.setY( 0 );
-			new TWEEN.Tween( self.load_sphere.position )
-				.to( { y: 1 }, 2000 )
-				.start();
+				var texture = THREE.ImageUtils.loadTexture( instructionsImage, THREE.UVMapping, function(){
 
-			for( var i = 0; i < self.load_frame.children.length; i++ ) {
+					self.instructionsPanel.material.wireframe = false;
+					self.instructionsPanel.material.map = texture;
 
-				var edge = self.load_frame.children[i];
-				edge.scale.z = 0;
+					self.object3d.visible = self.visible = true;
 
-				new TWEEN.Tween( edge.scale )
-					.to( { z: 1  }, 2000 )
-					.delay( i * 50 )	
-					.easing( TWEEN.Easing.Sinusoidal.Out )
-					.start();
+					for( var i = 0; i < self.load_frame.children.length; i++ ) { // animate in the frame
+
+						var edge = self.load_frame.children[i];
+						edge.scale.z = 0;
+
+						new TWEEN.Tween( edge.scale )
+							.to( { z: 1  }, 2000 )
+							.delay( i * 50 )	
+							.easing( TWEEN.Easing.Sinusoidal.Out )
+							.start();
+					}
+
+				} );
 			}
 
-			function makeVisible() {
-				self.object3d.visible = self.visible = true;
-			}
+			if ( delay ) { // check for delay
 
-			if (delay) {
-				setTimeout(makeVisible, delay);
-				setTimeout(function() {
+				setTimeout( makeVisible, delay );
+				setTimeout( function() {
 					resolve();
 				}, delay+duration)
+
 			} else {
+				
 				makeVisible();
 				resolve();
+				
 			}
 
-
+			// self.load_sphere.position.setY( 0 );
+			// new TWEEN.Tween( self.load_sphere.position )
+			// 	.to( { y: 1 }, 2000 )
+			// 	.start();
 
 		}
 	})
 }
 
 VRInstructions.prototype.hide = function() {
+	
 	this.object3d.visible = this.visible = false;
+
+	
+
 };

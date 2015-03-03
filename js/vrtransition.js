@@ -49,15 +49,13 @@ VRTransition.prototype.fadeOut = function(noTransition) { // hide content
 
     mesh.visible = self.visible = true;
 
-    new TWEEN.Tween( self.material.map.offset )
+    new TWEEN.Tween( self.material.map.offset ) // 
       .to( { y: 0 }, 800 )
       .easing( TWEEN.Easing.Sinusoidal.Out )
       .onComplete(function() {
         resolve();
       })
       .start();
-
-    resolve();
 
   });
 };
