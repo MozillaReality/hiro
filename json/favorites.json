@@ -1,20 +1,12 @@
 {
   "favorites": [
-  {
+    {
       "home": true,
       "landing": true,
-      "id": "fav-construct.png",
-      "title": "Sechelt",
-      "description": "JOSH CARPENTER\nMR DOOB",
-      "url": "content/construct",
-      "niceurl": "mozvr.github.io/sechelt",
-      "instructions": "images/instructions/sechelt.png"
-    },
-    {
       "id": "fav-sechelt.png",
       "title": "Sechelt",
       "description": "JOSH CARPENTER\nMR DOOB",
-      "url": "content/sechelt/index.html?mode=vr",
+      "url": "content/sechelt",
       "niceurl": "mozvr.github.io/sechelt",
       "instructions": "images/instructions/sechelt.png"
     },

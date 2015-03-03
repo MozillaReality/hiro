@@ -218,7 +218,10 @@
       return;
     }
     if (buttons.length === 1 && buttons[0] === 'Start') {
-      VRDemo.stop();
+      VRManager.zeroSensor();
+      if(Utils.querystring.demo) {
+        VRDemo.start();
+      }
       return;
     };
   });

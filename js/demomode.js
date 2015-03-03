@@ -8,7 +8,7 @@ var VRDemo = (function() {
 	}
 
 	VRDemo.prototype.start = function() {
-		var startDelay = 5000;
+		var startDelay = 20*1000;
 		var self = this;
 
 		if (this.currentIndex >= DemoScript.length) {

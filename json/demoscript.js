@@ -1,9 +1,11 @@
 
 var DemoScript = [
-  {
-    'favorite': 'fav-sechelt.png',
-    'playTime': 40
-  },
+  // {
+  //   'favorite': 'fav-sechelt.png',
+  //   'playTime': 40
+  // },
+  // HACK:
+  // initial start time in VRDemo.start()
   {
     'favorite': 'fav-polarsea.png',
     'playTime': 65
