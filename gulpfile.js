@@ -6,7 +6,6 @@ var Twit = require('twit')
 
 var serverPort = 8080;
 
-var T = new Twit(require('./appKeys/twitter').getKeys());
 
 gulp.task('clean', function(cb) {
   gulp.src('./s23/images/*').pipe(clean())
@@ -39,21 +38,27 @@ gulp.task('express', function() {
   var tweets = [];
   var cacheTweets = 15;
 
+  var T = new Twit(require('./appKeys/twitter').getKeys());
+
+
   var stream = T.stream('statuses/filter', { track: '#GDC2015' })
+
+  stream.on('error', function(e) {
+    console.log(e);
+  })
 
   stream.on('tweet', function (tweet) {
     io.sockets.emit('tweet', {
       user: tweet.user.screen_name,
       text: tweet.text
-    });
-
+    })
 
     if (tweets.length > cacheTweets) {
       tweets.shift();
     }
 
     tweets.push(tweet);
-  });
+  })
 
   app.get('/tweets', function(req, res) {
     res.send(tweets);
@@ -61,9 +66,9 @@ gulp.task('express', function() {
 
   var server = app.listen(serverPort);
 
-  console.log('Listening on port ' + serverPort);
-
   var io = require('socket.io').listen(server);
+
+  console.log('Listening on port ' + serverPort);
 })
 
 gulp.task('default', ['express']);
