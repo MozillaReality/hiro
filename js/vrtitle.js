@@ -162,8 +162,6 @@ VRTitle.prototype.makeLayout = function() {
 	holder.add(titleGroup);
 
 
-
-
 	//mesh.material.map.repeat.x = 2;
 
 	// make loading indicator frame
@@ -199,40 +197,34 @@ VRTitle.prototype.makeLayout = function() {
 VRTitle.prototype.show = function() {
 	if (!this.visible) {
 		this.object3d.visible = this.visible = true;
+
+		this.titleLabel.mesh.material.map.offset.set( 1, 0 );
+		new TWEEN.Tween( this.titleLabel.mesh.material.map.offset ) // wipe the title label in from left to right
+			.to( { x: 0 }, 500 )
+			.easing( TWEEN.Easing.Cubic.Out )
+			.start();
+
+		var urlLabel_delay = 300;
+
+		this.urlLabel.mesh.material.visible = false;
+		new TWEEN.Tween( this.urlLabel.mesh.material ) // hide the urlLabel until the title label has mostly slid in
+			.to( { visible: true }, 1 )
+			.delay( urlLabel_delay )
+			.start()
+
+		this.urlLabel.mesh.position.set( 0, 0, -0.001 )
+		new TWEEN.Tween( this.urlLabel.mesh.position ) // slide the urlLabel down from behind the title
+			.to( { y: -0.10 }, 400 )
+			.easing( TWEEN.Easing.Cubic.Out )
+			.delay( urlLabel_delay )
+			.start();
 	}
-
-	// this.titleLabel.mesh.position.setY( -0.1 );
-	// new TWEEN.Tween( this.titleLabel.mesh.position )
-	// 	.to( { y: 0 }, 400 )
-	// 	.easing( TWEEN.Easing.Cubic.Out )
-	// 	.start()
-
-	this.titleLabel.mesh.material.map.offset.set( 1, 0 );
-	new TWEEN.Tween( this.titleLabel.mesh.material.map.offset ) // wipe the title label in from left to right
-		.to( { x: 0 }, 500 )
-		.easing( TWEEN.Easing.Cubic.Out )
-		.start();
-
-
-	var urlLabel_delay = 300;
-
-	this.urlLabel.mesh.material.visible = false;
-	new TWEEN.Tween( this.urlLabel.mesh.material ) // hide the urlLabel until the title label has mostly slid in
-		.to( { visible: true }, 1 )
-		.delay( urlLabel_delay )
-		.start()
-
-	this.urlLabel.mesh.position.set( 0, 0, -0.001 )
-	new TWEEN.Tween( this.urlLabel.mesh.position ) // slide the urlLabel down from behind the title
-		.to( { y: -0.10 }, 400 )
-		.easing( TWEEN.Easing.Cubic.Out )
-		.delay( urlLabel_delay )
-		.start();
-
 }
 
 VRTitle.prototype.hide = function() {
-	this.object3d.visible = this.visible = false;
+	var meshes = this.object3d
+
+	meshes.visible = this.visible = false;
 };
 
 VRTitle.prototype.setTitle = function(title) {

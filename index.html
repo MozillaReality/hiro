@@ -200,6 +200,9 @@
   document.addEventListener('webkitfullscreenchange', onFschange);
   document.addEventListener('fullscreenchange', onFschange);
 
+
+  var demoRunning = false;
+
   xBoxPad.on('pressed', function(buttons) {
     if (buttons.length === 2) {
       if (buttons[0] === 'LT' && buttons[1] === 'RT' ||
@@ -218,7 +221,11 @@
       return;
     }
     if (buttons.length === 1 && buttons[0] === 'Start') {
-      VRDemo.stop();
+      VRManager.zeroSensor();
+      if(Utils.querystring.demo && !demoRunning) {
+        VRDemo.start();
+        demoRunning = true;
+      }
       return;
     };
   });

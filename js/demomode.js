@@ -8,7 +8,7 @@ var VRDemo = (function() {
 	}
 
 	VRDemo.prototype.start = function() {
-		var startDelay = 5000;
+		var startDelay = 30*1000;
 		var self = this;
 
 		if (this.currentIndex >= DemoScript.length) {
@@ -56,7 +56,7 @@ var VRDemo = (function() {
 			if (favorite) {
 				setTimeout(function() {
 					ui.load(favorite.url, favorite)
-				}, 2000);
+				}, 4000);
 			}
 		}
 

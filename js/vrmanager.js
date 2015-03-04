@@ -204,9 +204,9 @@ window.VRManager = (function() {
        self.currentDemo.setRenderMode(self.ui.mode);
       };
 
-      if(Utils.querystring.demo) {
-        VRDemo.start();
-      }
+      // if(Utils.querystring.demo) {
+      //   VRDemo.start();
+      // }
 
     } else {
       console.log('no vr mode available');

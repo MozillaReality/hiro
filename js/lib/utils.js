@@ -21,7 +21,6 @@ Utils.toDeg = function(rad) {
   return rad * (180/Math.PI);
 }
 
-
 Utils.xhr = function(url) {
   return new Promise( function(resolve, reject) {
     var xhr = new XMLHttpRequest();
@@ -50,11 +49,15 @@ Utils.loadJson = function(url) {
 }
 
 Utils.querystring = (function() {
-    var parameters = {};
-    var parts = window.location.search.substr( 1 ).split( '&' );
-    for ( var i = 0; i < parts.length; i ++ ) {
-      var parameter = parts[ i ].split( '=' );
-      parameters[ parameter[ 0 ] ] = parameter[ 1 ];
-    }
-    return parameters;
+  var parameters = {};
+  var parts = window.location.search.substr( 1 ).split( '&' );
+  for ( var i = 0; i < parts.length; i ++ ) {
+    var parameter = parts[ i ].split( '=' );
+    parameters[ parameter[ 0 ] ] = parameter[ 1 ];
+  }
+  return parameters;
 })();
+
+
+// todo: three.js mesh destroy.   delete material, geoemtry and remove object from parent.   self remove from parent.
+// todo: asset loader
