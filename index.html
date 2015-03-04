@@ -175,7 +175,9 @@
       case 70: // f
         enterVr(true);
         break;
-
+      case 13:
+        startKbDemo();
+        break; 
       case 83: // s
         enterVr(false);
         break;
@@ -203,6 +205,16 @@
 
   var demoRunning = false;
 
+  function startKbDemo() {
+    VRManager.currentDemo.iframe.contentWindow.play();
+    startDemo();
+  }
+
+  function startDemo() {
+    VRDemo.start();
+    demoRunning = true;
+  }
+
   xBoxPad.on('pressed', function(buttons) {
     if (buttons.length === 2) {
       if (buttons[0] === 'LT' && buttons[1] === 'RT' ||
@@ -223,8 +235,7 @@
     if (buttons.length === 1 && buttons[0] === 'Start') {
       VRManager.zeroSensor();
       if(Utils.querystring.demo && !demoRunning) {
-        VRDemo.start();
-        demoRunning = true;
+        startDemo();
       }
       return;
     };
