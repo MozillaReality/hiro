@@ -1,0 +1,10 @@
+// Register your Twitter application here: https://apps.twitter.com/app/new
+
+module.exports.getKeys = function () {
+  return {
+    consumer_key: '',
+    consumer_secret: '',
+    access_token: '',
+    access_token_secret: ''
+  };
+};
