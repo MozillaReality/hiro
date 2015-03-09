@@ -38,6 +38,16 @@ gulp.task('express', function() {
   var tweets = [];
   var cacheTweets = 15;
 
+  /*
+  Pass twitter app keys to Twit:
+
+  var T = new Twit({
+    consumer_key: '',
+    consumer_secret: '',
+    access_token: '',
+    access_token_secret: ''
+  });
+  */
   var T = new Twit(require('./appKeys/twitter').getKeys());
 
 
