@@ -9,10 +9,11 @@ To hack on the HIRO source go to your command line:
 
 * `git clone https://github.com/MozVR/HIRO.git`
 * `npm install`
+* `npm install gulp -g`
 * `gulp`
 * Open [http://localhost:8080](http://localhost:8080) in your browser
 
-fork and clone the repo then run `npm install` in the command line utility of your preference from your new local HIRO directory.
+Fork and clone the repo, and then run `npm install` in the command-line utility of your preference from your new local HIRO directory.
 
 ### Twitter API Keys
 
