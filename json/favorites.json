@@ -6,57 +6,17 @@
       "id": "fav-sechelt.png",
       "title": "Sechelt",
       "description": "JOSH CARPENTER\nMR DOOB",
-      "url": "content/sechelt",
+      "url": "http://mozvr.github.io/sechelt/?mode=vr",
       "niceurl": "mozvr.github.io/sechelt",
       "instructions": "images/instructions/sechelt.png"
-    },
-    {
-      "id": "fav-xibalba.png",
-      "title": "Xibala",
-      "description": "PHOBOSLAB\nIMPACT GAME ENGINE",
-      "url": "content/xibalba/",
-      "niceurl": "phoboslab.org/xibalba/",
-      "instructions": "images/instructions/xibalba.png"
     },
     {
       "id": "fav-polarsea.png",
       "title": "Polarsea",
       "description": "DEEP & ARTE\nELEVR WEB PLAYER",
-      "url": "content/polarsea/",
+      "url": "http://mozvr.github.io/polarsea/",
       "niceurl": "mozvr.github.io/polarsea",
       "instructions": "images/instructions/polarsea.png"
-    },
-    {
-      "id": "fav-rex.png",
-      "title": "Oculus Rex",
-      "description": "AERYS\nMINKO",
-      "url": "content/rex/super-trex.html",
-      "niceurl": "oculus-rex.com",
-      "instructions": "images/instructions/oculusrex.png"
-    },
-    {
-      "id": "fav-couchknights.png",
-      "title": "Couch Knights",
-      "description": "EPIC\nUNREAL ENGINE 4.7\nHTML EXPORTER BETA",
-      "url": "content/couchknights/CouchKnights.html",
-      "niceurl": "mozvr.github.io/couchknights",
-      "instructions": "images/instructions/couchknights.png"
-    },
-    {
-      "id": "fav-rainbow.png",
-      "title": "Rainbow Membrane",
-      "description": "CABBIBO\nLEAP MOTION",
-      "url": "content/rainbow/",
-      "niceurl": "www.github.io/demourl",
-      "instructions": "images/instructions/rainbowmembrane.png"
-    },
-    {
-      "id": "fav-nickycase.png",
-      "title": "I Am Ink",
-      "description": "NICKY CASE",
-      "url": "content/nickycase/animatic_test_4/",
-      "niceurl": "ncase.me",
-      "instructions": "images/instructions/nickycase.png"
     }
   ]
 }
