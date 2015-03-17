@@ -1,21 +1,22 @@
 {
-  "name": "JAVRIS",
+  "name": "HIRO",
+  "private": true,
   "version": "0.0.0",
-  "description": "JAVRIS- Javascript Augmented VR Interaction System",
+  "description": "MozVR.com: website for Mozilla Research Virtual Reality",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/potch/javris.git"
+    "url": "git://github.com/MozVR/HIRO.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/potch/javris/issues"
+    "url": "https://github.com/MozVR/HIRO/issues"
   },
-  "homepage": "https://github.com/potch/javris",
+  "homepage": "https://github.com/MozVR/HIRO",
   "dependencies": {
     "gulp": "~3.8.11",
     "gulp-connect": "^2.0.6",
