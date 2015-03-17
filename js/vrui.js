@@ -85,42 +85,30 @@ VRUi.prototype.load = function(url, opts) {
 	// hides transition
 	var noTransition = opts.noTransition || false;
 
-	var hideHud = self.hud.hide();
-
-
-	var coverContentTransition = function() { self.transition.fadeOut(noTransition) }
-	var showContentTransition = function() { self.transition.fadeIn() }
-	var fadeContentToBlack = function() { self.backgroundShow(1) }
-	var fadeInContent = function() { self.backgroundHide() }
-	var showTitle = function() { self.title.show() }
-	var hideTitle = function() { self.title.hide() }
-	var disableCursor = function() { self.cursor.disable() }
-	var unloadCurrentDemo = function() {  VRManager.unloadCurrent() }
 	var showInstructions = function() {
-			var delay = 500;	// time before showing instructions
-			var duration = 4000;
-			return self.instructions.show( instructions, duration, delay );
-		}
-	var hideInstructions = function() {
-		self.instructions.hide();
+		var delay = 500;	// time before showing instructions
+		var duration = 3000;
+		return self.instructions.show( instructions, duration, delay );
 	}
+	
 	var onPageMeta = function(tab) {
-			var title = tab.siteInfo.title;
-			var description = tab.siteInfo.description;
+		var title = tab.siteInfo.title;
+		var description = tab.siteInfo.description;
 
-			self.title.setTitle(title);
-			self.title.setDescription(description);
-		}
+		self.title.setTitle(title);
+		self.title.setDescription(description);
+	}
 	var loadContent = function() {
-			return new Promise(function(resolve, reject) {
-				VRManager.load(url);
-				// disabled onPageMeta for GDC demos.   meta loads only when page loads, so that happens too late for the demos.
-				//VRManager.onPageMeta = onPageMeta;
-				VRManager.onTabReady = function() {
-					resolve()
-				};
-			});
-		}
+		return new Promise(function(resolve, reject) {
+			VRManager.load(url);
+			// disabled onPageMeta for GDC demos.   meta loads only when page loads, so that happens too late for the demos.
+			//VRManager.onPageMeta = onPageMeta;
+			VRManager.onTabReady = function() {
+				resolve()
+			};
+		});
+	}
+
 	function setTitleLabels() {
 		if (opts.hasOwnProperty('description')) self.title.setDescription(opts.description);
 		if (opts.hasOwnProperty('title')) self.title.setTitle(opts.title);
@@ -130,40 +118,45 @@ VRUi.prototype.load = function(url, opts) {
 	// main loading sequence
 	self.currentUrl = url;
 
-	disableCursor();
+	self.cursor.disable();
 
-	hideTitle();
+	self.title.hide();
 
-	hideHud
+	self.hud.hide()
 		.then(function() {
-				coverContentTransition();
-				fadeContentToBlack();
+				// cover content with transition
+				self.transition.fadeOut(noTransition);
+				// fade content to black
+				self.backgroundShow(1)
 			})
 		.then(function() {
 			setTimeout(function() {
-				unloadCurrentDemo()
+				VRManager.unloadCurrent()
 				setTitleLabels();
 			}, 1000);
 
 			if (disableTitle) { // don't show titling or instructions.
-				fadeInContent();
+				// lift curtains
+				self.backgroundHide();
 				loadContent();
 			} else {
-				setTimeout( function() { showTitle(); }, 1000);
+				setTimeout( function() { 
+					self.title.show() 
+				}, 1000);
+
 				showInstructions()
 					.then(loadContent)
 					.then(function() {
-						hideTitle();
-						hideInstructions();
+						self.title.hide();
+						self.instructions.hide();
 						setTimeout(function() {
-							fadeInContent();
-							showContentTransition();
+							// liftcurtains
+							self.backgroundHide()
+							self.transition.fadeIn()
 						}, 1000)
 					})
 			}
-
 		})
-
 };
 
 VRUi.prototype.showHud = function() {
