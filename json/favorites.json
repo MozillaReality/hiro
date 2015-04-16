@@ -6,7 +6,7 @@
       "id": "fav-sechelt.png",
       "title": "Sechelt",
       "description": "JOSH CARPENTER\nMR DOOB",
-      "url": "http://mozvr.github.io/sechelt/?mode=vr",
+      "url": "http://mozvr.github.io/sechelt/",
       "niceurl": "mozvr.github.io/sechelt",
       "instructions": "images/instructions/sechelt.png"
     },
@@ -14,7 +14,7 @@
       "id": "fav-polarsea.png",
       "title": "Polarsea",
       "description": "DEEP & ARTE\nELEVR WEB PLAYER",
-      "url": "http://mozvr.github.io/polarsea/",
+      "url": "http://www.mozvr.com/projects/polarsea/content",
       "niceurl": "mozvr.github.io/polarsea",
       "instructions": "images/instructions/polarsea.png"
     }
