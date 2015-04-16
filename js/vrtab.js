@@ -140,7 +140,22 @@ VRTab.prototype.start = function () {
 // tell content that we have switched render modes.
 VRTab.prototype.setRenderMode = function(mode) {
   var self = this;
-  self.loaded.then(function() {
+  var modeStr;
+  switch (mode) {
+    case 1:
+      modeStr = 'mono';
+      break
+    case 2:
+      modeStr = 'stereo';
+      break
+    case 3:
+      modeStr = 'vr';
+      break
+  }
+
+  this.iframe.contentWindow.postMessage({ mode: modeStr }, '*');
+    
+  this.loaded.then(function() {
     self.sendMessage('renderMode',mode);
   })
 };
