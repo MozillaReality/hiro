@@ -1,7 +1,8 @@
 # HIRO
 
-Hiro is the code that drives [MozVR.com](http://mozvr.com), a "VR website about VR websites" from Mozilla Research.
+Experimental VR browsing interface.
 
+Viewing Note: Only Sechelt and Polar Sea demos are useable.
 
 ## Development
 
